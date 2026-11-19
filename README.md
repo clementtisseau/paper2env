@@ -2,14 +2,21 @@
 
 **Can an agent rediscover a paper's key insight from what was known before it?**
 
-paper2env turns a research paper into an evaluation environment. The agent
-gets the paper's own codebase with the contribution surgically removed, a
-prompt that says only what was known before the paper (plus optional hints),
-and a sandbox where it can run experiments. Its fix is graded on whether it
-*is* the contribution, checked exactly, not on whether it looks like the
-paper.
+paper2env is a collection of rediscovery environments, each built from one
+research paper. For each paper, the agent gets the paper's own codebase with
+the contribution surgically removed, a prompt that says only what was known
+before the paper (plus optional hints), and a sandbox where it can run
+experiments. Its fix is graded on whether it *is* the contribution, checked
+exactly, not on whether it looks like the paper.
 
-The first environment is built on *Score Centering Stabilizes Off-policy
+**The conversion is not automatic.** Each environment is built semi-manually:
+deciding what reveals the answer and must be hidden, which property of the
+contribution the grader can check, and which plausible wrong answers it must
+reject takes reading the paper closely, and that judgment is most of the work.
+The tooling that carries over from one paper to the next is listed
+[below](#what-carries-over-to-other-papers).
+
+**One environment so far**, built on *Score Centering Stabilizes Off-policy
 Reinforcement Learning* (Marek & Ryabinin, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807),
 September 2026): RL for LLMs drifts and collapses when the inference engine
 that samples rollouts differs slightly from the model being trained, and the
@@ -82,12 +89,48 @@ starter repo ──► agent container (no network)  ◄── prompt: task + hi
   Claude Code runner, a hook rewrites every subagent command into the run's
   container and denies every other tool.
 
+## What carries over to other papers
+
+Reusable as is, or nearly:
+
+- **The Claude Code runner and its confinement hook** (`rlenv/claude_agent/`):
+  every subagent command rewritten into the run's container, every other tool
+  denied, full transcripts kept. Nothing in it depends on the paper.
+- **Docker isolation and the Inspect AI task** (`rlenv/docker/`,
+  `rlenv/task.py`, `rlenv/shared.py`): sandbox without network, grader in a
+  separate container, images tagged by content.
+- **The sanitizer's mechanism** (`rlenv/sanitize.py`): exact replacements that
+  must match once, larger spans pinned by SHA-256, a grep audit that fails the
+  build, a fresh git history. The list of edits is per paper; the machinery is
+  not.
+- **The hint-ladder structure** (`rlenv/prompts/compose.py`): a common prompt
+  plus cumulative levels, with tests that each hint appears only from its
+  level on.
+- **The judge's plumbing** (`rlenv/grader/judge/judge.py`): one-pass template
+  filling, verdict validation, the `rediscovered` / `discovered` distinction,
+  aggregation over judges.
+- **The leak checklist** in [docs/design.md](docs/design.md): code, words,
+  structure, data plumbing, history, prompt, the agent's own context, the
+  environment's own files.
+
+Written again for each paper:
+
+- what to remove and rewrite in the codebase (the sanitizer's edit list);
+- the property the theory check verifies, and the wrong answers each of its
+  checks rejects;
+- the hint levels' content;
+- the judge's reference explanation, rubric and near-misses;
+- any cheap proxy of the paper's experiments (here, the CPU prototype).
+
+When a second paper is added, its environment will sit next to this one and
+the reusable parts will move into a shared package.
+
 ## Repository
 
 | Path | What |
 |---|---|
 | [`docs/`](docs/) | [design](docs/design.md), [results](docs/results.md), [lessons and limitations](docs/lessons.md) |
-| [`rlenv/`](rlenv/) | the environment: sanitizer, prompts, graders, CPU prototype, Docker, runners, tests ([reference](rlenv/README.md)) |
+| [`rlenv/`](rlenv/) | the score-centering environment: sanitizer, prompts, graders, CPU prototype, Docker, runners, tests ([reference](rlenv/README.md)) |
 | [`runs/`](runs/) | all 45 runs with transcripts and grading ([guide](runs/README.md)) |
 | [`upstream/`](upstream/) | the paper's reference implementation (MIT, Martin Marek), untouched |
 | [`scripts/`](scripts/) | result tables from the runs |
@@ -114,7 +157,7 @@ checkout whose name says nothing about the method: see
 
 ## Status
 
-Built: the starter and its audit, hint levels L0–L4, the theory check and
+One paper so far. Built: the starter and its audit, hint levels L0–L4, the theory check and
 CPU guard-rail (validated on known answers), the LLM judge (built, not yet
 calibrated or run), two runners, 45 runs. Not done: GPU validation on
 Qwen3-0.6B, judge calibration, more runs per cell, runs without
