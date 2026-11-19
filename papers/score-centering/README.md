@@ -48,6 +48,8 @@ Opus rediscovers the method from L1 in 5/5 runs, including the top-k tail
 model. Weaker models find the right diagnosis, then the familiar remedy
 (importance sampling). Analysis and limitations: [results.md](results.md) ·
 every run: [tables](results_tables.md), [`runs/`](runs/).
+After new runs:
+`python papers/score-centering/summarize_runs.py > papers/score-centering/results_tables.md`.
 
 ## The environment
 

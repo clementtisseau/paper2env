@@ -16,7 +16,8 @@ orchestrates (it launches the subagent with its Agent tool):
      container and ends the run. It also copies the subagent's full transcript
      into runs/<run>/transcripts/ (see copy_transcripts).
 
-`python core/runner/run.py abort` ends an active run without grading.
+`python core/runner/run.py abort` ends an active run without grading;
+`python core/runner/run.py papers` lists the papers and their levels.
 """
 import argparse
 import difflib
@@ -159,6 +160,13 @@ def abort(args):
     print("run aborted")
 
 
+def list_papers(args):
+    for name in papers.available():
+        p = papers.load(name)
+        print(f"{name}: {p.TITLE}\n  levels: {' '.join(p.LEVELS)} (default {' '.join(p.DEFAULT_LEVELS)})"
+              f"\n  delivers: {p.SUBMISSION}, {p.REPORT}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -171,8 +179,9 @@ def main():
     s.add_argument("--rebuild", action="store_true")
     sub.add_parser("finish")
     sub.add_parser("abort")
+    sub.add_parser("papers", help="list the papers and their levels")
     args = ap.parse_args()
-    {"start": start, "finish": finish, "abort": abort}[args.cmd](args)
+    {"start": start, "finish": finish, "abort": abort, "papers": list_papers}[args.cmd](args)
 
 
 if __name__ == "__main__":

@@ -55,14 +55,19 @@ build.
 ```bash
 pip install -r requirements-host.txt
 python -m pytest                                  # core, runner hook, every paper's tests
-python core/sanitize.py --paper score-centering   # build and audit a starter (optional: runners do it)
+python core/sanitize.py --paper <paper>    # build and audit a starter (optional: runners do it)
 ```
 
 Every command takes the paper by name (`--paper` or `-T paper=`). Both
 runners use the paper's starter, prompts and graders, so they grade the same
-way. Each paper lists its levels and modes in its README; for
-`score-centering`: levels `L0 L1 L2a L2b L3 L4`, mode `exp` (the agent can
-run CPU training) or `noexp`.
+way. To see the papers and their hint levels:
+
+```bash
+python core/runner/run.py papers
+```
+
+Every paper also has two modes: `exp` (the starter includes the tools the
+agent needs to run experiments; the default) and `noexp` (without them).
 
 ### Option A: an API model, with Inspect AI
 
@@ -71,8 +76,8 @@ enforced limits.
 
 ```bash
 export ANTHROPIC_API_KEY=...                  # or the provider of your model
-inspect eval core/task.py --model anthropic/claude-haiku-5-5 \
-    -T paper=score-centering -T levels=L1,L3 -T epochs=3 -T experiments=true \
+inspect eval core/task.py --model <provider/model> \
+    -T paper=<paper> -T levels=<level>,<level> -T epochs=3 -T experiments=true \
     -T hours=2 -T tokens=5000000 -T messages=500
 inspect view                                  # browse transcripts and scores
 ```
@@ -92,19 +97,19 @@ into `docker exec` in the run's container, and every other tool is denied.
    `.claude/settings.json` (the hook) and `.claude/agents/researcher.md`
    (a Bash-only agent). The checkout's directory name must say nothing about
    the method: the subagent sees it in its context.
-2. **Paste this into the session** (choose the paper, level, mode and model):
+2. **Paste this into the session**, with `<paper>`, `<level>` and `<model>`
+   filled in (`<model>`: `haiku`, `sonnet` or `opus`):
 
    ```text
-   Run one paper2env episode. Run `python3 core/runner/run.py start --paper score-centering --level L1 --hours 2`
+   Run one paper2env episode. Run `python3 core/runner/run.py start --paper <paper> --level <level> --hours 2`
    (add --no-experiments for the noexp mode). Then launch the `researcher` subagent with
-   model opus, giving it as its prompt exactly the content of the printed agent_prompt.md
+   model <model>, giving it as its prompt exactly the content of the printed agent_prompt.md
    and nothing else. When it has finished, run `python3 core/runner/run.py finish`
    and show me results.json.
    ```
 
-3. Runs land in `papers/<name>/runs/<run>/`. For score-centering, update the
-   tables with
-   `python papers/score-centering/summarize_runs.py > papers/score-centering/results_tables.md`.
+3. The run lands in `papers/<paper>/runs/<run>/`. A paper may have its own
+   script to summarize runs (see its README).
 
 Before a series of runs, check for leaks: ask the session to launch a
 `researcher` subagent that only quotes the lines of its context mentioning a
