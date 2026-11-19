@@ -9,8 +9,8 @@
 Rediscovery environments, each built from one recent research paper. The
 agent gets the paper's own codebase with the contribution removed, a prompt
 limited to pre-paper knowledge (plus optional hints), and a sandbox. It is
-graded on whether its fix **has the property the paper's contribution has**,
-checked exactly, not on whether its write-up sounds like the paper.
+graded on two things: whether it **found the paper's idea** (an LLM judge
+with a hidden rubric), and whether its **fix is correct** (exact checks).
 
 > Environments are **built by hand, not generated**: choosing what to hide,
 > which property to check and which wrong answers to reject means reading the
