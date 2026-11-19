@@ -26,6 +26,14 @@ differs slightly from the trained model. The paper shows why, and removes the
 drift by centering each token's score under the sampler, using only the top-k
 logprobs an inference engine returns. The models tested predate it.
 
+**A run succeeds when both hold:**
+1. **The idea is found:** an LLM judge finds in the report that each token's
+   score is centered under the sampler, which removes the drift.
+2. **It is implemented correctly:** exact checks confirm the loss is
+   drift-free, using only the sampler's top-k logprobs.
+
+[How a run is graded](papers/score-centering/grading.md)
+
 **Drift-free submissions by hint level** (passing / runs)
 
 <picture>
