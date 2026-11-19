@@ -2,169 +2,165 @@
 
 **Can an agent rediscover a paper's key insight from what was known before it?**
 
-paper2env is a collection of rediscovery environments, each built from one
-research paper. For each paper, the agent gets the paper's own codebase with
-the contribution surgically removed, a prompt that says only what was known
-before the paper (plus optional hints), and a sandbox where it can run
-experiments. Its fix is graded on whether it *is* the contribution, checked
-exactly, not on whether it looks like the paper.
+A collection of rediscovery environments, each built from one research paper.
+The agent gets the paper's codebase with the contribution removed, a prompt
+limited to what was known before the paper (plus optional hints), and a
+sandbox for experiments. It is graded on whether its fix *is* the
+contribution, checked exactly, not on whether it reads like the paper.
 
-**The conversion is not automatic.** Each environment is built semi-manually:
-deciding what reveals the answer and must be hidden, which property of the
-contribution the grader can check, and which plausible wrong answers it must
-reject takes reading the paper closely, and that judgment is most of the work.
-The tooling that carries over from one paper to the next is listed
-[below](#what-carries-over-to-other-papers).
+> **Environments are built by hand, not generated.** Choosing what to hide,
+> which property to check and which wrong answers to reject requires
+> reading the paper closely. What carries over between papers is
+> [listed below](#reusable-across-papers).
 
-**One environment so far**, built on *Score Centering Stabilizes Off-policy
-Reinforcement Learning* (Marek & Ryabinin, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807),
-September 2026): RL for LLMs drifts and collapses when the inference engine
-that samples rollouts differs slightly from the model being trained, and the
-paper fixes it by subtracting the sampler-expected score from each token's
-score. The models tested predate the paper.
+**One environment so far:** *Score Centering Stabilizes Off-policy RL*
+(Marek & Ryabinin, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807),
+Sept. 2026). RL for LLMs drifts when the inference engine that samples
+rollouts differs slightly from the trained model; the paper fixes it by
+subtracting the sampler-expected score from each token's score. The models
+tested predate the paper.
 
 ## Results
 
-45 runs with Claude Haiku 5.5, Sonnet 5.5 and Opus 5.5 as Claude Code
-subagents, at hint levels L4 (method given) down to L1 (pre-paper knowledge
-only). A run counts as a rediscovery when its loss is **drift-free**: the
-exact theory check finds no drift at any prefix, no change on-policy, and
-bounded gradients.
+45 runs, Claude Haiku / Sonnet / Opus 5.5, hint levels L4 → L1. A run counts
+as a rediscovery when its loss is **drift-free** under the exact theory
+check.
 
 | Level | Haiku | Sonnet | Opus |
 |---|---|---|---|
-| L3 (decomposition given) | 3/3 | 3/3 | 3/3 |
-| L2b (per-prefix direction) | 2/3 | 0/3 | 3/3 |
-| L2a (direction) | 2/3 | 0/3 | 3/3 |
-| **L1 (pre-paper knowledge)** | 1/6 | 2/6 | **5/5** |
+| L3: decomposition given | 3/3 | 3/3 | 3/3 |
+| L2b: per-prefix direction | 2/3 | 0/3 | 3/3 |
+| L2a: direction | 2/3 | 0/3 | 3/3 |
+| **L1: pre-paper knowledge only** | 1/6 | 2/6 | **5/5** |
 
-- **Opus rediscovers the method from L1 in all five runs**: the per-prefix
-  drift, why group centering does not remove it, the score correction, the
-  top-k tail model, and in four runs the composition with importance weights.
-- **Weaker models find the diagnosis but reach for the familiar remedy**:
-  importance sampling, unclipped or loosely capped. The grader's checks were
-  built to tell the two apart.
-- **More hints are not always better**: Sonnet does worse at L2 than at L1;
-  the L2 hint seems to steer it toward reweighting.
-- **The top-k is the hard part**: inference engines return only their top-k
-  logprobs, and truncating the sum is biased even on-policy. Haiku is
-  drift-free with the full distribution in 9 runs, with the top-k in 3.
+- **Opus rediscovers the method from L1 in 5/5 runs**, including the top-k
+  tail model; 4/5 also compose it correctly with importance weights.
+- **Weaker models find the right diagnosis, then the familiar remedy**:
+  importance sampling, unclipped or loosely capped.
+- **More hints are not always better**: Sonnet scores lower at L2 than at L1.
+- **The top-k is the hard part**: Haiku is drift-free with the full
+  distribution in 9 runs, with only the top-k in 3.
 
-Details, per-run tables and caveats: [docs/results.md](docs/results.md). Every
-run's prompt, transcript, submission, report and grading is in
-[`runs/`](runs/).
+→ [docs/results.md](docs/results.md) · every run with its transcript:
+[`runs/`](runs/)
 
 ## How it works
 
 ```
-upstream/ (the paper's code, untouched)
-   │  rlenv/sanitize.py: remove the method and every hint of it, audit, fresh git
-   ▼
-starter repo ──► agent container (no network)  ◄── prompt: task + hint level L0…L4
-                       │  experiments on a CPU version of the setup (optional)
-                       ▼
-                 losses.py + REPORT.md
-                       │
-          ┌────────────┼──────────────────┐
-          ▼            ▼                  ▼
-   theory check   CPU guard-rail      LLM judge
-   (exact, main)  (doesn't break      (hidden rubric,
-                   training)           near-misses)
+upstream/ (paper's code) ──sanitize.py──► starter repo ──► agent container (no network)
+                                                              ▲   │
+                                       prompt: task + hint L0…L4   │
+                                                                  ▼
+                                                       losses.py + REPORT.md
+                                                                  │
+                                 ┌────────────────────────────────┼────────────────────┐
+                                 ▼                                ▼                    ▼
+                         theory check (main)              CPU guard-rail          LLM judge
+                         exact, on a toy policy           doesn't break training  hidden rubric
 ```
 
-- **Hiding the answer** is most of the work: code branches, docstrings,
-  names, a module that exists only for the method, a config setting, the git
-  history, the prompt's wording, and the agent's own context (the session's
-  directory name). Each leak and its fix: [docs/design.md](docs/design.md).
-- **Hint levels** go from the bare problem (L0) to the method itself (L4), so
-  results are a curve: where each model starts finding the contribution, and
-  what it finds before that.
-- **Grading checks the property, not the wording.** The contribution is that
-  the loss's expected update has no drift under any sampler. The theory check
-  verifies it exactly on a toy policy where every completion is enumerated,
-  in three settings (full distribution, top-k only, combined with TIS). Each
-  check was added to reject a specific plausible wrong answer, two of them
-  found in agent submissions: [rlenv/grader](rlenv/grader/README.md).
-- **Isolation.** Agent code runs only in containers without network. With the
-  Claude Code runner, a hook rewrites every subagent command into the run's
-  container and denies every other tool.
-
-## What carries over to other papers
-
-Reusable as is, or nearly:
-
-- **The Claude Code runner and its confinement hook** (`rlenv/claude_agent/`):
-  every subagent command rewritten into the run's container, every other tool
-  denied, full transcripts kept. Nothing in it depends on the paper.
-- **Docker isolation and the Inspect AI task** (`rlenv/docker/`,
-  `rlenv/task.py`, `rlenv/shared.py`): sandbox without network, grader in a
-  separate container, images tagged by content.
-- **The sanitizer's mechanism** (`rlenv/sanitize.py`): exact replacements that
-  must match once, larger spans pinned by SHA-256, a grep audit that fails the
-  build, a fresh git history. The list of edits is per paper; the machinery is
-  not.
-- **The hint-ladder structure** (`rlenv/prompts/compose.py`): a common prompt
-  plus cumulative levels, with tests that each hint appears only from its
-  level on.
-- **The judge's plumbing** (`rlenv/grader/judge/judge.py`): one-pass template
-  filling, verdict validation, the `rediscovered` / `discovered` distinction,
-  aggregation over judges.
-- **The leak checklist** in [docs/design.md](docs/design.md): code, words,
-  structure, data plumbing, history, prompt, the agent's own context, the
-  environment's own files.
-
-Written again for each paper:
-
-- what to remove and rewrite in the codebase (the sanitizer's edit list);
-- the property the theory check verifies, and the wrong answers each of its
-  checks rejects;
-- the hint levels' content;
-- the judge's reference explanation, rubric and near-misses;
-- any cheap proxy of the paper's experiments (here, the CPU prototype).
-
-When a second paper is added, its environment will sit next to this one and
-the reusable parts will move into a shared package.
-
-## Repository
-
-| Path | What |
+| Piece | What it does |
 |---|---|
-| [`docs/`](docs/) | [design](docs/design.md), [results](docs/results.md), [lessons and limitations](docs/lessons.md) |
-| [`rlenv/`](rlenv/) | the score-centering environment: sanitizer, prompts, graders, CPU prototype, Docker, runners, tests ([reference](rlenv/README.md)) |
-| [`runs/`](runs/) | all 45 runs with transcripts and grading ([guide](runs/README.md)) |
-| [`upstream/`](upstream/) | the paper's reference implementation (MIT, Martin Marek), untouched |
-| [`scripts/`](scripts/) | result tables from the runs |
+| **Sanitizer** | Removes the method and every trace of it (code, words, names, history), then audits the result. [Leaks and fixes](docs/design.md#hiding-the-answer) |
+| **Hint levels** | L0 (bare problem) → L4 (method given), so results are a curve, not a pass rate. |
+| **Theory check** | Verifies the property itself (no drift at any prefix, unchanged on-policy, bounded gradients) by enumerating every completion of a toy policy. Each check rejects a specific plausible wrong answer. [Details](rlenv/grader/README.md) |
+| **Isolation** | Agent code runs only in containers without network; grading in a separate container. |
 
-## Running it
+## Running
 
-Requirements: Docker, Python 3.12. CPU only.
+**Requirements:** Docker (daemon running), Python 3.12, CPU only. On a
+network that intercepts TLS, set `SC_RLENV_PIPCA=<CA bundle>` so the images
+can build.
 
 ```bash
-python rlenv/sanitize.py                 # build the agent's starter (and audit it)
-python -m pytest rlenv/tests             # starter equivalence, grader validation, leak tests
+python rlenv/sanitize.py        # build the agent's starter and audit it
+python -m pytest rlenv/tests    # validate starter, graders, prompts, hook
 ```
 
-With an API model (Inspect AI):
+Both runners use the same starter, prompts and graders. Levels: `L0 L1 L2a
+L2b L3 L4`. Mode: `exp` (the agent can run CPU training) or `noexp`.
+
+### Option A: an API model, with Inspect AI
+
+The agent loop is Inspect's `react` agent (bash, python, editor), with
+enforced limits.
 
 ```bash
 pip install -r rlenv/requirements-host.txt
-inspect eval rlenv/task.py --model <provider/model> -T levels=L1,L3 -T epochs=3
+export ANTHROPIC_API_KEY=...                  # or the provider of your model
+inspect eval rlenv/task.py --model anthropic/claude-haiku-5-5 \
+    -T levels=L1,L3 -T epochs=3 -T experiments=true \
+    -T hours=2 -T tokens=5000000 -T messages=500
+inspect view                                  # browse transcripts and scores
 ```
 
-With a Claude Code subagent (no API key; how `runs/` was produced), from a
-checkout whose name says nothing about the method: see
+`epochs` = attempts per level (pass@k). Optional: `-T judges=<model>` adds
+the LLM judge. Images are built on the first run.
+
+### Option B: a Claude Code subagent, no API key
+
+How every run in `runs/` was produced. The model under test is a subagent of
+a Claude Code session, so it uses a Claude subscription instead of API
+credits. A hook confines it: each of its Bash commands is rewritten into
+`docker exec` in the run's container, and every other tool is denied.
+
+1. **Open a Claude Code session at the repository root**, so it loads
+   `.claude/settings.json` (the hook) and `.claude/agents/researcher.md`
+   (a Bash-only agent). The checkout's directory name must say nothing about
+   the method: the subagent sees it in its context.
+2. **Paste this into the session** (choose the level, mode and model):
+
+   ```text
+   Run one paper2env episode. Run `python3 rlenv/claude_agent/run.py start --level L1 --hours 2`
+   (add --no-experiments for the noexp mode). Then launch the `researcher` subagent with
+   model opus, giving it as its prompt exactly the content of the printed agent_prompt.md
+   and nothing else. When it has finished, run `python3 rlenv/claude_agent/run.py finish`
+   and show me results.json.
+   ```
+
+3. **Update the tables:**
+   `python scripts/summarize_runs.py > docs/results_tables.md`. New runs are
+   picked up automatically.
+
+Before a series of runs, check for leaks: ask the session to launch a
+`researcher` subagent that only quotes the lines of its context mentioning a
+directory, repository, branch, commit or project name. Details and limits
+(no enforced budget, one run at a time):
 [rlenv/claude_agent](rlenv/claude_agent/README.md).
+
+## Reusable across papers
+
+| Reusable as is | Rewritten for each paper |
+|---|---|
+| Claude Code runner and confinement hook (`rlenv/claude_agent/`) | The sanitizer's list of edits: what to remove and rewrite |
+| Docker isolation, Inspect task, image tagging (`rlenv/docker/`, `task.py`, `shared.py`) | The property the theory check verifies, and the wrong answers it rejects |
+| Sanitizer machinery: exact, SHA-pinned edits, grep audit, fresh history | The hint levels' content |
+| Hint-ladder composition and leak tests (`rlenv/prompts/compose.py`) | The judge's reference, rubric and near-misses |
+| Judge plumbing: prompt filling, verdict validation, aggregation | Any cheap proxy of the paper's experiments (here, a CPU prototype) |
+| The leak checklist in [docs/design.md](docs/design.md) | |
+
+When a second paper is added, each environment gets its own directory and
+the reusable parts move into a shared package.
+
+## Repository
+
+| Path | Content |
+|---|---|
+| [`docs/`](docs/) | [design](docs/design.md) · [results](docs/results.md) · [lessons and limitations](docs/lessons.md) |
+| [`rlenv/`](rlenv/) | the score-centering environment ([reference](rlenv/README.md)) |
+| [`runs/`](runs/) | 45 runs: prompts, transcripts, submissions, reports, grading ([guide](runs/README.md)) |
+| [`upstream/`](upstream/) | the paper's code, untouched (MIT, Martin Marek) |
+| [`scripts/`](scripts/) | result tables from the runs |
 
 ## Status
 
-One paper so far. Built: the starter and its audit, hint levels L0–L4, the theory check and
-CPU guard-rail (validated on known answers), the LLM judge (built, not yet
-calibrated or run), two runners, 45 runs. Not done: GPU validation on
-Qwen3-0.6B, judge calibration, more runs per cell, runs without
-experimentation (`noexp`). Limitations: [docs/lessons.md](docs/lessons.md).
+**Done:** starter and audit, hint levels L0–L4, theory check and CPU
+guard-rail validated on known answers, two runners, 45 runs.
+**Not done:** LLM judge calibration and runs, GPU validation on Qwen3-0.6B,
+`noexp` runs, more runs per cell. See [limitations](docs/lessons.md).
 
 ## Credits
 
-The paper and the code in `upstream/` are by Martin Marek and Max Ryabinin.
-This repository builds an evaluation on top of their work and is not
-affiliated with them.
+The paper and `upstream/` are by Martin Marek and Max Ryabinin. This
+repository builds an evaluation on their work and is not affiliated with
+them.
