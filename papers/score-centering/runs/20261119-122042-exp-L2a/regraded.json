@@ -1,0 +1,77 @@
+{
+  "note": "Theory check re-run on this run's losses.py with the final grader, so every run is graded the same way. results.json is the grading recorded at the end of the run.",
+  "theory": {
+    "passed": false,
+    "passed_topk": false,
+    "scenarios": {
+      "full": {
+        "passed": false,
+        "checks": {
+          "no_drift": true,
+          "no_drift_prefix": true,
+          "on_policy": false,
+          "bounded": true
+        },
+        "worst": {
+          "no_drift": 0.0,
+          "no_drift_prefix": 1.0469968003690155e-07,
+          "on_policy": 1.0,
+          "bounded": 0.0,
+          "alignment": 0.0
+        }
+      },
+      "topk": {
+        "passed": false,
+        "checks": {
+          "no_drift": true,
+          "no_drift_prefix": true,
+          "on_policy": false,
+          "bounded": true
+        },
+        "worst": {
+          "no_drift": 0.0,
+          "no_drift_prefix": 1.0814837736461413e-07,
+          "on_policy": 1.0,
+          "bounded": 0.0,
+          "alignment": 0.0
+        }
+      }
+    },
+    "passed_with_tis": false,
+    "with_tis": {
+      "full": {
+        "passed": false,
+        "checks": {
+          "no_drift": true,
+          "no_drift_prefix": false,
+          "on_policy": false,
+          "bounded": true
+        },
+        "worst": {
+          "no_drift": 0.0,
+          "no_drift_prefix": 0.01664835587143898,
+          "on_policy": 1.0,
+          "bounded": 0.0,
+          "alignment": 0.0
+        }
+      },
+      "topk": {
+        "passed": false,
+        "checks": {
+          "no_drift": true,
+          "no_drift_prefix": false,
+          "on_policy": false,
+          "bounded": true
+        },
+        "worst": {
+          "no_drift": 0.0,
+          "no_drift_prefix": 0.0004142213729210198,
+          "on_policy": 1.0,
+          "bounded": 0.0,
+          "alignment": 0.0
+        }
+      }
+    }
+  },
+  "grader_image": "p2e-score-centering-grader:0b2aa46cde51"
+}

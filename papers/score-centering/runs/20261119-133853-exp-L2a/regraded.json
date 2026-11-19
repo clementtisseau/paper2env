@@ -1,0 +1,77 @@
+{
+  "note": "Theory check re-run on this run's losses.py with the final grader, so every run is graded the same way. results.json is the grading recorded at the end of the run.",
+  "theory": {
+    "passed": true,
+    "passed_topk": true,
+    "scenarios": {
+      "full": {
+        "passed": false,
+        "checks": {
+          "no_drift": true,
+          "no_drift_prefix": true,
+          "on_policy": true,
+          "bounded": false
+        },
+        "worst": {
+          "no_drift": 6.075548242279183e-08,
+          "no_drift_prefix": 5.162064908859065e-08,
+          "on_policy": 2.5699861794237222e-08,
+          "bounded": 90481.71875,
+          "alignment": 0.8377906084060669
+        }
+      },
+      "topk": {
+        "passed": true,
+        "checks": {
+          "no_drift": true,
+          "no_drift_prefix": true,
+          "on_policy": true,
+          "bounded": true
+        },
+        "worst": {
+          "no_drift": 1.3376659069308516e-07,
+          "no_drift_prefix": 7.613407149165141e-08,
+          "on_policy": 2.6658258889256103e-07,
+          "bounded": 1.242716908454895,
+          "alignment": 0.7407826781272888
+        }
+      }
+    },
+    "passed_with_tis": true,
+    "with_tis": {
+      "full": {
+        "passed": false,
+        "checks": {
+          "no_drift": false,
+          "no_drift_prefix": false,
+          "on_policy": true,
+          "bounded": true
+        },
+        "worst": {
+          "no_drift": 0.44055768847465515,
+          "no_drift_prefix": 0.031440332531929016,
+          "on_policy": 2.5699861794237222e-08,
+          "bounded": 1.809446930885315,
+          "alignment": 0.8366120457649231
+        }
+      },
+      "topk": {
+        "passed": true,
+        "checks": {
+          "no_drift": true,
+          "no_drift_prefix": true,
+          "on_policy": true,
+          "bounded": true
+        },
+        "worst": {
+          "no_drift": 1.1750826445222629e-07,
+          "no_drift_prefix": 3.636408862917051e-08,
+          "on_policy": 2.6658258889256103e-07,
+          "bounded": 2.348106622695923,
+          "alignment": 0.8508368134498596
+        }
+      }
+    }
+  },
+  "grader_image": "p2e-score-centering-grader:0b2aa46cde51"
+}
