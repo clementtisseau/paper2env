@@ -1,6 +1,9 @@
-# Lessons and limitations
+# Lessons
 
-## Things that went wrong, and what they taught
+What went wrong while building the first environment
+([score-centering](../papers/score-centering/)), and what it taught for any
+paper. Limitations of that paper's results are in its
+[results](../papers/score-centering/results.md#limitations).
 
 - **Leaks come from where you do not look.** The method's name reached the
   agent not through the code but through the orchestrating session's working
@@ -42,26 +45,3 @@
   sequence level, then subtract a reward baseline) leads to GRPO, which the
   paper explicitly argues is insufficient. The rubric scores that path as a
   near-miss rather than a partial success.
-
-## Limitations of the results
-
-- **Small samples.** Three runs per (level, model) cell in most cases. The
-  tables show counts, not rates with confidence intervals.
-- **One harness.** All runs use Claude Code's subagent harness with Bash
-  only. Results measure "model in this harness"; a different harness (or the
-  Inspect `react` agent) could change them.
-- **No enforced budget.** The 2-hour budget is stated in the prompt but not
-  enforced in the subagent runner; time and commands are recorded instead.
-- **No judge yet.** The theory check proves a submission is drift-free, not
-  that its report understands why; the reports were read by hand for the
-  summary, and the LLM judge has not been run or calibrated.
-- **Two starter versions.** 37 runs used the first starter (the sampler's
-  distribution behind a setting the L3 prompt named); 8 L1 runs used the
-  second (top-20 always in the batch, nothing documented). They are reported
-  separately.
-- **Contamination is a moving target.** The models tested predate the paper,
-  but publishing this repository (rubric, reference, graders) means future
-  models may have seen the answer. The method is also already shipped in
-  several RL frameworks.
-- **No GPU validation.** Nothing here has been trained on Qwen3-0.6B; the
-  GPU agent image and the GPU grader are not built.

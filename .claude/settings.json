@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/rlenv/claude_agent/hook.py\"",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/core/runner/hook.py\"",
             "onFailure": "block"
           }
         ]

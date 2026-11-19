@@ -1,0 +1,7 @@
+{
+  "weights": {"C1": 1, "C2": 3, "C3": 3, "C4": 1, "C5": 1, "C6": 1},
+  "near_misses": ["N1", "N2", "N3", "N4", "N5", "N6", "N7"],
+  "rediscovered": {"C2": 1, "C3": 2, "C6": 1},
+  "discovery": ["C2", "C3"],
+  "near_miss_zeroes": "C3"
+}
