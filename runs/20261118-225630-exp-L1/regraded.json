@@ -1,0 +1,77 @@
+{
+ "note": "Theory check re-run on this run's losses.py with the final grader, so every run is graded the same way. results.json is the grading recorded at the end of the run.",
+ "theory": {
+  "passed": true,
+  "passed_topk": true,
+  "scenarios": {
+   "full": {
+    "passed": true,
+    "checks": {
+     "no_drift": true,
+     "no_drift_prefix": true,
+     "on_policy": true,
+     "bounded": true
+    },
+    "worst": {
+     "no_drift": 9.219327523624088e-08,
+     "no_drift_prefix": 3.2903972879694265e-08,
+     "on_policy": 2.517842574434326e-07,
+     "bounded": 1.2510170936584473,
+     "alignment": 0.7466804385185242
+    }
+   },
+   "topk": {
+    "passed": true,
+    "checks": {
+     "no_drift": true,
+     "no_drift_prefix": true,
+     "on_policy": true,
+     "bounded": true
+    },
+    "worst": {
+     "no_drift": 1.316278002150284e-07,
+     "no_drift_prefix": 7.53510676076985e-08,
+     "on_policy": 2.6658258889256103e-07,
+     "bounded": 1.242716908454895,
+     "alignment": 0.7407826781272888
+    }
+   }
+  },
+  "passed_with_tis": true,
+  "with_tis": {
+   "full": {
+    "passed": true,
+    "checks": {
+     "no_drift": true,
+     "no_drift_prefix": true,
+     "on_policy": true,
+     "bounded": true
+    },
+    "worst": {
+     "no_drift": 8.992942923669034e-08,
+     "no_drift_prefix": 3.357679290161286e-08,
+     "on_policy": 2.5179312501677487e-07,
+     "bounded": 2.2911694049835205,
+     "alignment": 0.8588075041770935
+    }
+   },
+   "topk": {
+    "passed": true,
+    "checks": {
+     "no_drift": true,
+     "no_drift_prefix": true,
+     "on_policy": true,
+     "bounded": true
+    },
+    "worst": {
+     "no_drift": 1.0454208165810996e-07,
+     "no_drift_prefix": 4.0827345060279185e-08,
+     "on_policy": 2.6658258889256103e-07,
+     "bounded": 2.348106622695923,
+     "alignment": 0.8508368134498596
+    }
+   }
+  }
+ },
+ "grader_image": "sc-rlenv-grader:915576f66055"
+}

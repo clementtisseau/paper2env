@@ -1,0 +1,15 @@
+# GPU JAX is selected in the README install command.
+jax>=0.11.1
+tokamax==0.0.13  # MoE grouped matmul (see models/quant.py: qragged_dot)
+triton; sys_platform == "linux" and platform_machine == "x86_64"
+optax
+numpy
+transformers
+jinja2  # chat templates
+huggingface-hub
+safetensors
+datasets
+verifiers<0.4  # 0.4 moved the API under verifiers.v1
+omegaconf
+wandb
+tqdm
