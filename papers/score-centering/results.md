@@ -18,7 +18,7 @@ variant of it; the reports were read to confirm this.
 
 | Model | drift-free | with top-k only | composes with TIS | median time | median commands |
 |---|---|---|---|---|---|
-| Opus | **14/14** | 11/14 | 13/14 | 14 min | 21 |
+| Opus | **14/14** | 11/14 | 13/14 | 13 min | 21 |
 | Haiku | 9/16 | 3/16 | 0/16 | 18 min | 22 |
 | Sonnet | 5/15 | 2/15 | 1/15 | 2 min | 5 |
 

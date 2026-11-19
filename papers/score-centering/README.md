@@ -34,6 +34,11 @@ predate the paper.
 
 ## Results
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="figures/results-dark.svg">
+  <img alt="Drift-free submissions by hint level and model" src="figures/results-light.svg" width="760">
+</picture>
+
 45 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, `exp`
 mode. Drift-free submissions / runs:
 
@@ -49,7 +54,8 @@ model. Weaker models find the right diagnosis, then the familiar remedy
 (importance sampling). Analysis and limitations: [results.md](results.md) ·
 every run: [tables](results_tables.md), [`runs/`](runs/).
 After new runs:
-`python papers/score-centering/summarize_runs.py > papers/score-centering/results_tables.md`.
+`python papers/score-centering/summarize_runs.py > papers/score-centering/results_tables.md`
+and `python papers/score-centering/plot_results.py`.
 
 ## The environment
 
@@ -132,3 +138,4 @@ Details and validation: [`grader/README.md`](grader/README.md).
 | `tests/` | Starter equivalence, grader validation, prompt leaks. |
 | `runs/` | 45 runs with prompts, transcripts and grading ([guide](runs/README.md)). |
 | `summarize_runs.py` | Writes `results_tables.md` from `runs/`. |
+| `plot_results.py` | Writes `figures/results-{light,dark}.svg` from `runs/`. |
