@@ -2,14 +2,11 @@
 
 **A run succeeds when both hold:**
 
-1. **The idea is found** (LLM judge). The judge reads the agent's report and
-   its diff, against a hidden rubric. It must find:
-   - the correction: each token's score minus its expected value under the
-     sampler, with an argument that this removes the drift;
-   - at least the drift term identified: under a mismatched sampler, the
-     expected score is not zero, so the update gains a term that carries no
-     reward signal. The full per-prefix decomposition is not required;
-   - code that does what the report says.
+1. **The idea is found** (LLM judge). The judge reads the submitted loss
+   (its diff against the starter), with the agent's report as context, against
+   a hidden rubric. It must find that the loss centers each token's score
+   under the sampler: it subtracts the score's expected value under the
+   sampler, not a reward baseline or an importance weight.
 2. **It is implemented correctly** (exact checks). The submitted loss passes
    the four checks below **using only the sampler's top-k logprobs**, which is
    all an inference engine returns.

@@ -28,8 +28,8 @@ drift by centering each token's score under the sampler, using only the top-k
 logprobs an inference engine returns. The models tested predate it.
 
 **A run succeeds when both hold:**
-1. **The idea is found:** an LLM judge finds in the report that each token's
-   score is centered under the sampler, which removes the drift.
+1. **The idea is found:** an LLM judge finds that the submitted loss centers
+   each token's score under the sampler, which removes the drift.
 2. **It is implemented correctly:** exact checks confirm the loss is
    drift-free, using only the sampler's top-k logprobs.
 
