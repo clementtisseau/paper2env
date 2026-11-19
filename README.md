@@ -10,9 +10,8 @@ Rediscovery environments, each built from one recent research paper. The
 agent gets the paper's own codebase with the contribution removed, a prompt
 limited to pre-paper knowledge (plus optional hints), and a sandbox. It is
 graded on whether it **found the paper's idea** and **implemented it
-correctly**. How depends on the paper: exact checks where correctness can be
-verified, an LLM judge with a hidden rubric where it takes reading the
-agent's reasoning (score-centering uses both).
+correctly**. How depends on the paper: exact checks, an LLM judge with a hidden
+rubric, or both.
 
 > Environments are **built by hand, not generated**: choosing what to hide,
 > which property to check and which wrong answers to reject means reading the
