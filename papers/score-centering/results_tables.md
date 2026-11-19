@@ -24,9 +24,15 @@ Each cell: runs passing / runs. `theory` = drift-free with the full distribution
 
 | Level | Model | theory | top-k | +TIS | guard-rail | median minutes |
 |---|---|---|---|---|---|---|
+| L2b | Haiku | 0/3 | 0/3 | 0/3 | 3/3 | 7 |
+| L2b | Sonnet | 0/3 | 0/3 | 0/3 | 0/3 | 1 |
+| L2b | Opus | 3/3 | 3/3 | 3/3 | 3/3 | 12 |
+| L2a | Haiku | 0/3 | 0/3 | 0/3 | 3/3 | 12 |
+| L2a | Sonnet | 1/3 | 1/3 | 0/3 | 2/3 | 4 |
+| L2a | Opus | 3/3 | 3/3 | 3/3 | 3/3 | 20 |
 | L1 | Haiku | 1/3 | 1/3 | 0/3 | 2/3 | 28 |
 | L1 | Sonnet | 0/3 | 0/3 | 0/3 | 3/3 | 6 |
-| L1 | Opus | 2/2 | 2/2 | 1/2 | 2/2 | 10 |
+| L1 | Opus | 3/3 | 3/3 | 2/3 | 3/3 | 10 |
 
 ## What the submitted losses do (theory check, best scenario)
 
@@ -36,15 +42,15 @@ Each cell: runs passing / runs. `theory` = drift-free with the full distribution
 | L3 | Haiku | 0 | 0 | 0 | 3 | 0 |
 | L3 | Sonnet | 0 | 0 | 0 | 3 | 0 |
 | L3 | Opus | 0 | 0 | 0 | 3 | 0 |
-| L2b | Haiku | 0 | 0 | 1 | 2 | 0 |
-| L2b | Sonnet | 0 | 0 | 2 | 0 | 1 |
-| L2b | Opus | 0 | 0 | 0 | 3 | 0 |
-| L2a | Haiku | 0 | 1 | 0 | 2 | 0 |
-| L2a | Sonnet | 1 | 0 | 1 | 0 | 1 |
-| L2a | Opus | 0 | 0 | 0 | 3 | 0 |
+| L2b | Haiku | 0 | 3 | 1 | 2 | 0 |
+| L2b | Sonnet | 0 | 0 | 2 | 0 | 4 |
+| L2b | Opus | 0 | 0 | 0 | 6 | 0 |
+| L2a | Haiku | 0 | 4 | 0 | 2 | 0 |
+| L2a | Sonnet | 3 | 0 | 1 | 1 | 1 |
+| L2a | Opus | 0 | 0 | 0 | 6 | 0 |
 | L1 | Haiku | 2 | 3 | 0 | 1 | 0 |
 | L1 | Sonnet | 0 | 2 | 2 | 2 | 0 |
-| L1 | Opus | 0 | 0 | 0 | 5 | 0 |
+| L1 | Opus | 0 | 0 | 0 | 6 | 0 |
 
 ## Every run
 
@@ -95,3 +101,22 @@ Each cell: runs passing / runs. `theory` = drift-free with the full distribution
 | [20261119-101754-exp-L1](runs/20261119-101754-exp-L1/) | v2 | exp | L1 | Sonnet | 6 | 8 | ✗ | ✗ | ✗ | 0.90 | drift under severe mismatch |
 | [20261119-102609-exp-L1](runs/20261119-102609-exp-L1/) | v2 | exp | L1 | Opus | 6 | 20 | ✓ | ✓ | ✗ | 0.93 | drift-free |
 | [20261119-103415-exp-L1](runs/20261119-103415-exp-L1/) | v2 | exp | L1 | Opus | 14 | 25 | ✓ | ✓ | ✓ | 0.95 | drift-free |
+| [20261119-104955-exp-L1](runs/20261119-104955-exp-L1/) | v2 | exp | L1 | Opus | 10 | 15 | ✓ | ✓ | ✓ | 0.95 | drift-free |
+| [20261119-110224-exp-L2a](runs/20261119-110224-exp-L2a/) | v2 | exp | L2a | Haiku | 52 | 16 | ✗ | ✗ | ✗ | 0.66 | drift remains |
+| [20261119-115626-exp-L2a](runs/20261119-115626-exp-L2a/) | v2 | exp | L2a | Haiku | 9 | 19 | ✗ | ✗ | ✗ | 1.00 | drift remains |
+| [20261119-120713-exp-L2a](runs/20261119-120713-exp-L2a/) | v2 | exp | L2a | Haiku | 12 | 16 | ✗ | ✗ | ✗ | 0.97 | drift remains |
+| [20261119-122042-exp-L2a](runs/20261119-122042-exp-L2a/) | v2 | exp | L2a | Sonnet | 13 | 10 | ✗ | ✗ | ✗ | 0.64 | changes on-policy update |
+| [20261119-123601-exp-L2a](runs/20261119-123601-exp-L2a/) | v2 | exp | L2a | Sonnet | 1 | 4 | ✗ | ✗ | ✗ | -2.05 | changes on-policy update |
+| [20261119-123853-exp-L2a](runs/20261119-123853-exp-L2a/) | v2 | exp | L2a | Sonnet | 4 | 9 | ✓ | ✓ | ✗ | 0.93 | drift-free |
+| [20261119-124431-exp-L2a](runs/20261119-124431-exp-L2a/) | v2 | exp | L2a | Opus | 29 | 22 | ✓ | ✓ | ✓ | 0.93 | drift-free |
+| [20261119-131624-exp-L2a](runs/20261119-131624-exp-L2a/) | v2 | exp | L2a | Opus | 20 | 30 | ✓ | ✓ | ✓ | 0.92 | drift-free |
+| [20261119-133853-exp-L2a](runs/20261119-133853-exp-L2a/) | v2 | exp | L2a | Opus | 11 | 19 | ✓ | ✓ | ✓ | 0.95 | drift-free |
+| [20261119-135225-exp-L2b](runs/20261119-135225-exp-L2b/) | v2 | exp | L2b | Haiku | 7 | 17 | ✗ | ✗ | ✗ | 1.00 | drift remains |
+| [20261119-140145-exp-L2b](runs/20261119-140145-exp-L2b/) | v2 | exp | L2b | Haiku | 6 | 15 | ✗ | ✗ | ✗ | 0.97 | drift remains |
+| [20261119-141003-exp-L2b](runs/20261119-141003-exp-L2b/) | v2 | exp | L2b | Haiku | 29 | 33 | ✗ | ✗ | ✗ | 1.00 | drift remains |
+| [20261119-144130-exp-L2b](runs/20261119-144130-exp-L2b/) | v2 | exp | L2b | Sonnet | 1 | 3 | ✗ | ✗ | ✗ | 0.37 | unbounded weights |
+| [20261119-144418-exp-L2b](runs/20261119-144418-exp-L2b/) | v2 | exp | L2b | Sonnet | 1 | 6 | ✗ | ✗ | ✗ | 0.37 | unbounded weights |
+| [20261119-144726-exp-L2b](runs/20261119-144726-exp-L2b/) | v2 | exp | L2b | Sonnet | 2 | 3 | ✗ | ✗ | ✗ | 0.37 | unbounded weights |
+| [20261119-145052-exp-L2b](runs/20261119-145052-exp-L2b/) | v2 | exp | L2b | Opus | 47 | 20 | ✓ | ✓ | ✓ | 0.89 | drift-free |
+| [20261119-162635-exp-L2b](runs/20261119-162635-exp-L2b/) | v2 | exp | L2b | Opus | 12 | 16 | ✓ | ✓ | ✓ | 1.04 | drift-free |
+| [20261119-164144-exp-L2b](runs/20261119-164144-exp-L2b/) | v2 | exp | L2b | Opus | 7 | 15 | ✓ | ✓ | ✓ | 0.93 | drift-free |
