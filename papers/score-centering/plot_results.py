@@ -1,7 +1,8 @@
 """Figure of the headline result: drift-free runs by hint level and model.
 
 Writes figures/results-light.svg and figures/results-dark.svg (standard
-library only; the README picks one with <picture> and prefers-color-scheme).
+library only, transparent background; the README picks one with <picture>
+and prefers-color-scheme).
 Counts come from summarize_runs.rows(), so the figure and the tables agree.
 
     python papers/score-centering/plot_results.py
@@ -14,17 +15,18 @@ HERE = Path(__file__).resolve().parent
 OUT = HERE / "figures"
 LEVELS = [("L1", "pre-paper knowledge"), ("L2a", "direction"), ("L2b", "per-prefix direction"),
           ("L3", "decomposition given")]
-# categorical slots 1-3 of the reference palette, validated in both modes
+# one hue (slate), three steps: Haiku lightest, Opus strongest. Transparent
+# background, text in GitHub's own light / dark inks.
 THEMES = {
-    "light": {"surface": "#fcfcfb", "text": "#0b0b0b", "secondary": "#52514e", "muted": "#898781",
-              "grid": "#e1e0d9", "series": ["#2a78d6", "#eb6834", "#1baf7a"]},
-    "dark": {"surface": "#1a1a19", "text": "#f0efec", "secondary": "#c3c2b7", "muted": "#898781",
-             "grid": "#2c2c2a", "series": ["#3987e5", "#d95926", "#199e70"]},
+    "light": {"text": "#1f2328", "muted": "#59636e", "rule": "#d1d9e0",
+              "series": ["#a3b4c7", "#5f7a96", "#1e3550"]},
+    "dark": {"text": "#e6edf3", "muted": "#9198a1", "rule": "#3d444d",
+             "series": ["#3a5470", "#7894b2", "#c8d6e5"]},
 }
-W, H = 760, 400
-LEFT, RIGHT, TOP, BOTTOM = 56, 24, 114, 64
-BAR, GAP, R = 24, 2, 4
-FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+W, H = 680, 270
+LEFT, RIGHT, TOP, BOTTOM = 8, 8, 44, 52
+BAR, GAP, R = 22, 3, 2
+FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 
 
 def counts():
@@ -37,8 +39,9 @@ def counts():
 
 
 def bar(x, y, h, color):
-    """Column with a 4px rounded top, square at the baseline."""
-    if h <= 0:  # a zero still shows which series it is: a 2px stub on the baseline
+    """Column with slightly rounded top corners, square at the baseline; a
+    zero is a 2px stub, so its series stays visible."""
+    if h <= 0:
         return f'<rect x="{x}" y="{y - 2}" width="{BAR}" height="2" fill="{color}"/>'
     r = min(R, h)
     return (f'<path d="M{x},{y + h} V{y + r} Q{x},{y} {x + r},{y} H{x + BAR - r} Q{x + BAR},{y} {x + BAR},{y + r} '
@@ -57,25 +60,15 @@ def svg(theme):
            '<title id="title">Drift-free submissions by hint level and model</title>',
            '<desc id="desc">' + "; ".join(
                f"{lvl} {m}: {c[(lvl, m)][1]} of {c[(lvl, m)][0]}" for lvl, _ in LEVELS for m in MODELS
-               if (lvl, m) in c) + "</desc>",
-           f'<rect width="{W}" height="{H}" fill="{t["surface"]}"/>',
-           f'<text x="{LEFT - 40}" y="30" font-size="17" font-weight="600" fill="{t["text"]}">'
-           'Drift-free submissions, by hint level</text>',
-           f'<text x="{LEFT - 40}" y="52" font-size="13" fill="{t["secondary"]}">'
-           'Share of runs whose loss passes the exact theory check · labels: passing / runs</text>']
-    # legend
-    x = LEFT - 40
+               if (lvl, m) in c) + "</desc>"]
+    # legend, top left
+    x = LEFT + (band - group) / 2
     for m, color in zip(MODELS, t["series"]):
-        out.append(f'<rect x="{x}" y="66" width="12" height="12" rx="3" fill="{color}"/>')
-        out.append(f'<text x="{x + 18}" y="76.5" font-size="13" fill="{t["secondary"]}">{m} 5.5</text>')
-        x += 104
-    # grid and y axis
-    for frac in (0, 0.5, 1):
-        y = base - frac * plot_h
-        out.append(f'<line x1="{LEFT}" x2="{W - RIGHT}" y1="{y}" y2="{y}" stroke="{t["grid"]}" stroke-width="1"/>')
-        out.append(f'<text x="{LEFT - 8}" y="{y + 4}" font-size="12" text-anchor="end" fill="{t["muted"]}">'
-                   f'{int(frac * 100)}%</text>')
-    # bars
+        out.append(f'<rect x="{x}" y="6" width="10" height="10" rx="2" fill="{color}"/>')
+        out.append(f'<text x="{x + 15}" y="15" font-size="12" fill="{t["muted"]}">{m}</text>')
+        x += 24 + 7.5 * len(m)
+    # baseline only
+    out.append(f'<line x1="{LEFT}" x2="{W - RIGHT}" y1="{base + 0.5}" y2="{base + 0.5}" stroke="{t["rule"]}"/>')
     for i, (lvl, name) in enumerate(LEVELS):
         x0 = LEFT + i * band + (band - group) / 2
         for j, (m, color) in enumerate(zip(MODELS, t["series"])):
@@ -85,15 +78,13 @@ def svg(theme):
             h = p / n * plot_h
             xb = x0 + j * (BAR + GAP)
             out.append(bar(xb, base - h, h, color))
-            out.append(f'<text x="{xb + BAR / 2}" y="{base - h - 6}" font-size="11" text-anchor="middle" '
-                       f'fill="{t["secondary"]}">{p}/{n}</text>')
+            out.append(f'<text x="{xb + BAR / 2}" y="{base - h - 6}" font-size="10.5" text-anchor="middle" '
+                       f'fill="{t["muted"]}" font-variant-numeric="tabular-nums">{p}/{n}</text>')
         cx = LEFT + i * band + band / 2
-        out.append(f'<text x="{cx}" y="{base + 22}" font-size="13" font-weight="600" text-anchor="middle" '
+        out.append(f'<text x="{cx}" y="{base + 20}" font-size="12.5" font-weight="600" text-anchor="middle" '
                    f'fill="{t["text"]}">{lvl}</text>')
-        out.append(f'<text x="{cx}" y="{base + 40}" font-size="12" text-anchor="middle" fill="{t["muted"]}">'
+        out.append(f'<text x="{cx}" y="{base + 37}" font-size="11.5" text-anchor="middle" fill="{t["muted"]}">'
                    f'{name}</text>')
-    out.append(f'<text x="{W - RIGHT}" y="{H - 6}" font-size="11" text-anchor="end" fill="{t["muted"]}">'
-               'fewer hints ← → more hints</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 

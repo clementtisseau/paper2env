@@ -15,17 +15,21 @@ How to run either: [top-level README](../../README.md#running).
 
 When RL for LLMs samples rollouts with an inference engine that differs
 slightly from the trained model (quantization, kernels, stale weights),
-training drifts and often collapses. The paper shows why and fixes it with
-one line of math:
+training drifts and often collapses. The paper shows why and fixes it in the
+loss:
 
 - At a prefix h, the expected REINFORCE update under the sampler q splits
   into **E_q[A | h] · s̄(h)**, a drift along the sampler's expected score
   s̄(h) = Σ_v q(v|h) ∇log p(v|h), plus **Cov_q(A, s_y | h)**, the signal.
   On-policy s̄ = 0; off-policy it is not, and the drift compounds because the
   sampler is rebuilt from the trainer every step.
-- **Fix:** replace each token's score s_y by s_y − s̄(h), through a scalar
-  surrogate with stop-gradients, with a model of the tail when the engine
-  returns only its top-k logprobs.
+- **Fix:** replace each token's score s_y by s_y − s̄(h), through the scalar
+  surrogate −A·(log p(y) − Σ_v sg[q_v] log p(v)).
+- **With only the top-k:** an engine returns q on its top k tokens, not on the
+  vocabulary. The paper models q's tail as ρ·p, with ρ matching the tail mass.
+  Then Σ_v q̂_v ∇log p(v) = Σ_{v∈top-k} (q_v − ρ p_v) ∇log p(v) + ρ·E_p[∇log p],
+  and the last term is zero: the correction touches only the k logprobs the
+  engine returned, at no cost over the whole vocabulary.
 
 A good target: the problem was widely studied before the paper (importance
 sampling, clipping, "a systematic bias, not noise"), the fix is a small change
@@ -36,7 +40,7 @@ predate the paper.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/results-dark.svg">
-  <img alt="Drift-free submissions by hint level and model" src="figures/results-light.svg" width="760">
+  <img alt="Drift-free submissions by hint level and model" src="figures/results-light.svg" width="680">
 </picture>
 
 45 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, `exp`

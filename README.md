@@ -22,12 +22,15 @@ checked exactly, not on whether its write-up sounds like the paper.
 The first environment is built from *Score Centering Stabilizes Off-policy RL*
 (Marek & Ryabinin, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807),
 Sept. 2026). RL for LLMs **drifts** when the engine that samples rollouts
-differs slightly from the trained model; the paper shows why and removes the
-drift with a one-line change to the loss. The models tested predate it.
+differs slightly from the trained model. The paper shows why, and removes the
+drift by centering each token's score under the sampler, using only the top-k
+logprobs an inference engine returns. The models tested predate it.
+
+**Drift-free submissions by hint level** (passing / runs)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/results-dark.svg">
-  <img alt="Drift-free submissions by hint level. L1: Haiku 1/6, Sonnet 2/6, Opus 5/5. L2a: 2/3, 0/3, 3/3. L2b: 2/3, 0/3, 3/3. L3: 3/3 for all three models." src="papers/score-centering/figures/results-light.svg" width="760">
+  <img alt="Drift-free submissions by hint level. L1: Haiku 1/6, Sonnet 2/6, Opus 5/5. L2a: 2/3, 0/3, 3/3. L2b: 2/3, 0/3, 3/3. L3: 3/3 for all three models." src="papers/score-centering/figures/results-light.svg" width="680">
 </picture>
 
 45 runs, Claude Haiku / Sonnet / Opus 5.5, as Claude Code subagents with a

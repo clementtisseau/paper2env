@@ -1,52 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="400" viewBox="0 0 760 400" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="270" viewBox="0 0 680 270" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
 <title id="title">Drift-free submissions by hint level and model</title>
 <desc id="desc">L1 Haiku: 1 of 6; L1 Sonnet: 2 of 6; L1 Opus: 5 of 5; L2a Haiku: 2 of 3; L2a Sonnet: 0 of 3; L2a Opus: 3 of 3; L2b Haiku: 2 of 3; L2b Sonnet: 0 of 3; L2b Opus: 3 of 3; L3 Haiku: 3 of 3; L3 Sonnet: 3 of 3; L3 Opus: 3 of 3</desc>
-<rect width="760" height="400" fill="#fcfcfb"/>
-<text x="16" y="30" font-size="17" font-weight="600" fill="#0b0b0b">Drift-free submissions, by hint level</text>
-<text x="16" y="52" font-size="13" fill="#52514e">Share of runs whose loss passes the exact theory check · labels: passing / runs</text>
-<rect x="16" y="66" width="12" height="12" rx="3" fill="#2a78d6"/>
-<text x="34" y="76.5" font-size="13" fill="#52514e">Haiku 5.5</text>
-<rect x="120" y="66" width="12" height="12" rx="3" fill="#eb6834"/>
-<text x="138" y="76.5" font-size="13" fill="#52514e">Sonnet 5.5</text>
-<rect x="224" y="66" width="12" height="12" rx="3" fill="#1baf7a"/>
-<text x="242" y="76.5" font-size="13" fill="#52514e">Opus 5.5</text>
-<line x1="56" x2="736" y1="336" y2="336" stroke="#e1e0d9" stroke-width="1"/>
-<text x="48" y="340" font-size="12" text-anchor="end" fill="#898781">0%</text>
-<line x1="56" x2="736" y1="225.0" y2="225.0" stroke="#e1e0d9" stroke-width="1"/>
-<text x="48" y="229.0" font-size="12" text-anchor="end" fill="#898781">50%</text>
-<line x1="56" x2="736" y1="114" y2="114" stroke="#e1e0d9" stroke-width="1"/>
-<text x="48" y="118" font-size="12" text-anchor="end" fill="#898781">100%</text>
-<path d="M103.0,336.0 V303.0 Q103.0,299.0 107.0,299.0 H123.0 Q127.0,299.0 127.0,303.0 V336.0 Z" fill="#2a78d6"/>
-<text x="115.0" y="293.0" font-size="11" text-anchor="middle" fill="#52514e">1/6</text>
-<path d="M129.0,336.0 V266.0 Q129.0,262.0 133.0,262.0 H149.0 Q153.0,262.0 153.0,266.0 V336.0 Z" fill="#eb6834"/>
-<text x="141.0" y="256.0" font-size="11" text-anchor="middle" fill="#52514e">2/6</text>
-<path d="M155.0,336.0 V118.0 Q155.0,114.0 159.0,114.0 H175.0 Q179.0,114.0 179.0,118.0 V336.0 Z" fill="#1baf7a"/>
-<text x="167.0" y="108.0" font-size="11" text-anchor="middle" fill="#52514e">5/5</text>
-<text x="141.0" y="358" font-size="13" font-weight="600" text-anchor="middle" fill="#0b0b0b">L1</text>
-<text x="141.0" y="376" font-size="12" text-anchor="middle" fill="#898781">pre-paper knowledge</text>
-<path d="M273.0,336.0 V192.0 Q273.0,188.0 277.0,188.0 H293.0 Q297.0,188.0 297.0,192.0 V336.0 Z" fill="#2a78d6"/>
-<text x="285.0" y="182.0" font-size="11" text-anchor="middle" fill="#52514e">2/3</text>
-<rect x="299.0" y="334.0" width="24" height="2" fill="#eb6834"/>
-<text x="311.0" y="330.0" font-size="11" text-anchor="middle" fill="#52514e">0/3</text>
-<path d="M325.0,336.0 V118.0 Q325.0,114.0 329.0,114.0 H345.0 Q349.0,114.0 349.0,118.0 V336.0 Z" fill="#1baf7a"/>
-<text x="337.0" y="108.0" font-size="11" text-anchor="middle" fill="#52514e">3/3</text>
-<text x="311.0" y="358" font-size="13" font-weight="600" text-anchor="middle" fill="#0b0b0b">L2a</text>
-<text x="311.0" y="376" font-size="12" text-anchor="middle" fill="#898781">direction</text>
-<path d="M443.0,336.0 V192.0 Q443.0,188.0 447.0,188.0 H463.0 Q467.0,188.0 467.0,192.0 V336.0 Z" fill="#2a78d6"/>
-<text x="455.0" y="182.0" font-size="11" text-anchor="middle" fill="#52514e">2/3</text>
-<rect x="469.0" y="334.0" width="24" height="2" fill="#eb6834"/>
-<text x="481.0" y="330.0" font-size="11" text-anchor="middle" fill="#52514e">0/3</text>
-<path d="M495.0,336.0 V118.0 Q495.0,114.0 499.0,114.0 H515.0 Q519.0,114.0 519.0,118.0 V336.0 Z" fill="#1baf7a"/>
-<text x="507.0" y="108.0" font-size="11" text-anchor="middle" fill="#52514e">3/3</text>
-<text x="481.0" y="358" font-size="13" font-weight="600" text-anchor="middle" fill="#0b0b0b">L2b</text>
-<text x="481.0" y="376" font-size="12" text-anchor="middle" fill="#898781">per-prefix direction</text>
-<path d="M613.0,336.0 V118.0 Q613.0,114.0 617.0,114.0 H633.0 Q637.0,114.0 637.0,118.0 V336.0 Z" fill="#2a78d6"/>
-<text x="625.0" y="108.0" font-size="11" text-anchor="middle" fill="#52514e">3/3</text>
-<path d="M639.0,336.0 V118.0 Q639.0,114.0 643.0,114.0 H659.0 Q663.0,114.0 663.0,118.0 V336.0 Z" fill="#eb6834"/>
-<text x="651.0" y="108.0" font-size="11" text-anchor="middle" fill="#52514e">3/3</text>
-<path d="M665.0,336.0 V118.0 Q665.0,114.0 669.0,114.0 H685.0 Q689.0,114.0 689.0,118.0 V336.0 Z" fill="#1baf7a"/>
-<text x="677.0" y="108.0" font-size="11" text-anchor="middle" fill="#52514e">3/3</text>
-<text x="651.0" y="358" font-size="13" font-weight="600" text-anchor="middle" fill="#0b0b0b">L3</text>
-<text x="651.0" y="376" font-size="12" text-anchor="middle" fill="#898781">decomposition given</text>
-<text x="736" y="394" font-size="11" text-anchor="end" fill="#898781">fewer hints ← → more hints</text>
+<rect x="55.0" y="6" width="10" height="10" rx="2" fill="#a3b4c7"/>
+<text x="70.0" y="15" font-size="12" fill="#59636e">Haiku</text>
+<rect x="116.5" y="6" width="10" height="10" rx="2" fill="#5f7a96"/>
+<text x="131.5" y="15" font-size="12" fill="#59636e">Sonnet</text>
+<rect x="185.5" y="6" width="10" height="10" rx="2" fill="#1e3550"/>
+<text x="200.5" y="15" font-size="12" fill="#59636e">Opus</text>
+<line x1="8" x2="672" y1="218.5" y2="218.5" stroke="#d1d9e0"/>
+<path d="M55.0,218.0 V191.0 Q55.0,189.0 57.0,189.0 H75.0 Q77.0,189.0 77.0,191.0 V218.0 Z" fill="#a3b4c7"/>
+<text x="66.0" y="183.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">1/6</text>
+<path d="M80.0,218.0 V162.0 Q80.0,160.0 82.0,160.0 H100.0 Q102.0,160.0 102.0,162.0 V218.0 Z" fill="#5f7a96"/>
+<text x="91.0" y="154.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">2/6</text>
+<path d="M105.0,218.0 V46.0 Q105.0,44.0 107.0,44.0 H125.0 Q127.0,44.0 127.0,46.0 V218.0 Z" fill="#1e3550"/>
+<text x="116.0" y="38.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">5/5</text>
+<text x="91.0" y="238" font-size="12.5" font-weight="600" text-anchor="middle" fill="#1f2328">L1</text>
+<text x="91.0" y="255" font-size="11.5" text-anchor="middle" fill="#59636e">pre-paper knowledge</text>
+<path d="M221.0,218.0 V104.0 Q221.0,102.0 223.0,102.0 H241.0 Q243.0,102.0 243.0,104.0 V218.0 Z" fill="#a3b4c7"/>
+<text x="232.0" y="96.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">2/3</text>
+<rect x="246.0" y="216.0" width="22" height="2" fill="#5f7a96"/>
+<text x="257.0" y="212.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">0/3</text>
+<path d="M271.0,218.0 V46.0 Q271.0,44.0 273.0,44.0 H291.0 Q293.0,44.0 293.0,46.0 V218.0 Z" fill="#1e3550"/>
+<text x="282.0" y="38.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">3/3</text>
+<text x="257.0" y="238" font-size="12.5" font-weight="600" text-anchor="middle" fill="#1f2328">L2a</text>
+<text x="257.0" y="255" font-size="11.5" text-anchor="middle" fill="#59636e">direction</text>
+<path d="M387.0,218.0 V104.0 Q387.0,102.0 389.0,102.0 H407.0 Q409.0,102.0 409.0,104.0 V218.0 Z" fill="#a3b4c7"/>
+<text x="398.0" y="96.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">2/3</text>
+<rect x="412.0" y="216.0" width="22" height="2" fill="#5f7a96"/>
+<text x="423.0" y="212.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">0/3</text>
+<path d="M437.0,218.0 V46.0 Q437.0,44.0 439.0,44.0 H457.0 Q459.0,44.0 459.0,46.0 V218.0 Z" fill="#1e3550"/>
+<text x="448.0" y="38.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">3/3</text>
+<text x="423.0" y="238" font-size="12.5" font-weight="600" text-anchor="middle" fill="#1f2328">L2b</text>
+<text x="423.0" y="255" font-size="11.5" text-anchor="middle" fill="#59636e">per-prefix direction</text>
+<path d="M553.0,218.0 V46.0 Q553.0,44.0 555.0,44.0 H573.0 Q575.0,44.0 575.0,46.0 V218.0 Z" fill="#a3b4c7"/>
+<text x="564.0" y="38.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">3/3</text>
+<path d="M578.0,218.0 V46.0 Q578.0,44.0 580.0,44.0 H598.0 Q600.0,44.0 600.0,46.0 V218.0 Z" fill="#5f7a96"/>
+<text x="589.0" y="38.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">3/3</text>
+<path d="M603.0,218.0 V46.0 Q603.0,44.0 605.0,44.0 H623.0 Q625.0,44.0 625.0,46.0 V218.0 Z" fill="#1e3550"/>
+<text x="614.0" y="38.0" font-size="10.5" text-anchor="middle" fill="#59636e" font-variant-numeric="tabular-nums">3/3</text>
+<text x="589.0" y="238" font-size="12.5" font-weight="600" text-anchor="middle" fill="#1f2328">L3</text>
+<text x="589.0" y="255" font-size="11.5" text-anchor="middle" fill="#59636e">decomposition given</text>
 </svg>
