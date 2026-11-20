@@ -49,11 +49,12 @@ sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/success-dark.svg">
-  <img alt="Successful runs by hint level and model. L1: Haiku 1/9, Sonnet 3/9, Opus 8/9. L2a: Haiku 1/9, Sonnet 3/9, Opus 9/9. L2b: Haiku 0/9, Sonnet 0/9, Opus 9/9. L3: Haiku 1/9, Sonnet 1/9, Opus 9/9." src="papers/score-centering/figures/success-light.svg" width="680">
+  <img alt="Successful runs by hint level and model. L1: Haiku 1/9, Sonnet 3/9, Opus 8/9. L2a: Haiku 1/9, Sonnet 3/9, Opus 9/9. L2b: Haiku 0/9, Sonnet 0/9, Opus 9/9. L3: Haiku 1/9, Sonnet 1/9, Opus 9/9. More to come: DeepSeek V4.1 Flash, GLM 5.3 Flash, gpt-oss-120b." src="papers/score-centering/figures/success-light.svg" width="680">
 </picture>
 
 *Success rate by hint level and model: Claude Haiku, Sonnet and Opus 5.5
-as Claude Code subagents, 9 runs each; whiskers: 95% Wilson intervals.*
+as Claude Code subagents, 9 runs each; whiskers: 95% Wilson intervals.
+More to come: DeepSeek V4.1 Flash, GLM 5.3 Flash and gpt-oss-120b.*
 
 **What the figure shows**
 

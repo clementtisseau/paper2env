@@ -26,8 +26,10 @@ THEMES = {
     "dark": {"text": "#e6edf3", "halo": "#0d1117", "muted": "#9198a1", "rule": "#3d444d",
              "series": ["#3a5470", "#7894b2", "#c8d6e5"]},
 }
-W, H = 680, 270
-LEFT, RIGHT, TOP, BOTTOM = 44, 8, 36, 52
+W, H = 680, 288
+LEFT, RIGHT, TOP, BOTTOM = 44, 8, 54, 52
+# models announced in the legend, not run yet (no bars)
+COMING = ["DeepSeek V4.1 Flash", "GLM 5.3 Flash", "gpt-oss-120b"]
 BAR, GAP, R = 22, 3, 2
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 
@@ -75,6 +77,15 @@ def svg(theme):
         out.append(f'<rect x="{x}" y="6" width="10" height="10" rx="2" fill="{color}"/>')
         out.append(f'<text x="{x + 15}" y="15" font-size="12" fill="{t["muted"]}">{m}</text>')
         x += 24 + 7.5 * len(m)
+    # second legend row: models not run yet, hollow dashed swatches
+    x = LEFT + (band - group) / 2
+    out.append(f'<text x="{x}" y="35" font-size="12" font-style="italic" fill="{t["muted"]}">More to come:</text>')
+    x += 92
+    for m in COMING:
+        out.append(f'<rect x="{x + 0.5}" y="26.5" width="9" height="9" rx="2" fill="none" stroke="{t["muted"]}" '
+                   f'stroke-dasharray="2 1.5"/>')
+        out.append(f'<text x="{x + 15}" y="35" font-size="12" fill="{t["muted"]}">{m}</text>')
+        x += 24 + 6.6 * len(m)
     # y axis: success rate, light gridlines, the baseline solid
     for pct in (0, 25, 50, 75, 100):
         y = round(base - pct / 100 * plot_h) + 0.5
