@@ -91,16 +91,9 @@ flowchart LR
     A -->|submission| J["LLM judge<br/>is the idea there?"]
 ```
 
-| | Shared, in [`core/`](core/) | Written for each paper, in `papers/<name>/` |
-|---|---|---|
-| **Starter** | copy, exact SHA-pinned edits, grep audit, fresh git history | what to remove, revealing words |
-| **Prompt** | cumulative hint levels; tools section with or without experiments | the task and each level's content |
-| **Graders** | images tagged by content, sandboxed runs | the property, the wrong answers it rejects |
-| **LLM judge** | prompt filling, answer validation, majority vote | the method and its near-misses, in one prompt |
-| **Runners** | Inspect AI task; Claude Code subagent runner | — |
+What is shared between papers and what is written for each: [docs/adding-a-paper.md](docs/adding-a-paper.md).
 
-Why the eval is built this way, and what went wrong: [docs/method.md](docs/method.md) ·
-adding a paper: [docs/adding-a-paper.md](docs/adding-a-paper.md)
+Why the eval is built this way, and what went wrong: [docs/method.md](docs/method.md).
 
 ## Papers
 
