@@ -10,5 +10,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install "jax==0.12.0.1" "jaxlib==0.12.0.1" optax numpy omegaconf pytest inspect-ai
-      # CPU only; the slow guard-rail tests (RUN_SLOW=1) and Docker are not run here
+      # CPU only; Docker is not run here
       - run: python -m pytest -q tests papers

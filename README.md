@@ -52,8 +52,6 @@ L1 (only what was known before the paper) to L3 (the key decomposition).
 - **Weaker models find the diagnosis, then the familiar remedy:** importance
   sampling, unclipped or loosely capped. It slows the drift without removing it.
 - **More hints are not always better:** Sonnet scores lower at L2 than at L1.
-- **An exact check matters:** a CPU training run, the usual empirical proxy,
-  passes 10 of the 17 submissions the exact check rejects.
 
 [Full results and limitations](papers/score-centering/results.md) · [every
 run, with its transcript](papers/score-centering/runs/)
@@ -75,8 +73,8 @@ Sixteen minutes later, the agent's report:
 > fix is to center the score under the distribution that generated the
 > tokens.*
 
-Grading: drift-free with the full distribution ✓, with the top-k only ✓,
-combined with importance weights ✓.
+Exact checks: drift-free with the sampler's top-k ✓ (the judge has not run
+yet).
 
 ## Why this is a useful eval
 
@@ -112,10 +110,8 @@ flowchart LR
     U["paper's code<br/>(upstream/)"] -->|"remove the contribution,<br/>audit for leaks"| S[starter repo]
     S --> A["agent container<br/>no network"]
     P["prompt<br/>task + hint level"] --> A
-    A -->|"submission + report"| G["graders<br/>separate container"]
-    G --> T["exact property check<br/>(main signal)"]
-    G --> E[cheap training run]
-    A -.->|report| J["LLM judge<br/>hidden rubric"]
+    A -->|submission| G["exact checks<br/>separate container"]
+    A -->|submission| J["LLM judge<br/>is the idea there?"]
 ```
 
 | | Shared, in [`core/`](core/) | Written for each paper, in `papers/<name>/` |
@@ -123,7 +119,7 @@ flowchart LR
 | **Starter** | copy, exact SHA-pinned edits, grep audit, fresh git history | what to remove, revealing words |
 | **Prompt** | cumulative hint levels; tools section with or without experiments | the task and each level's content |
 | **Graders** | images tagged by content, sandboxed runs | the property, the wrong answers it rejects |
-| **LLM judge** | prompt filling, verdict validation, scoring | reference, rubric, near-misses |
+| **LLM judge** | prompt filling, answer validation, majority vote | the method and its near-misses, in one prompt |
 | **Runners** | Inspect AI task; Claude Code subagent runner | — |
 
 Design: [docs/method.md](docs/method.md) · adding a paper:
@@ -184,7 +180,7 @@ Run one paper2env episode. Run `python3 core/runner/run.py start --paper <paper>
 (add --no-experiments for the noexp mode). Then launch the `researcher` subagent with
 model <haiku|sonnet|opus>, giving it as its prompt exactly the content of the printed
 agent_prompt.md and nothing else. When it has finished, run `python3 core/runner/run.py finish`
-and show me results.json.
+and show me grade.json.
 ```
 
 <details>
@@ -207,9 +203,9 @@ and show me results.json.
 - **Small samples:** 3 runs per (level, model) in most cells; counts, not
   rates with confidence intervals.
 - **One harness:** all runs use Claude Code's subagent harness with Bash only.
-- **Judge not calibrated:** the LLM judge is built but has not been run; the
-  reports were read by hand.
-- **Contamination from here on:** publishing the rubric and graders means
+- **Judge not run yet:** the success rate waits for it; the reports were read
+  by hand.
+- **Contamination from here on:** publishing the judge's prompt and the checks means
   future models may have seen the answer.
 - **Not done yet:** GPU validation, `noexp` runs, a second paper.
 

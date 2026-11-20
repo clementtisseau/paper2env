@@ -12,7 +12,8 @@ orchestrates (it launches the subagent with its Agent tool):
      in the container and denies its other tools.
   3. python core/runner/run.py finish
      Copies the submission and the report out of the container, runs the
-     paper's graders in its grader image, writes results.json, then stops the
+     paper's graders in its grader image, writes grade.json (see core/grade.py)
+     and the run's statistics in meta.json, then stops the
      container and ends the run. It also copies the subagent's full transcript
      into runs/<run>/transcripts/ (see copy_transcripts).
 
@@ -30,6 +31,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 import compose  # noqa: E402
+import grade as grade_lib  # noqa: E402
 import images  # noqa: E402
 import paper as papers  # noqa: E402
 
@@ -135,22 +137,15 @@ def finish(args):
     (run_dir / paper.SUBMISSION).write_text(submission)
     (run_dir / paper.REPORT).write_text(report)
     (run_dir / f"{Path(paper.SUBMISSION).stem}.diff").write_text(diff)
-    results = {"run_id": meta["run_id"], "level": meta["level"], "experiments": meta["experiments"],
-               "minutes": round((time.time() - meta["started"]) / 60, 1),
-               "submitted": bool(submission), "changed": bool(diff), "configuration": paper.configuration(report)}
-    if submission:
-        results.update(images.run_graders(paper, submission, report))
     log = Path(meta["log"])
-    results["agent_commands"] = sum(1 for _ in open(log)) if log.exists() else 0
-    results["transcripts"] = copy_transcripts(run_dir, log)
-    (run_dir / "results.json").write_text(json.dumps(results, indent=2) + "\n")
+    meta.update(minutes=round((time.time() - meta["started"]) / 60, 1), submitted=bool(submission),
+                changed=bool(diff), agent_commands=sum(1 for _ in open(log)) if log.exists() else 0,
+                transcripts=copy_transcripts(run_dir, log))
+    (run_dir / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+    grade = grade_lib.grade(paper, run_dir)
     end(meta)
-    summary = {k: results.get(k) for k in ("run_id", "minutes", "submitted", "changed", "agent_commands")}
-    for g in paper.GRADERS:
-        if g["name"] in results:
-            r = results[g["name"]]
-            summary[g["name"]] = {k: v for k, v in r.items() if k.startswith("passed") or k == "normalized"}
-    print(json.dumps(summary, indent=2))
+    print(json.dumps({**{k: meta[k] for k in ("run_id", "minutes", "submitted", "changed", "agent_commands")},
+                      **{k: grade[k] for k in ("correct", "idea_found", "success")}}, indent=2))
 
 
 def abort(args):

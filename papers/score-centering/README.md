@@ -67,8 +67,8 @@ and `python papers/score-centering/plot_results.py`.
 |---|---|
 | Levels | `L0 L1 L2a L2b L3 L4` (default: `L2a L2b L3 L4`) |
 | Modes | `exp`: the starter has `run_dev.sh` and `dev/mini.py` (a CPU run of the setting); `noexp`: without |
-| Submission, report | `losses.py` (signature of `loss_fn_rl` fixed, change active by default), `REPORT.md` (derivation; optional `## Configuration` with `rl.is.*` keys) |
-| Graders | `theory` (exact check, main signal), `guard` (CPU training run) |
+| Submission, report | `losses.py` (signature of `loss_fn_rl` fixed, change active by default), `REPORT.md` (derivation) |
+| Grading | an LLM judge ([`grader/judge.md`](grader/judge.md)) and exact checks ([`grader/check.py`](grader/check.py)): [grading.md](grading.md) |
 
 **What the agent gets.** A real JAX RL framework: `train_rl.py` trains
 Qwen3-0.6B on Countdown with a deliberately mismatched sampler, with every
@@ -111,20 +111,8 @@ and the author's name in `LICENSE`, as the MIT license requires.
 
 ### Grading
 
-Details and validation: [`grader/README.md`](grader/README.md).
-
-1. **Theory check** ([`grader/theory/check.py`](grader/theory/check.py), CPU,
-   exact): on a toy policy whose completions are all enumerated, the expected
-   update has no drift at any prefix (mild and severe mismatch), is unchanged
-   on-policy, and keeps per-sample gradients bounded. Reported with the full
-   distribution (`passed`), the top-k only (`passed_topk`) and with TIS
-   (`passed_with_tis`). Each check rejects a named wrong answer: a GRPO-style
-   global baseline, unclipped or loosely capped IS, a loss that learns nothing.
-2. **CPU guard-rail** ([`grader/empirical/`](grader/empirical/)): a training
-   run on held-out seeds, normalized between REINFORCE (0) and the method (1).
-   It cannot separate the method from TIS at CPU scale.
-3. **LLM judge** ([`grader/judge/`](grader/judge/)): hidden rubric, seven
-   near-misses. Built, not yet calibrated or run.
+A run succeeds when an LLM judge finds the method in `losses.py` and exact
+checks confirm it is drift-free with the sampler's top-k: [grading.md](grading.md).
 
 ## Layout
 
@@ -136,10 +124,10 @@ Details and validation: [`grader/README.md`](grader/README.md).
 | `starter_extra/` | Added to the `exp` starter: `run_dev.sh`, `dev/summarize.py`. |
 | `starter/` | **Generated:** `exp/`, `noexp/`. |
 | `prompts/` | `common.md`, one file per level, `tools_*.md` per mode. |
-| `mini/` | CPU prototype of the setting; ships as `dev/mini.py`, backs the guard-rail. |
-| `grader/` | Theory check, guard-rail, judge. |
+| `mini/` | CPU prototype of the setting; ships in the `exp` starter as `dev/mini.py`. |
+| `grader/` | `check.py` (exact checks) and `judge.md` (the judge's prompt). |
 | `docker/` | Agent (CPU) and grader images. |
 | `tests/` | Starter equivalence, grader validation, prompt leaks. |
-| `runs/` | 45 runs with prompts, transcripts and grading ([guide](runs/README.md)). |
+| `runs/` | Every run, with prompts, transcripts and grading ([guide](runs/README.md)). |
 | `summarize_runs.py` | Writes `results_tables.md` from `runs/`. |
 | `plot_results.py` | Writes `figures/results-{light,dark}.svg` from `runs/`. |

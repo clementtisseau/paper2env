@@ -10,14 +10,15 @@ Required:
     DEFAULT_LEVELS                 levels run when none are given
     SUBMISSION, REPORT             files the agent leaves in /workspace; SUBMISSION
                                    is graded and diffed against the starter
-    GRADERS                        [{"name", "args", "timeout", "config"}]: scripts run
-                                   in the grader image on /sub/<SUBMISSION>; "config"
-                                   appends configuration(report) to the args
+    GRADERS                        [{"name", "args", "timeout"}]: scripts run in the
+                                   grader image on /sub/<SUBMISSION>, each printing JSON
+                                   with a boolean "correct"
     GRADER_INPUTS                  paths (relative to the paper) copied into the grader
                                    image, so the image is rebuilt when they change
     AUDIT, ALLOW, AUDIT_EXEMPT     revealing patterns, allowed lines, exempt files
     write_starter(out, experiments)   write the starter into `out`
-    configuration(report)          key=value settings the agent may request
+Optional:
+    JUDGE_LABELS                   with grader/judge.md: the judge's wrong_answer labels
 Set by the loader:
     DIR                            the paper's directory
 """
@@ -27,7 +28,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 PAPERS = REPO / "papers"
 REQUIRED = ("NAME", "TITLE", "URL", "LEVELS", "DEFAULT_LEVELS", "SUBMISSION", "REPORT", "GRADERS",
-            "GRADER_INPUTS", "AUDIT", "write_starter", "configuration")
+            "GRADER_INPUTS", "AUDIT", "write_starter")
 _cache = {}
 
 

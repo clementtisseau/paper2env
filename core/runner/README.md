@@ -32,7 +32,8 @@ subagent harness. Works for any paper in `papers/`; all runs in
 2. The session launches the `researcher` subagent (`.claude/agents/`, Bash
    only) with the model under test and that prompt, nothing else.
 3. `python3 core/runner/run.py finish` copies out the paper's submission and
-   report, runs its graders in its grader image, writes `results.json`,
+   report, runs its graders in its grader image, writes `grade.json` (see
+   `core/grade.py`) and the run's statistics in `meta.json`,
    removes the container and ends the run. It also copies the subagent's full
    transcript (messages, tool calls and outputs) into `runs/<run>/transcripts/`,
    with the requested model (`<id>.meta.json`) and the served one

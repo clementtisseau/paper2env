@@ -3,7 +3,8 @@
 Writes figures/results-light.svg and figures/results-dark.svg (standard
 library only, transparent background; the README picks one with <picture>
 and prefers-color-scheme).
-Counts come from summarize_runs.rows(), so the figure and the tables agree.
+Successful runs (grade.json) of the current starter, from
+summarize_runs.rows(), so the figure and the tables agree.
 
     python papers/score-centering/plot_results.py
 """
@@ -30,11 +31,15 @@ FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, A
 
 
 def counts():
+    """(runs, successes) per (level, model), over the current starter (v2)."""
+    rs = [r for r in rows() if r["era"] == "v2"]
+    if any(r["success"] is None for r in rs):
+        raise SystemExit("some runs are not judged yet (grade.json: success is null)")
     c = {}
-    for r in rows():
+    for r in rs:
         k = (r["level"], r["model"])
         n, p = c.get(k, (0, 0))
-        c[k] = (n + 1, p + r["theory"])
+        c[k] = (n + 1, p + r["success"])
     return c
 
 
@@ -57,7 +62,7 @@ def svg(theme):
     group = len(MODELS) * BAR + (len(MODELS) - 1) * GAP
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            f'font-family="{FONT}" role="img" aria-labelledby="title desc">',
-           '<title id="title">Drift-free submissions by hint level and model</title>',
+           '<title id="title">Successful runs by hint level and model</title>',
            '<desc id="desc">' + "; ".join(
                f"{lvl} {m}: {c[(lvl, m)][1]} of {c[(lvl, m)][0]}" for lvl, _ in LEVELS for m in MODELS
                if (lvl, m) in c) + "</desc>"]

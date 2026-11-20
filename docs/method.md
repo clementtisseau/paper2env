@@ -66,20 +66,18 @@ its own level names.
 
 ## Grading
 
-Signals independent by design:
+Two questions, answered separately: is the paper's idea there, and is it
+implemented correctly? Depending on the paper, one or both are graded:
 
-1. **An exact check of the property (the main signal).** The contribution is
-   stated as a property that a correct submission must have, and checked
-   exactly on a toy instance (for score-centering: no drift in the expected
-   update, by enumerating every completion of a tiny policy). It rewards any
-   correct fix, not only the paper's wording. **Each check is introduced
+1. **Exact checks** answer the second. The contribution is stated as a
+   property a correct submission must have, and checked exactly on a toy
+   instance (for score-centering: no drift in the expected update, by
+   enumerating every completion of a tiny policy). **Each check is introduced
    against a specific plausible wrong answer** and validated on it.
-2. **A cheap empirical guard-rail**, when the paper's experiments have a
-   proxy small enough to run: confirms the submission does not break training.
-3. **An LLM judge** with a hidden rubric: the reference explanation, weighted
-   criteria, named near-misses (derivations that look like the method but are
-   not), and a flag for what the prompt already gave versus what the agent
-   discovered.
+2. **An LLM judge** answers the first. One prompt: the method explained
+   clearly, the near-misses that look like it with a label each, and the
+   submission. It answers whether the idea is there, quoting the code, and
+   which near-miss it is otherwise.
 
 Graders run in their own image, without network, with the submission mounted
 read-only. Images are tagged by the content they copy in, so a changed check

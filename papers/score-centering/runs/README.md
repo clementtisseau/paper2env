@@ -20,9 +20,8 @@ in the loss batch, documented nowhere).
 | `agent_log.jsonl` | Every tool call as the confinement hook saw it: the original command, the `docker exec` it was rewritten to, and the decision. |
 | `losses.py`, `losses.diff` | The submitted loss and its diff against the starter. |
 | `REPORT.md` | The agent's derivation and justification. |
-| `results.json` | Grading recorded at the end of the run (theory check and CPU guard-rail, with the grader of that time). |
-| `regraded.json` | The theory check re-run with the final grader, so every run is graded the same way. The tables use this one. |
-| `meta.json` | Container, image, level, budget. |
+| `grade.json` | The grading ([grading.md](../grading.md)): `correct` (exact checks), `idea_found` (judge), `success`. |
+| `meta.json` | Container, image, level, budget; time spent and commands run. |
 
 ## Worth reading
 
@@ -37,7 +36,7 @@ in the loss batch, documented nowhere).
   E_q[∇log p] = −∇KL(q‖p) turns every baseline into a drift, then fixes it
   with unclipped importance weights, which are unbiased but unbounded.
   [`20261119-095730-exp-L1`](20261119-095730-exp-L1/REPORT.md) does the same
-  with weights capped at 10; it fooled the first version of the theory check
+  with weights capped at 10; it fooled the first version of the exact checks
   (see [lessons](../../../docs/lessons.md)).
 - **Correct with the full distribution, wrong with the top-k (Haiku, L3):**
   [`20261118-112015-exp-L3`](20261118-112015-exp-L3/REPORT.md) truncates the

@@ -2,42 +2,62 @@
 
 **A run succeeds when both hold:**
 
-1. **The idea is found** (LLM judge). The judge reads the submitted loss
-   (its diff against the starter), with the agent's report as context, against
-   a hidden rubric. It must find that the loss centers each token's score
-   under the sampler: it subtracts the score's expected value under the
-   sampler, not a reward baseline or an importance weight.
-2. **It is implemented correctly** (exact checks). The submitted loss passes
-   the four checks below **using only the sampler's top-k logprobs**, which is
-   all an inference engine returns.
+1. **The idea is found:** an LLM judge finds that the submitted `losses.py`
+   centers each token's score under the sampler.
+2. **It is implemented correctly:** exact checks confirm the loss is
+   drift-free, using only the sampler's top-k logprobs.
 
-The judge decides whether the idea was found; the checks only confirm that it
-was implemented correctly. Neither replaces the other: a loss can pass the
-checks on a toy problem for other reasons, and a right idea can be
+Only `losses.py` is graded, called with its default arguments, as the task
+asked. The report, its `## Configuration` section and how the loss handles an
+importance-sampling correction are not graded.
+
+The result is `runs/<run>/grade.json`: `correct` (1), `idea_found` (2),
+`success` (both), with the details of each.
+
+## 1. The judge: [`grader/judge.md`](grader/judge.md)
+
+One prompt, with a clear account of the method, the near-misses that look
+like it, and the submission (`losses.py` and its diff against the starter).
+The judge answers with one JSON object:
+
+```json
+{"evidence": "<the lines of losses.py that decide>", "idea_found": true, "wrong_answer": null}
+```
+
+`wrong_answer` names what the loss does instead when the idea is missing:
+`reward_baseline`, `expectation_under_p`, `wrong_coefficient`,
+`sampled_tokens_only`, `importance_weights`, `kl_to_sampler`, `tuning` or
+`other`. With several judges, `idea_found` is the majority.
+
+## 2. The exact checks: [`grader/check.py`](grader/check.py)
+
+A toy language model with 5 tokens and completions of 3 tokens: all 125
+completions can be enumerated, so the loss's expected update is computed
+exactly. The sampler q is the trained model p plus noise, seen only through
+its top-3 logprobs. The loss is called exactly as `train_rl.py` calls it.
+All four checks must pass, on three seeds:
+
+| Check | Given | Requires | Rejects |
+|---|---|---|---|
+| `no_drift` | a constant advantage, mild and severe noise | expected update ≈ 0 | REINFORCE; truncated or masked IS; IS capped at 10 |
+| `no_drift_prefix` | an advantage that depends on the first tokens, mean zero | ≈ 0 at every later position | a global reward baseline (GRPO at its limit) |
+| `on_policy` | q = p | the same update as REINFORCE | a loss that learns nothing |
+| `bounded` | severe noise | no gradient above 10× REINFORCE's largest | unclipped IS |
+
+≈ 0 means below 10⁻⁴ of the gradients' size. Each rejection is tested in
+[`tests/test_check.py`](tests/test_check.py), on the wrong answer itself.
+
+The judge and the checks answer different questions: a loss can pass the
+checks on a toy problem without the method, and the method can be
 implemented wrongly.
 
-## The exact checks
+## Running
 
-On a toy policy (vocabulary 5, length 3) whose completions are all
-enumerated, so expectations are exact. Each check rejects a plausible wrong
-answer:
+```bash
+python papers/score-centering/grader/check.py path/to/losses.py   # JSON, exit 0 if correct
+python core/grade.py --paper score-centering [run ...]           # re-run the checks on runs
+```
 
-| Check | Requires | Rejects |
-|---|---|---|
-| `no_drift` | with a constant advantage, the expected update is zero, under a mild and a severe mismatch | REINFORCE; TIS and MIS (reduced, not removed); importance sampling capped at 10 |
-| `no_drift_prefix` | zero expected update at every prefix, not only on average | a global reward baseline (GRPO pushed to its limit) |
-| `on_policy` | when the sampler is exact, the update equals REINFORCE's | a loss that learns nothing |
-| `bounded` | no per-sample gradient above 10× the worst REINFORCE one | unclipped importance sampling (×85,000) |
-
-## Reported, not required
-
-- **Correct with the full distribution only:** the idea is there, but the
-  loss needs the sampler's whole distribution, which an engine does not give.
-- **Composes with TIS:** still drift-free when combined with importance
-  weights (the centering must then be under q·w).
-- **CPU guard-rail:** a short training run, normalized between REINFORCE (0)
-  and the paper's method (1). It confirms that training does not break, but
-  cannot separate the method from importance sampling at this scale.
-
-All of these are per run in [results_tables.md](results_tables.md).
-Implementation of the checks and the judge: [grader/README.md](grader/README.md).
+`check.py` alone runs the code on the host, for trusted files only;
+`core/grade.py` runs it in the grader container
+(no network, the file mounted read-only).

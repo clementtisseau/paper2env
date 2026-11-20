@@ -1,8 +1,6 @@
-"""Judge plumbing: the prompt fills every field, agent text is inserted
-verbatim, and verdicts are validated and scored as the rubric says."""
-import copy
-import importlib.util
-import json
+"""Judge plumbing (core/judge.py), on score-centering's judge: the prompt is
+filled verbatim, answers are validated, judges are combined by majority."""
+import re
 import sys
 from pathlib import Path
 
@@ -10,79 +8,65 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "core"))
-import judge as judge_lib  # noqa: E402
+import judge  # noqa: E402
 import paper as papers  # noqa: E402
 
-# tested on score-centering's rubric and config
 PAPER = papers.load("score-centering")
-CFG = judge_lib.config(PAPER)
+LABELS = PAPER.JUDGE_LABELS
 
 
-class judge:  # the paper bound in, so the tests read as before
-    WEIGHTS = CFG["weights"]
-    build_prompt = staticmethod(lambda *a: judge_lib.build_prompt(PAPER, *a))
-    score = staticmethod(lambda v: judge_lib.score(v, CFG))
-    validate = staticmethod(lambda v: judge_lib.validate(v, CFG))
-    aggregate = staticmethod(lambda vs: judge_lib.aggregate(vs, CFG))
+def answer(found, wrong=None, evidence="x"):
+    return {"evidence": evidence, "idea_found": found, "wrong_answer": wrong}
 
 
-def verdict(scores, near_miss=None, given=(), alt=False):
-    return {
-        "criteria": {k: {"score": s, "given_in_prompt": k in given, "evidence": "", "reasoning": ""}
-                     for k, s in zip(judge.WEIGHTS, scores)},
-        "near_miss": near_miss,
-        "alternative_contribution": {"present": alt, "description": ""},
-        "summary": "",
-    }
+def answer_section():
+    return judge.prompt_path(PAPER).read_text().split("## Your answer")[1]
 
 
-def test_prompt_fills_all_fields():
-    text = judge.build_prompt("PROMPT", "REPORT {{DIFF}}", "DIFF")
-    assert "{{" not in text.replace("REPORT {{DIFF}}", "")
-    assert "REPORT {{DIFF}}" in text  # agent text kept verbatim, never re-templated
-    assert "Near-misses" in text and "expected score" in text
+def test_prompt_inserts_agent_text_verbatim():
+    text = judge.build_prompt(PAPER, "DIFF {{SUBMISSION}}", "CODE")
+    assert "DIFF {{SUBMISSION}}" in text and "CODE" in text  # never re-templated
+    assert "{{" not in text.replace("DIFF {{SUBMISSION}}", "")
 
 
-def test_schema_is_json():
-    json.loads((PAPER.DIR / "grader/judge/schema.json").read_text())
+def test_prompt_lists_exactly_the_labels():
+    """The labels quoted in judge.md's answer section are those of paper.py."""
+    quoted = set(re.findall(r'"([a-z_]+)"', answer_section().split("Example")[0]))
+    assert quoted - {"evidence", "idea_found", "wrong_answer", "unchanged"} == set(LABELS)
 
 
-def test_full_marks():
-    s = judge.score(verdict([2] * 6))
-    assert s["score"] == 1.0 and s["rediscovered"] and s["discovered"]
+def test_examples_in_prompt_are_valid():
+    examples = [judge.parse(line) for line in answer_section().splitlines() if line.startswith("{")]
+    assert len(examples) == 2
+    for e in examples:
+        judge.validate(e, LABELS)
 
 
-def test_given_in_prompt_is_not_discovery():
-    s = judge.score(verdict([2] * 6, given=("C2",)))
-    assert s["rediscovered"] and not s["discovered"] and s["score"] == 1.0
+def test_parse_fenced_and_bare():
+    assert judge.parse('Here:\n```json\n{"a": {"b": 1}}\n```') == {"a": {"b": 1}}
+    assert judge.parse('prefix {"a": 1} suffix') == {"a": 1}
 
 
-def test_near_miss_grpo():
-    s = judge.score(verdict([2, 1, 0, 1, 1, 2], near_miss="N1"))
-    assert not s["rediscovered"] and s["near_miss"] == "N1"
-    assert s["score"] == pytest.approx((2 + 3 + 0 + 1 + 1 + 2) / 20)
-
-
-def test_near_miss_requires_c3_zero():
-    with pytest.raises(ValueError):
-        judge.score(verdict([2] * 6, near_miss="N1"))
-
-
-@pytest.mark.parametrize("mutate", [
-    lambda v: v["criteria"]["C1"].update(score=3),
-    lambda v: v["criteria"]["C1"].update(score=True),
-    lambda v: v["criteria"].pop("C6"),
-    lambda v: v.update(near_miss="N9"),
-    lambda v: v.update(extra=1),
+@pytest.mark.parametrize("bad", [
+    answer(True, "reward_baseline"),                    # a label with idea_found true
+    answer(False, None),                                # no label with idea_found false
+    answer(False, "not_a_label"),
+    answer("yes"),                                      # not a boolean
+    {"idea_found": True, "evidence": "x", "wrong_answer": None},   # wrong order
+    answer(True) | {"extra": 1},
 ])
-def test_invalid_verdicts(mutate):
-    v = verdict([2] * 6)
-    mutate(v)
+def test_invalid_answers(bad):
     with pytest.raises(ValueError):
-        judge.validate(v)
+        judge.validate(bad, LABELS)
 
 
-def test_aggregate_median_and_review():
-    vs = [verdict([2] * 6), verdict([0] * 6), verdict([2, 2, 2, 2, 2, 1], alt=True)]
-    a = judge.aggregate(vs)
-    assert a["score"] == pytest.approx(19 / 20) and a["rediscovered"] and a["needs_human_review"]
+def test_valid_answers():
+    judge.validate(answer(True), LABELS)
+    judge.validate(answer(False, "importance_weights"), LABELS)
+
+
+def test_majority():
+    v = judge.majority([answer(True), answer(False, "tuning"), answer(True)])
+    assert v == {"idea_found": True, "wrong_answer": None, "votes": "2/3"}
+    v = judge.majority([answer(False, "tuning"), answer(False, "importance_weights"), answer(False, "tuning")])
+    assert v == {"idea_found": False, "wrong_answer": "tuning", "votes": "0/3"}

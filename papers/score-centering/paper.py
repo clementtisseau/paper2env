@@ -5,7 +5,6 @@ Paper: Score Centering Stabilizes Off-policy Reinforcement Learning
 framework without the method, and must make RL stable when the sampler that
 generates rollouts differs from the trained model. See README.md.
 """
-import re
 import sys
 from pathlib import Path
 
@@ -24,14 +23,10 @@ SUBMISSION = "losses.py"
 REPORT = "REPORT.md"
 
 # Scripts run in the grader image (WORKDIR = this directory's copy), on the
-# submission mounted at /sub/losses.py.
-GRADERS = [
-    {"name": "theory", "args": ["grader/theory/check.py", "/sub/losses.py"], "timeout": 1800, "config": False},
-    {"name": "guard", "args": ["grader/empirical/mini_check.py", "/sub/losses.py"], "timeout": 3600,
-     "config": True},
-]
+# submission mounted at /sub/losses.py. The judge's prompt is grader/judge.md.
+GRADERS = [{"name": "check", "args": ["grader/check.py", "/sub/losses.py"], "timeout": 1800}]
 # What docker/Dockerfile.grader copies in: the grader image is rebuilt when it changes.
-GRADER_INPUTS = ["docker/Dockerfile.grader", "upstream/losses.py", "grader", "mini"]
+GRADER_INPUTS = ["docker/Dockerfile.grader", "grader/check.py"]
 
 AUDIT = sanitize_spec.AUDIT
 ALLOW = sanitize_spec.ALLOW
@@ -39,11 +34,6 @@ AUDIT_EXEMPT = sanitize_spec.AUDIT_EXEMPT
 write_starter = sanitize_spec.write_starter
 
 
-def configuration(report):
-    """key=value lines of the report's `## Configuration` section; only the
-    importance-sampling settings (rl.is.*) are accepted."""
-    m = re.search(r"^##\s*Configuration\s*$(.*?)(?=^##\s|\Z)", report, re.M | re.S)
-    if not m:
-        return []
-    lines = [line.strip().strip("`").strip() for line in m.group(1).splitlines()]
-    return [line for line in lines if re.fullmatch(r"rl\.is\.\w+=\S+", line)]
+# The labels grader/judge.md lets the judge give as wrong_answer (core/judge.py).
+JUDGE_LABELS = ("reward_baseline", "expectation_under_p", "wrong_coefficient", "sampled_tokens_only",
+                "importance_weights", "kl_to_sampler", "tuning", "other")

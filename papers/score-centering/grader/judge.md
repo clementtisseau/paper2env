@@ -76,7 +76,7 @@ The diff of losses.py against the starter the agent received:
 
 The full submitted losses.py:
 
-{{LOSSES}}
+{{SUBMISSION}}
 
 ## Your answer
 

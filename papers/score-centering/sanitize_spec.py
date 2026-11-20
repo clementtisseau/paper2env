@@ -240,8 +240,7 @@ so any loss written for train_rl.py runs here unchanged.
 """),
     ("        cfg, sc = METHODS[method]", "        cfg, _ = METHODS[method]"),
     ("losses.loss_fn_rl(h, hd, b, corr, sc)", "losses.loss_fn_rl(h, hd, b, corr)"),
-    ("""# Default setting, shared with grader/empirical/mini_check.py (which
-# uses other seeds): REINFORCE plateaus here while drift-free losses improve.""",
+    ("""# Default setting: REINFORCE plateaus here while drift-free losses improve.""",
      """# Default setting (the evaluation uses other seeds)."""),
     # the sampler always returns its top-20 logprobs, with no setting for it
     ("""          reward_mode="group_centered", vocab_logprobs=SAMPLER_TOPK, correction=None):""",

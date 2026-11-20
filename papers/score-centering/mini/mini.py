@@ -253,8 +253,7 @@ def train(method="pg", noise=0.1, seed=0, steps=300, prompts_per_step=16, group=
     return log
 
 
-# Default setting, shared with grader/empirical/mini_check.py (which
-# uses other seeds): REINFORCE plateaus here while drift-free losses improve.
+# Default setting: REINFORCE plateaus here while drift-free losses improve.
 SETTING = dict(noise=0.3, steps=600, lr=0.2, reward_mode="plus_minus")
 
 

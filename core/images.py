@@ -82,15 +82,11 @@ def grader_command(paper, submission_dir, args):
             grader_image(paper), "python", "-I", *args]
 
 
-def grader_args(paper, grader, report):
-    return [*grader["args"], *(paper.configuration(report) if grader.get("config") else [])]
-
-
 def parse_grader_output(out, err):
     try:
         return json.loads(out)
     except json.JSONDecodeError:
-        return {"passed": False, "error": (err or out).decode(errors="replace")[-1500:]}
+        return {"correct": False, "error": (err or out).decode(errors="replace")[-1500:]}
 
 
 def run_grader_sync(paper, submission, args, timeout):
@@ -101,11 +97,11 @@ def run_grader_sync(paper, submission, args, timeout):
         try:
             proc = subprocess.run(grader_command(paper, tmp, args), capture_output=True, timeout=timeout)
         except subprocess.TimeoutExpired:
-            return {"passed": False, "error": f"grader timed out after {timeout}s"}
+            return {"correct": False, "error": f"grader timed out after {timeout}s"}
     return parse_grader_output(proc.stdout, proc.stderr)
 
 
-def run_graders(paper, submission, report, only=None):
+def run_graders(paper, submission, only=None):
     """Every grader of the paper (or those named in `only`): {name: result}."""
-    return {g["name"]: run_grader_sync(paper, submission, grader_args(paper, g, report), g["timeout"])
+    return {g["name"]: run_grader_sync(paper, submission, g["args"], g["timeout"])
             for g in paper.GRADERS if only is None or g["name"] in only}
