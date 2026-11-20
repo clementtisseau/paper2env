@@ -21,7 +21,6 @@ orchestrates (it launches the subagent with its Agent tool):
 `python core/runner/run.py papers` lists the papers and their levels.
 """
 import argparse
-import difflib
 import json
 import subprocess
 import sys
@@ -73,8 +72,7 @@ def start(args):
     container = f"p2e-run-{paper.NAME}-{run_id}"
     sh("docker", "run", "-d", "--name", container, "--network", "none", "--cpus", str(args.cpus),
        "--memory", "8g", "--init", tag, "tail", "-f", "/dev/null")
-    budget = images.CPU_BUDGET.format(cpus=args.cpus, hours=args.hours)
-    task_prompt = compose.compose(paper, args.level, budget, experiments=experiments)
+    task_prompt = compose.compose(paper, args.level, cpus=args.cpus, hours=args.hours, experiments=experiments)
     (run_dir / "task_prompt.md").write_text(task_prompt)
     preamble = PREAMBLE.format(submission=paper.SUBMISSION, report=paper.REPORT)
     (run_dir / "agent_prompt.md").write_text(preamble + task_prompt)
@@ -131,9 +129,7 @@ def finish(args):
     STATE.unlink()
     submission = read_from_container(meta["container"], paper.SUBMISSION)
     report = read_from_container(meta["container"], paper.REPORT)
-    original = (papers.starter_dir(paper, meta["experiments"]) / paper.SUBMISSION).read_text()
-    diff = "".join(difflib.unified_diff(original.splitlines(True), submission.splitlines(True),
-                                        f"a/{paper.SUBMISSION}", f"b/{paper.SUBMISSION}"))
+    diff = grade_lib.diff(paper, meta["experiments"], submission)
     (run_dir / paper.SUBMISSION).write_text(submission)
     (run_dir / paper.REPORT).write_text(report)
     (run_dir / f"{Path(paper.SUBMISSION).stem}.diff").write_text(diff)

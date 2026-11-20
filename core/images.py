@@ -1,5 +1,5 @@
-"""Images and grading, shared by both runners (core/task.py for API models,
-core/runner/run.py for a Claude Code subagent), so they grade the same way.
+"""Docker images, shared by both runners (core/task.py for API models,
+core/runner/run.py for a Claude Code subagent).
 
 Each paper brings its own Dockerfiles (papers/<name>/docker/: an agent image
 holding the starter, a grader image holding the grading scripts), built with
@@ -8,11 +8,9 @@ in, so they are rebuilt exactly when that content changes. Standard library
 only.
 """
 import hashlib
-import json
 import os
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -23,12 +21,11 @@ import sanitize  # noqa: E402
 GRADER_IMAGE = "p2e-{paper}-grader:{digest}"
 AGENT_IMAGE = "p2e-{paper}-agent:{starter}-{digest}"
 WORKSPACE = "/workspace"
-CPU_BUDGET = "Budget: {cpus} CPU cores, no GPU, and {hours:g} hours of working time."
 
 
 def docker_build(tag, dockerfile, context, args=()):
     cmd = ["docker", "build", "-q", "-t", tag, "-f", str(dockerfile), *args]
-    ca = os.environ.get("P2E_PIPCA") or os.environ.get("SC_RLENV_PIPCA")  # optional CA bundle (TLS interception)
+    ca = os.environ.get("P2E_PIPCA")  # optional CA bundle (TLS interception)
     if ca:
         cmd += ["--secret", f"id=pipca,src={ca}"]
     subprocess.run([*cmd, str(context)], check=True, capture_output=True)
@@ -73,35 +70,3 @@ def ensure_images(paper, experiments, rebuild=False):
     if rebuild or not have_image(tag):
         docker_build(tag, dockerfile, paper.DIR, ["--build-arg", f"STARTER={starter}"])
     return starter, tag
-
-
-def grader_command(paper, submission_dir, args):
-    """docker run line for one of the paper's grader scripts; the submission
-    directory is mounted read-only at /sub, without network."""
-    return ["docker", "run", "--rm", "--network", "none", "--cpus", "4", "-v", f"{submission_dir}:/sub:ro",
-            grader_image(paper), "python", "-I", *args]
-
-
-def parse_grader_output(out, err):
-    try:
-        return json.loads(out)
-    except json.JSONDecodeError:
-        return {"correct": False, "error": (err or out).decode(errors="replace")[-1500:]}
-
-
-def run_grader_sync(paper, submission, args, timeout):
-    """Run one grader script on the submission text (blocking)."""
-    with tempfile.TemporaryDirectory() as tmp:
-        Path(tmp, paper.SUBMISSION).write_text(submission)
-        os.chmod(tmp, 0o755)
-        try:
-            proc = subprocess.run(grader_command(paper, tmp, args), capture_output=True, timeout=timeout)
-        except subprocess.TimeoutExpired:
-            return {"correct": False, "error": f"grader timed out after {timeout}s"}
-    return parse_grader_output(proc.stdout, proc.stderr)
-
-
-def run_graders(paper, submission, only=None):
-    """Every grader of the paper (or those named in `only`): {name: result}."""
-    return {g["name"]: run_grader_sync(paper, submission, g["args"], g["timeout"])
-            for g in paper.GRADERS if only is None or g["name"] in only}

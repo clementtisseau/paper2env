@@ -16,10 +16,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import paper as papers  # noqa: E402
 
-DEFAULT_BUDGET = "Budget: one GPU and 8 hours of wall-clock time."
+BUDGET = "Budget: {cpus} CPU cores, no GPU, and {hours:g} hours of working time."
 
 
-def compose(paper, level, budget=DEFAULT_BUDGET, experiments=True):
+def compose(paper, level, cpus=4, hours=2.0, experiments=True):
+    budget = BUDGET.format(cpus=cpus, hours=float(hours))
     if level not in paper.LEVELS:
         raise ValueError(f"level must be one of {paper.LEVELS}")
     prompts = paper.DIR / "prompts"

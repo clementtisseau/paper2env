@@ -12,8 +12,12 @@ added later with set_judge(). To re-grade runs after a grader changed:
     python core/grade.py --paper score-centering [run ...]
 """
 import argparse
+import difflib
 import json
+import os
+import subprocess
 import sys
+import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -21,6 +25,36 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import images  # noqa: E402
 import judge as judge_lib  # noqa: E402
 import paper as papers  # noqa: E402
+
+
+def diff(paper, experiments, submission):
+    """The submission's unified diff against the starter it was written from."""
+    original = (papers.starter_dir(paper, experiments) / paper.SUBMISSION).read_text()
+    return "".join(difflib.unified_diff(original.splitlines(True), submission.splitlines(True),
+                                        f"a/{paper.SUBMISSION}", f"b/{paper.SUBMISSION}"))
+
+
+def run_grader(paper, submission, args, timeout):
+    """Run one grader script on the submission in the paper's grader image:
+    no network, the submission mounted read-only at /sub. Returns its JSON."""
+    with tempfile.TemporaryDirectory() as tmp:
+        Path(tmp, paper.SUBMISSION).write_text(submission)
+        os.chmod(tmp, 0o755)
+        cmd = ["docker", "run", "--rm", "--network", "none", "--cpus", "4", "-v", f"{tmp}:/sub:ro",
+               images.grader_image(paper), "python", "-I", *args]
+        try:
+            proc = subprocess.run(cmd, capture_output=True, timeout=timeout)
+        except subprocess.TimeoutExpired:
+            return {"correct": False, "error": f"grader timed out after {timeout}s"}
+    try:
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return {"correct": False, "error": (proc.stderr or proc.stdout).decode(errors="replace")[-1500:]}
+
+
+def run_graders(paper, submission):
+    """Every grader of the paper: {name: result}."""
+    return {g["name"]: run_grader(paper, submission, g["args"], g["timeout"]) for g in paper.GRADERS}
 
 
 def _write(paper, run_dir, graders, judge):
@@ -45,7 +79,7 @@ def grade(paper, run_dir):
     keeping a judge verdict already there."""
     run_dir = Path(run_dir)
     sub = run_dir / paper.SUBMISSION
-    graders = images.run_graders(paper, sub.read_text()) if sub.exists() and sub.read_text() else {}
+    graders = run_graders(paper, sub.read_text()) if sub.exists() and sub.read_text() else {}
     old = load(run_dir)
     return _write(paper, run_dir, graders, old["judge"] if old else None)
 
