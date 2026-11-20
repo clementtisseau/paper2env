@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "q_tail = jnp.clip(1.0 - q_head.sum(-1), 0.0, 1.0)\np_tail = jnp.clip(-jnp.expm1(jax.nn.logsumexp(sg(logp_head), axis=-1)), 0.0, 1.0)\nrho = jnp.clip(q_tail / jnp.maximum(p_tail, P_TAIL_MIN), 0.0, RHO_MAX)\ncoef = sg(q_head - rho[..., None] * jnp.exp(logp_head))\nreturn (coef * logp_head).sum(-1), q_tail, rho\n...\ncentered = logp - mean_score\nterms = extra | {\"score\": w * centered, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "coef = sg(q_head - rho[..., None] * jnp.exp(logp_head))\nreturn (coef * logp_head).sum(-1), q_tail, rho\n...\ncentered = logp - mean_score\nterms = extra | {\"score\": w * centered, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "coef = sg(q_head - rho[..., None] * jnp.exp(logp_head))\nreturn (coef * logp_head).sum(-1), q_tail, rho\ncentered = logp - mean_score\nterms = extra | {\"score\": w * centered, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

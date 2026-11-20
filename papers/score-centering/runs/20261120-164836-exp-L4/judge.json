@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "q_h = jnp.exp(b[\"sampler_topk_logprobs\"].astype(jnp.float32))\np_tail = jnp.maximum(1.0 - p_h.sum(-1), 1e-6)\nq_tail = jnp.clip(1.0 - q_h.sum(-1), 0.0, 1.0)\nrho = q_tail / p_tail\ncoef = sg(q_h - rho[..., None] * p_h)\nreturn (coef * lp_h).sum(-1)\nbase = sampler_mean_score(logp_vocab, b) if use_baseline and \"sampler_topk_ids\" in b else 0.0\nterms = {\"score\": w * (logp - base), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "coef = sg(q_h - rho[..., None] * p_h)                    # [B, C, K]\nreturn (coef * lp_h).sum(-1)\nbase = sampler_mean_score(logp_vocab, b) if use_baseline and \"sampler_topk_ids\" in b else 0.0\nterms = {\"score\": w * (logp - base), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "p_tail = jnp.maximum(1.0 - p_h.sum(-1), 1e-6)\nq_tail = jnp.clip(1.0 - q_h.sum(-1), 0.0, 1.0)\nrho = q_tail / p_tail\ncoef = sg(q_h - rho[..., None] * p_h)\nreturn (coef * lp_h).sum(-1)\nbase = sampler_mean_score(logp_vocab, b) if use_baseline and \"sampler_topk_ids\" in b else 0.0\nterms = {\"score\": w * (logp - base), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

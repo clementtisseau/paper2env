@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "rho = jnp.clip(q_tail / p_tail, 0.0, 1e3)\ncoef = sg(qv - rho * pv)\nscore = logp - (coef * jnp.where(valid, tlp, 0.0)).sum(-1)\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "rho = jnp.clip(q_tail / p_tail, 0.0, 1e3)\ncoef = sg(qv - rho * pv)\nscore = logp - (coef * jnp.where(valid, tlp, 0.0)).sum(-1)\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "rho = jnp.clip(q_tail / p_tail, 0.0, 1e3)\ncoef = sg(qv - rho * pv)\nscore = logp - (coef * jnp.where(valid, tlp, 0.0)).sum(-1)\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

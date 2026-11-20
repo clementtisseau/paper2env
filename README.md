@@ -19,7 +19,7 @@ it correctly.
 
 | `--paper` | Paper | Runs |
 |---|---|---|
-| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 108 |
+| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 126 |
 | | *more to come* | |
 
 ## Result: score-centering
@@ -43,25 +43,25 @@ by level, each level including the previous ones:
   and that the batch holds the sampler's top-20 logprobs.
 - **L4:** the method itself.
 
-These runs cover L1 to L3. A run succeeds when LLM judges find the paper's
+These runs cover L1 to L4. A run succeeds when LLM judges find the paper's
 idea in the submitted loss and exact checks confirm it is correct with the
 sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/success-dark.svg">
-  <img alt="Successful runs by hint level and model. L1: Haiku 1/9, Sonnet 3/9, Opus 8/9. L2a: Haiku 1/9, Sonnet 3/9, Opus 9/9. L2b: Haiku 0/9, Sonnet 0/9, Opus 9/9. L3: Haiku 1/9, Sonnet 1/9, Opus 9/9. More to come: DeepSeek V4 Pro, DeepSeek V4.1 Flash, GLM 5.3 Flash." src="papers/score-centering/figures/success-light.svg" width="680">
+  <img alt="Successful runs by hint level and model. L1: Haiku 1/9, Sonnet 3/9, Opus 8/9. L2a: Haiku 1/9, Sonnet 3/9, Opus 9/9. L2b: Haiku 0/9, Sonnet 0/9, Opus 9/9. L3: Haiku 1/9, Sonnet 1/9, Opus 9/9. L4: Haiku 6/6, Sonnet 6/6, Opus 6/6. More to come: DeepSeek V4 Pro, DeepSeek V4.1 Flash, GLM 5.3 Flash." src="papers/score-centering/figures/success-light.svg" width="680">
 </picture>
 
 *Success rate by hint level and model: Claude Haiku, Sonnet and Opus 5.5
-as Claude Code subagents, 9 runs each; whiskers: 95% Wilson intervals.
+as Claude Code subagents, 9 runs each (6 at L4); whiskers: 95% Wilson intervals.
 More to come: DeepSeek V4 Pro, DeepSeek V4.1 Flash and GLM 5.3 Flash.*
 
 **What the figure shows**
 
-- **Opus rediscovers the method from pre-paper knowledge alone:** 35 of 36
-  runs succeed, already at L1, in a median of 10 minutes per run.
+- **Opus rediscovers the method from pre-paper knowledge alone:** 35 of its 36
+  runs up to L3 succeed, already at L1, in a median of 10 minutes per run.
 - **Haiku and Sonnet mostly fail, for opposite reasons:**
-  - Haiku usually *finds* the idea (32/36 runs) but implements it wrongly: it
+  - Haiku usually *finds* the idea (32/36 runs up to L3) but implements it wrongly: it
     centers over the sampler's top-k logprobs and ignores the rest of the
     vocabulary, which leaves a bias (26 runs).
   - Sonnet usually *misses* the idea up to L2b (20/27 runs) and applies the
@@ -72,7 +72,10 @@ More to come: DeepSeek V4 Pro, DeepSeek V4.1 Flash and GLM 5.3 Flash.*
   ([why](papers/score-centering/README.md#results)). At L3, which gives the
   answer to the analysis, all 18 Haiku and Sonnet runs find the idea, but 14 make
   Haiku's mistake: each model succeeds once in 9.
-- **With 9 runs per bar, only the gap between Opus and the others is
+- **Given the method (L4), every model implements it correctly** (18/18,
+  top-k tail included). What separates the models is finding the method, and
+  how to handle the top-k tail, not writing the code.
+- **With 6 to 9 runs per bar, only the gap between Opus and the others is
   certain;** the differences between levels are within the intervals.
 
 Detailed results, one episode and every run: [papers/score-centering](papers/score-centering/README.md)
@@ -117,10 +120,10 @@ at the repository root and follow [core/runner](core/runner/README.md).
   the method. The models to come were all released before the paper (DeepSeek
   V4 Pro on Aug 13, GLM 5.3 Flash on Aug 26, DeepSeek V4.1 Flash on Sep 10,
   2026), so they cannot have trained on it.
-- **Small samples:** 9 runs per model and level (3/9 spans 12–65%). 37 runs
+- **Small samples:** 9 runs per model and level, 6 at L4 (3/9 spans 12–65%). 37 runs
   of an earlier version of the starter are kept in `runs/` but not counted.
 - **One harness:** all runs use Claude Code's subagent harness, Bash only.
-- **Judge checked by hand:** the three judges agree on all 108 runs, and every
+- **Judge checked by hand:** the three judges agree on all 126 runs, and every
   verdict read by hand was right.
 - **Published answer:** the judge's prompt and the checks are public, so
   future models may have seen them.

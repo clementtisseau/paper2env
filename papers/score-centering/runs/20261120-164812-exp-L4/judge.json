@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "log_p_tail = sg(jax.nn.logsumexp(jnp.where(in_head, -jnp.inf, logp_vocab), -1))\nlog_q_tail = jnp.log(jnp.maximum(1.0 - q_top.sum(-1), 0.0))\nrho = jnp.where(jnp.isfinite(log_p_tail), jnp.exp(sg(log_q_tail) - log_p_tail), 0.0)\ncoef = sg(q_top - rho[..., None] * jnp.exp(sg(logp_top)))\nreturn (coef * logp_top).sum(-1)\n...\ndrift = drift_baseline(logp_vocab, b[\"sampler_topk_ids\"], b[\"sampler_topk_logprobs\"])\nterms = {\"score\": w * (logp - drift), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "log_q_tail = jnp.log(jnp.maximum(1.0 - q_top.sum(-1), 0.0))\nrho = jnp.where(jnp.isfinite(log_p_tail), jnp.exp(sg(log_q_tail) - log_p_tail), 0.0)\ncoef = sg(q_top - rho[..., None] * jnp.exp(sg(logp_top)))\nreturn (coef * logp_top).sum(-1)\ndrift = drift_baseline(logp_vocab, b[\"sampler_topk_ids\"], b[\"sampler_topk_logprobs\"])\nterms = {\"score\": w * (logp - drift), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "log_p_tail = sg(jax.nn.logsumexp(jnp.where(in_head, -jnp.inf, logp_vocab), -1))\nlog_q_tail = jnp.log(jnp.maximum(1.0 - q_top.sum(-1), 0.0))\nrho = jnp.where(jnp.isfinite(log_p_tail), jnp.exp(sg(log_q_tail) - log_p_tail), 0.0)\ncoef = sg(q_top - rho[..., None] * jnp.exp(sg(logp_top)))\nreturn (coef * logp_top).sum(-1)\n...\ndrift = drift_baseline(logp_vocab, b[\"sampler_topk_ids\"], b[\"sampler_topk_logprobs\"])\nterms = {\"score\": w * (logp - drift), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

@@ -24,6 +24,9 @@ Each cell: runs passing / runs. `correct`: the four exact checks pass with the s
 
 | Level | Model | correct | idea | success | success, 95% CI | median minutes |
 |---|---|---|---|---|---|---|
+| L4 | Haiku | 6/6 | 6/6 | 6/6 | 61–100% | 7 |
+| L4 | Sonnet | 6/6 | 6/6 | 6/6 | 61–100% | 1 |
+| L4 | Opus | 6/6 | 6/6 | 6/6 | 61–100% | 6 |
 | L3 | Haiku | 1/9 | 9/9 | 1/9 | 2–44% | 9 |
 | L3 | Sonnet | 1/9 | 9/9 | 1/9 | 2–44% | 2 |
 | L3 | Opus | 9/9 | 9/9 | 9/9 | 70–100% | 7 |
@@ -186,3 +189,21 @@ Each cell: runs passing / runs. `correct`: the four exact checks pass with the s
 | [20261120-161435-exp-L3](runs/20261120-161435-exp-L3/) | v2 | exp | L3 | Haiku | 23 | 16 | ✗ | ✓ | ✗ |  |
 | [20261120-161436-exp-L3](runs/20261120-161436-exp-L3/) | v2 | exp | L3 | Sonnet | 2 | 5 | ✗ | ✓ | ✗ |  |
 | [20261120-161601-exp-L3](runs/20261120-161601-exp-L3/) | v2 | exp | L3 | Haiku | 14 | 33 | ✗ | ✓ | ✗ |  |
+| [20261120-164806-exp-L4](runs/20261120-164806-exp-L4/) | v2 | exp | L4 | Opus | 4 | 14 | ✓ | ✓ | ✓ |  |
+| [20261120-164812-exp-L4](runs/20261120-164812-exp-L4/) | v2 | exp | L4 | Haiku | 10 | 22 | ✓ | ✓ | ✓ |  |
+| [20261120-164818-exp-L4](runs/20261120-164818-exp-L4/) | v2 | exp | L4 | Sonnet | 1 | 3 | ✓ | ✓ | ✓ |  |
+| [20261120-164818-exp-L4-sonnet](runs/20261120-164818-exp-L4-sonnet/) | v2 | exp | L4 | Sonnet | 2 | 3 | ✓ | ✓ | ✓ |  |
+| [20261120-164823-exp-L4](runs/20261120-164823-exp-L4/) | v2 | exp | L4 | Sonnet | 1 | 3 | ✓ | ✓ | ✓ |  |
+| [20261120-164827-exp-L4](runs/20261120-164827-exp-L4/) | v2 | exp | L4 | Sonnet | 1 | 4 | ✓ | ✓ | ✓ |  |
+| [20261120-164828-exp-L4](runs/20261120-164828-exp-L4/) | v2 | exp | L4 | Haiku | 5 | 17 | ✓ | ✓ | ✓ |  |
+| [20261120-164828-exp-L4-haiku](runs/20261120-164828-exp-L4-haiku/) | v2 | exp | L4 | Haiku | 5 | 27 | ✓ | ✓ | ✓ |  |
+| [20261120-164833-exp-L4](runs/20261120-164833-exp-L4/) | v2 | exp | L4 | Opus | 7 | 15 | ✓ | ✓ | ✓ |  |
+| [20261120-164833-exp-L4-sonnet](runs/20261120-164833-exp-L4-sonnet/) | v2 | exp | L4 | Sonnet | 2 | 4 | ✓ | ✓ | ✓ |  |
+| [20261120-164836-exp-L4](runs/20261120-164836-exp-L4/) | v2 | exp | L4 | Haiku | 9 | 22 | ✓ | ✓ | ✓ |  |
+| [20261120-164839-exp-L4](runs/20261120-164839-exp-L4/) | v2 | exp | L4 | Opus | 6 | 18 | ✓ | ✓ | ✓ |  |
+| [20261120-164845-exp-L4](runs/20261120-164845-exp-L4/) | v2 | exp | L4 | Opus | 7 | 13 | ✓ | ✓ | ✓ |  |
+| [20261120-164849-exp-L4](runs/20261120-164849-exp-L4/) | v2 | exp | L4 | Haiku | 4 | 16 | ✓ | ✓ | ✓ |  |
+| [20261120-164849-exp-L4-opus](runs/20261120-164849-exp-L4-opus/) | v2 | exp | L4 | Opus | 8 | 18 | ✓ | ✓ | ✓ |  |
+| [20261120-164906-exp-L4](runs/20261120-164906-exp-L4/) | v2 | exp | L4 | Haiku | 9 | 13 | ✓ | ✓ | ✓ |  |
+| [20261120-164911-exp-L4](runs/20261120-164911-exp-L4/) | v2 | exp | L4 | Opus | 3 | 12 | ✓ | ✓ | ✓ |  |
+| [20261120-164911-exp-L4-sonnet](runs/20261120-164911-exp-L4-sonnet/) | v2 | exp | L4 | Sonnet | 1 | 3 | ✓ | ✓ | ✓ |  |

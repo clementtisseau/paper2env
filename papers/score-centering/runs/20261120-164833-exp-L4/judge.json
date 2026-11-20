@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "m_h = jnp.exp(log_mass(sg(logp_h), logq_h, positive[..., None], token_c, tv_h))  # = q_h when correction is None\nrho = jnp.clip(q_tail / jnp.maximum(p_tail, 1e-12), 0.0, TAIL_RHO_MAX)\ncoef = sg(m_h - rho_m[..., None] * p_h)\nbaseline = (coef * logp_h).sum(-1)\nscore = score - baseline\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "m_h = jnp.exp(log_mass(sg(logp_h), logq_h, positive[..., None], token_c, tv_h))  # = q_h when token_c is None\nrho = jnp.clip(q_tail / jnp.maximum(p_tail, 1e-12), 0.0, TAIL_RHO_MAX)\ncoef = sg(m_h - rho_m[..., None] * p_h)\nbaseline = (coef * logp_h).sum(-1)\nscore = score - baseline\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "rho = jnp.clip(q_tail / jnp.maximum(p_tail, 1e-12), 0.0, TAIL_RHO_MAX)\nm_h = jnp.exp(log_mass(sg(logp_h), logq_h, positive[..., None], token_c, tv_h))  # = q_h when token_c is None\nrho_m = rho\ncoef = sg(m_h - rho_m[..., None] * p_h)\nbaseline = (coef * logp_h).sum(-1)\nscore = score - baseline\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

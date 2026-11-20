@@ -30,7 +30,7 @@ W, H = 680, 288
 LEFT, RIGHT, TOP, BOTTOM = 44, 8, 54, 52
 # models not run yet: in the legend, and as empty dashed bars of unknown height
 COMING = ["DeepSeek V4 Pro", "DeepSeek V4.1 Flash", "GLM 5.3 Flash"]
-BAR, GAP, R = 18, 3, 2
+BAR, GAP, R = 15, 2, 2
 SEP = 8  # between the models run and the models to come
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 
