@@ -58,7 +58,7 @@ as Claude Code subagents, 9 runs each; whiskers: 95% Wilson intervals.*
 **What the figure shows**
 
 - **Opus rediscovers the method from pre-paper knowledge alone:** 35 of 36
-  runs succeed, already at L1 (median 10 minutes).
+  runs succeed, already at L1, in a median of 10 minutes per run.
 - **Haiku and Sonnet mostly fail, for opposite reasons:**
   - Haiku usually *finds* the idea (32/36 runs) but implements it wrongly: it
     centers over the sampler's top-k logprobs and ignores the rest of the
@@ -69,7 +69,7 @@ as Claude Code subagents, 9 runs each; whiskers: 95% Wilson intervals.*
   even drops to 0/9 at L2b: given a more precise hint, it answers in under
   2 minutes without experimenting, with importance sampling
   ([why](papers/score-centering/README.md#results)). At L3, which gives the
-  answer to the analysis, all 18 of their runs find the idea, but 14 make
+  answer to the analysis, all 18 Haiku and Sonnet runs find the idea, but 14 make
   Haiku's mistake: each model succeeds once in 9.
 - **With 9 runs per bar, only the gap between Opus and the others is
   certain;** the differences between levels are within the intervals.
