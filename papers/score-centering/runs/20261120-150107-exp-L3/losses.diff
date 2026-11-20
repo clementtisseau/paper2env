@@ -1,0 +1,39 @@
+--- a/losses.py
++++ b/losses.py
+@@ -110,7 +110,7 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,7 +121,26 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        if "sampler_topk_ids" in b:
++            # score centering: subtract sum_v q(v) log p(v) (q detached), so the expected
++            # update has no s_bar(h) drift term. Top-20 of q exact; leftover q mass spread over
++            # the other tokens in proportion to p.
++            ids = b["sampler_topk_ids"].astype(jnp.int32)
++            qk = jnp.exp(b["sampler_topk_logprobs"].astype(jnp.float32))
++            qk = jnp.where(jnp.isfinite(qk) & (ids >= 0), qk, 0.0)
++            ids = jnp.maximum(ids, 0)
++            logp_k = take_vocab(logp_vocab, ids)
++            pk = jnp.exp(sg(logp_k))
++            # dedupe-safe: zero mass for ids repeated is not expected; ignore
++            resid = jnp.clip(1.0 - qk.sum(-1), 0.0, 1.0)
++            p_all = jnp.exp(logp_vocab)
++            tail_p = jnp.maximum(1.0 - (pk * (qk > 0)).sum(-1), 1e-6)
++            tail_sum = (sg(p_all) * logp_vocab).sum(-1) - (pk * logp_k * (qk > 0)).sum(-1)
++            sbar = (sg(qk) * logp_k).sum(-1) + sg(resid / tail_p) * tail_sum
++            logp_c = logp - sbar
++        else:
++            logp_c = logp
++        terms = {"score": w * logp_c, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))

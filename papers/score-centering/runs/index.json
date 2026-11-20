@@ -942,5 +942,149 @@
     "experiments": true,
     "era": "v2",
     "budget_hours": 2.0
+  },
+  "20261120-145922-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150841-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-145921-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150711-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-145920-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150656-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-145859-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150243-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150017-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150634-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-145952-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150748-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-145922-exp-L3-sonnet": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150058-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-145908-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150107-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150135-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-150318-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
   }
 }

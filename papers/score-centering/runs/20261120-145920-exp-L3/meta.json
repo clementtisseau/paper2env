@@ -1,0 +1,18 @@
+{
+  "paper": "score-centering",
+  "run_id": "20261120-145920-exp-L3",
+  "run_dir": "/home/user/paper2env/papers/score-centering/runs/20261120-145920-exp-L3",
+  "container": "p2e-run-score-centering-20261120-145920-exp-L3",
+  "image": "p2e-score-centering-agent:exp-1d1040120a93",
+  "starter": "exp",
+  "level": "L3",
+  "experiments": true,
+  "hours": 2.0,
+  "started": 1795186760.8163636,
+  "log": "/home/user/paper2env/papers/score-centering/runs/20261120-145920-exp-L3/agent_log.jsonl",
+  "minutes": 7.1,
+  "submitted": true,
+  "changed": true,
+  "agent_commands": 20,
+  "transcripts": 1
+}

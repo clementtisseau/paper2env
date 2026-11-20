@@ -1,0 +1,102 @@
+--- a/losses.py
++++ b/losses.py
+@@ -1,8 +1,18 @@
+-"""REINFORCE with importance-sampling corrections.
++"""REINFORCE with importance-sampling corrections and a sampler-centered score.
+ 
+ Every correction is REINFORCE with a detached weight w(r) on the ratio
+ r = p/q of trainer (p) to sampler (q) probabilities, per token or per
+ sequence.
++
++Always on: the per-token score grad log p(y|h) is centered under the measure
++that actually draws y (the sampler q, times the IS weight if any),
++    s_y  ->  s_y - sum_v m(v|h) grad log p(v|h),   m(v|h) = q(v|h) w(v|h).
++On-policy (q = p, w = 1) the subtracted term is grad sum_v p(v|h) = 0, so
++nothing changes. Under mismatch it removes the drift E[A|h] * s_bar(h), which
++is a systematic, reward-independent bias of REINFORCE (see REPORT.md).
++m is known on the sampler's top-k tokens; the tail outside the top-k is
++taken proportional to p (exact when q is proportional to p there), which
++keeps the on-policy case exactly zero.
+ """
+ import math
+ from typing import NamedTuple
+@@ -80,6 +90,37 @@
+     return sg(jnp.exp(log_mass(jnp.clip(log_ratio, -20.0, 20.0), 0.0, positive, c, tv)))
+ 
+ 
++TAIL_RATIO_MAX = 10.0  # cap on (sampler tail mass) / (trainer tail mass) outside the top-k
++TAIL_MIN = 1e-6        # floor on the trainer tail mass (float32 cancellation in 1 - sum p)
++
++
++def centering_coeffs(logp_k, logq_k, positive, c, valid):
++    """Detached coefficients a_v on the sampler's top-k tokens such that
++    sum_k a_v grad log p(v|h) estimates s_bar(h) = sum_v m(v|h) grad log p(v|h),
++    with m = q * w(p/q) the measure that draws (and weights) the sampled token.
++
++    Tail (v outside the top-k K): m is taken proportional to p there, with
++    mass M_tail. As sum_v p(v) grad log p(v) = 0,
++        sum_{v not in K} p(v) s_v = -sum_{v in K} p(v) s_v,
++    so the tail adds -M_tail / P_tail * p(v) to each top-k coefficient.
++    On-policy (m = p) every coefficient is exactly 0."""
++    logp_k, logq_k = sg(logp_k), sg(logq_k)
++    tv_k = jnp.abs(jnp.exp(logq_k) - jnp.exp(logp_k))
++    m_k = jnp.where(valid, jnp.exp(log_mass(logp_k, logq_k, positive[..., None], c, tv_k)), 0.0)
++    p_k = jnp.where(valid, jnp.exp(logp_k), 0.0)
++    q_k = jnp.where(valid, jnp.exp(logq_k), 0.0)
++    p_tail = jnp.clip(1.0 - p_k.sum(-1), 0.0, 1.0)
++    q_tail = jnp.clip(1.0 - q_k.sum(-1), 0.0, 1.0)
++    if c is None:
++        m_tail = q_tail
++    else:  # weight of the tail as a whole, at its aggregate ratio
++        r_tail = jnp.log(jnp.maximum(p_tail, TAIL_MIN)) - jnp.log(jnp.maximum(q_tail, TAIL_MIN))
++        tv_tail = jnp.abs(q_tail - p_tail)
++        m_tail = q_tail * jnp.exp(log_mass(jnp.clip(r_tail, -20.0, 20.0), 0.0, positive, c, tv_tail))
++    tail_ratio = jnp.where(p_tail > TAIL_MIN, jnp.minimum(m_tail / jnp.maximum(p_tail, TAIL_MIN), TAIL_RATIO_MAX), 0.0)
++    return sg(m_k - tail_ratio[..., None] * p_k)
++
++
+ def take_vocab(logp, ids):
+     """take_along_axis over a [B, C, V] vocab axis that may be TP-sharded (the
+     gather drops that axis, so its output sharding must be explicit)."""
+@@ -110,7 +151,8 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
++    center = "sampler_topk_ids" in batch and "sampler_topk_logprobs" in batch
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,8 +163,21 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
+-        return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
++        score = w * logp
++        terms = {"entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        if center:  # subtract the sampler-measure mean score: removes the drift E[A|h] s_bar(h)
++            ids = b["sampler_topk_ids"].astype(jnp.int32)
++            logq_k = b["sampler_topk_logprobs"].astype(jnp.float32)
++            valid = jnp.isfinite(logq_k) & (logq_k <= 0.0) & b["mask"][..., None]
++            logq_k = jnp.where(valid, logq_k, -jnp.inf)
++            logp_k = take_vocab(logp_vocab, ids)
++            a_k = centering_coeffs(logp_k, logq_k, positive, token_c, valid)
++            score = score - (a_k * jnp.where(valid, logp_k, 0.0)).sum(-1)
++            terms["drift_mass"] = sg(jnp.abs(a_k).sum(-1))  # L1 size of the centering measure
++        terms["score"] = score
++        b_mask = b["mask"]
++        return {k: (jnp.where(b_mask, v, 0) if v.dtype == jnp.bool_ else jnp.where(b_mask, v, 0.0)).sum(-1)
++                for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
+     sums = {k: v.sum(0) for k, v in chunks.items()}  # per-sequence sums [B]
+@@ -139,6 +194,6 @@
+         advantages = advantages * w
+         frac_masked = (w == 0).mean()  # fraction of sequences
+     loss = -(advantages * sums["score"]).sum() / n_tokens
+-    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train") if k in sums}
++    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train", "drift_mass") if k in sums}
+     metrics["pol_entropy"] = metrics.pop("entropy")
+     return loss, metrics | {"frac_masked": frac_masked}

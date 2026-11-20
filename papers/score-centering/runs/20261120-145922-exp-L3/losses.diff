@@ -1,0 +1,39 @@
+--- a/losses.py
++++ b/losses.py
+@@ -110,7 +110,8 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
++    has_topk = "sampler_topk_ids" in batch and "sampler_topk_logprobs" in batch
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,7 +122,17 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        if has_topk:
++            # Drift removal: subtract the sampler-mean score s_bar_q(h) = sum_v q(v|h) grad log p(v|h),
++            # estimated from the sampler's top-k distribution (renormalised over the k entries).
++            q_top = sg(jnp.exp(b["sampler_topk_logprobs"]))
++            pi = sg(q_top / q_top.sum(-1, keepdims=True))
++            baseline = (pi * take_vocab(logp_vocab, b["sampler_topk_ids"])).sum(-1)
++            topk_mass = sg(q_top.sum(-1))
++        else:
++            baseline, topk_mass = 0.0, sg(jnp.zeros_like(logp))
++        terms = {"score": w * (logp - baseline), "entropy": -plogp, "kl_samp_train": sg(logq - logp),
++                 "masked": w == 0, "tv": tv, "topk_mass": topk_mass}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
+@@ -139,6 +150,6 @@
+         advantages = advantages * w
+         frac_masked = (w == 0).mean()  # fraction of sequences
+     loss = -(advantages * sums["score"]).sum() / n_tokens
+-    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train") if k in sums}
++    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train", "topk_mass") if k in sums}
+     metrics["pol_entropy"] = metrics.pop("entropy")
+     return loss, metrics | {"frac_masked": frac_masked}
