@@ -1,0 +1,73 @@
+--- a/losses.py
++++ b/losses.py
+@@ -91,6 +91,25 @@
+     return logp.at[b, c, ids].get(out_sharding=P(*spec[:-1], None))
+ 
+ 
++TAIL_EPS = 1e-6  # floor on the trainer's tail mass 1 - sum_H p when forming rho
++
++
++def score_baseline(logp_top, logq_top):
++    """sum_{v in H} sg[q_v - rho p_v] log p_v: the expected score s_bar(h) of the
++    sampler distribution q, from the sampler's top-K head H (REPORT.md).
++
++    logp_top [..., K]: trainer logprobs of the head tokens (gradient flows through them);
++    logq_top [..., K]: sampler logprobs of the same tokens. The tail of q is modelled as
++    rho times the tail of p, which contributes no gradient since sum_v p_v s_v = 0."""
++    p_top = sg(jnp.exp(logp_top))
++    q_top = jnp.exp(logq_top.astype(jnp.float32))
++    p_tail = jnp.maximum(1.0 - p_top.sum(-1), TAIL_EPS)
++    q_tail = jnp.maximum(1.0 - q_top.sum(-1), 0.0)
++    rho = sg(q_tail / p_tail)
++    coef = sg(q_top - rho[..., None] * p_top)
++    return (coef * logp_top).sum(-1)
++
++
+ def loss_fn_rl(hidden, head, batch, correction=None, chunk=128):
+     """REINFORCE loss on sampled rollouts, with an optional ISCorrection.
+     Returns (loss, metrics).
+@@ -101,6 +120,10 @@
+ 
+     batch: tokens, mask (completion tokens), advantages [B], and
+     sampling_token_logprobs [B, T], the sampler's logprobs of the sampled tokens.
++    Optional sampler_topk_ids / sampler_topk_logprobs [B, T, K] (the sampler's
++    top-K head per position) enable the score-centering baseline: each token's
++    score log p(y|h) is replaced by log p(y|h) - s_bar(h), so the expected update
++    has no drift under a sampler mismatch (REPORT.md).
+     """
+     c = correction
+     token_c = c if c and c.level == "token" else None
+@@ -110,8 +133,9 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
++    centered = "sampler_topk_ids" in per_token and "sampler_topk_logprobs" in per_token
+ 
+     def chunk_sums(start):
+         b = {k: jax.lax.dynamic_slice_in_dim(v, start, chunk, axis=1) for k, v in per_token.items()}
+@@ -120,8 +144,15 @@
+         logq = b["sampling_token_logprobs"]
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
++        if centered:
++            base = score_baseline(take_vocab(logp_vocab, b["sampler_topk_ids"]), b["sampler_topk_logprobs"])
++            score_lp = logp - base
++        else:
++            base = jnp.zeros_like(logp)
++            score_lp = logp
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        terms = {"score": w * score_lp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0,
++                 "tv": tv, "baseline": sg(base)}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
+@@ -141,4 +172,5 @@
+     loss = -(advantages * sums["score"]).sum() / n_tokens
+     metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train") if k in sums}
+     metrics["pol_entropy"] = metrics.pop("entropy")
++    metrics["sbar_drift"] = sums["baseline"].sum() / n_tokens
+     return loss, metrics | {"frac_masked": frac_masked}
