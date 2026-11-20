@@ -29,7 +29,7 @@ THEMES = {
 W, H = 680, 288
 LEFT, RIGHT, TOP, BOTTOM = 44, 8, 54, 52
 # models announced in the legend, not run yet (no bars)
-COMING = ["DeepSeek V4.1 Flash", "GLM 5.3 Flash", "gpt-oss-120b"]
+COMING = ["DeepSeek V4 Pro", "DeepSeek V4.1 Flash", "GLM 5.3 Flash"]
 BAR, GAP, R = 22, 3, 2
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 
@@ -85,7 +85,7 @@ def svg(theme):
         out.append(f'<rect x="{x + 0.5}" y="26.5" width="9" height="9" rx="2" fill="none" stroke="{t["muted"]}" '
                    f'stroke-dasharray="2 1.5"/>')
         out.append(f'<text x="{x + 15}" y="35" font-size="12" fill="{t["muted"]}">{m}</text>')
-        x += 24 + 6.6 * len(m)
+        x += 28 + 6.6 * len(m)
     # y axis: success rate, light gridlines, the baseline solid
     for pct in (0, 25, 50, 75, 100):
         y = round(base - pct / 100 * plot_h) + 0.5
