@@ -1,6 +1,6 @@
 """Figure of the headline result: drift-free runs by hint level and model.
 
-Writes figures/results-light.svg and figures/results-dark.svg (standard
+Writes figures/success-light.svg and figures/success-dark.svg (standard
 library only, transparent background; the README picks one with <picture>
 and prefers-color-scheme).
 Successful runs (grade.json) of the current starter, from
@@ -99,5 +99,5 @@ def svg(theme):
 if __name__ == "__main__":
     OUT.mkdir(exist_ok=True)
     for theme in THEMES:
-        (OUT / f"results-{theme}.svg").write_text(svg(theme))
-        print(OUT / f"results-{theme}.svg")
+        (OUT / f"success-{theme}.svg").write_text(svg(theme))
+        print(OUT / f"success-{theme}.svg")

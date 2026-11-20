@@ -41,8 +41,8 @@ The judge says whether the idea is there; the checks say whether it works.
 **Successful runs by hint level** (successes / runs)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/results-dark.svg">
-  <img alt="Successful runs by hint level. L1: Haiku 1/3, Sonnet 0/3, Opus 3/3. L2a: Haiku 0/3, Sonnet 1/3, Opus 3/3. L2b: Haiku 0/3, Sonnet 0/3, Opus 3/3." src="papers/score-centering/figures/results-light.svg" width="680">
+  <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/success-dark.svg">
+  <img alt="Successful runs by hint level. L1: Haiku 1/3, Sonnet 0/3, Opus 3/3. L2a: Haiku 0/3, Sonnet 1/3, Opus 3/3. L2b: Haiku 0/3, Sonnet 0/3, Opus 3/3." src="papers/score-centering/figures/success-light.svg" width="680">
 </picture>
 
 27 runs: Claude Haiku, Sonnet and Opus 5.5 as Claude Code subagents, three

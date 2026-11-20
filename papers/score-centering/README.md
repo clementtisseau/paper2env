@@ -39,8 +39,8 @@ predate the paper.
 ## Results
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="figures/results-dark.svg">
-  <img alt="Successful runs by hint level and model" src="figures/results-light.svg" width="680">
+  <source media="(prefers-color-scheme: dark)" srcset="figures/success-dark.svg">
+  <img alt="Successful runs by hint level and model" src="figures/success-light.svg" width="680">
 </picture>
 
 27 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, `exp`
@@ -132,4 +132,4 @@ checks confirm it is drift-free with the sampler's top-k: [grading.md](grading.m
 | `tests/` | Starter equivalence, grader validation, prompt leaks. |
 | `runs/` | Every run, with prompts, transcripts and grading ([guide](runs/README.md)). |
 | `summarize_runs.py` | Writes `results_tables.md` from `runs/`. |
-| `plot_results.py` | Writes `figures/results-{light,dark}.svg` from `runs/`. |
+| `plot_results.py` | Writes `figures/success-{light,dark}.svg` from `runs/`. |
