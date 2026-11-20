@@ -112,9 +112,11 @@ at the repository root and follow [core/runner](core/runner/README.md).
 
 ## Limitations
 
-- **Possible contamination:** the models tested were released a few days
-  after the paper and may have seen it; two Haiku reports even name the
-  method. Runs with open-weight models released before the paper are planned.
+- **Possible contamination:** Claude Haiku, Sonnet and Opus 5.5 were released
+  a few days after the paper and may have seen it; two Haiku reports even name
+  the method. The models to come were all released before the paper (DeepSeek
+  V4 Pro on Aug 13, GLM 5.3 Flash on Aug 26, DeepSeek V4.1 Flash on Sep 10,
+  2026), so they cannot have trained on it.
 - **Small samples:** 9 runs per model and level (3/9 spans 12–65%). 37 runs
   of an earlier version of the starter are kept in `runs/` but not counted.
 - **One harness:** all runs use Claude Code's subagent harness, Bash only.
