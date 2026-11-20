@@ -32,14 +32,10 @@ A paper is a good target when:
 
 ## What the agent gets
 
-A Docker container (no network, CPUs only) holding a **starter**: the paper's
-own repository with the contribution surgically removed, so it equals the
-reference with the method turned off. The agent leaves a modified file (the
-paper's `SUBMISSION`) and a report.
-
-Two modes: `exp`, where the starter also holds a cheap way to run the setting
-(for score-centering, a CPU-sized version of the experiment), and `noexp`,
-where the agent can only reason and call its code on inputs it builds.
+A sandbox (Docker, no network, CPUs only) holding the **starter**: the paper's
+repository with the contribution removed. It leaves a modified file and a
+report. In `exp` mode the starter also holds a cheap way to run the setting;
+in `noexp` mode the agent can only reason.
 
 ## Hiding the answer
 
@@ -90,14 +86,9 @@ is always the one that grades.
 
 ## Runners
 
-Both use the paper's starter, prompts and graders:
-
-- an **Inspect AI task** (`core/task.py`) for API models, with limits on
-  working time, tokens and messages;
-- a **Claude Code subagent runner** (`core/runner/`), which needs no API key:
-  a hook rewrites every subagent Bash call into `docker exec` in the run's
-  container and denies every other tool. Details:
-  [core/runner](../core/runner/README.md).
+An Inspect AI task (`core/task.py`) for API models, and a Claude Code runner
+(`core/runner/`) that needs no API key; both use the same starter, prompts and
+graders. Details: [core/runner](../core/runner/README.md).
 
 ## Lessons
 

@@ -11,7 +11,12 @@ Only `losses.py` is graded, called with its default arguments, as the task
 asked. The report, its `## Configuration` section and how the loss handles an
 importance-sampling correction are not graded.
 
-The result is `runs/<run>/grade.json`: `correct` (1), `idea_found` (2),
+The agent's prompt announces a broader evaluation: the reasoning in its
+report, whether `losses.py` implements it, and training stability. Grading
+kept what can be judged reliably from `losses.py`; the prompt was left as it
+was, so that every run had the same one.
+
+The result is `runs/<run>/grade.json`: `idea_found` (1), `correct` (2),
 `success` (both), with the details of each.
 
 ## 1. The judge: [`grader/judge.md`](grader/judge.md)
