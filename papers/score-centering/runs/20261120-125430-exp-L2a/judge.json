@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "m_k = sg(jnp.exp(log_mass(jnp.clip(sg(lp_k), lq_k - 20.0, lq_k + 20.0), lq_k, pos, c, tv_k)))\nhead = (m_k * lp_k).sum(-1)\ncoef = sg(jnp.where(ok, m_tail / jnp.where(ok, p_tail, 1.0), 0.0))\ntail = (p_vocab * logp_vocab).sum(-1) - (sg(jnp.exp(lp_k)) * lp_k).sum(-1)\nreturn head + coef * tail\nterms = {\"score\": w * logp - base, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "m_k = sg(jnp.exp(log_mass(jnp.clip(sg(lp_k), lq_k - 20.0, lq_k + 20.0), lq_k, pos, c, tv_k)))\nhead = (m_k * lp_k).sum(-1)\ncoef = sg(jnp.where(ok, m_tail / jnp.where(ok, p_tail, 1.0), 0.0))\ntail = (p_vocab * logp_vocab).sum(-1) - (sg(jnp.exp(lp_k)) * lp_k).sum(-1)\nreturn head + coef * tail\nterms = {\"score\": w * logp - base, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "m_k = sg(jnp.exp(log_mass(jnp.clip(sg(lp_k), lq_k - 20.0, lq_k + 20.0), lq_k, pos, c, tv_k)))  # = q_k when c is None\nhead = (m_k * lp_k).sum(-1)\ncoef = sg(jnp.where(ok, m_tail / jnp.where(ok, p_tail, 1.0), 0.0))  # = q_tail / p_tail\ntail = (p_vocab * logp_vocab).sum(-1) - (sg(jnp.exp(lp_k)) * lp_k).sum(-1)\nreturn head + coef * tail\nterms = {\"score\": w * logp - base, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}
