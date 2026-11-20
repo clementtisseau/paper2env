@@ -1,0 +1,27 @@
+{
+  "correct": false,
+  "idea_found": true,
+  "success": false,
+  "graders": {
+    "check": {
+      "correct": false,
+      "checks": {
+        "no_drift": false,
+        "no_drift_prefix": false,
+        "on_policy": false,
+        "bounded": true
+      },
+      "worst": {
+        "no_drift": 0.13600261509418488,
+        "no_drift_prefix": 0.08457282930612564,
+        "on_policy": 0.8287719488143921,
+        "bounded": 1.2516132593154907
+      }
+    }
+  },
+  "judge": {
+    "idea_found": true,
+    "wrong_answer": null,
+    "votes": "3/3"
+  }
+}

@@ -1086,5 +1086,61 @@
     "experiments": true,
     "era": "v2",
     "budget_hours": 2.0
+  },
+  "20261120-161429-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-161416-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-161321-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-161427-exp-L3": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-161436-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-161339-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-161407-exp-L3": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
   }
 }

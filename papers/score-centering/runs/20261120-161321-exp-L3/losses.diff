@@ -1,0 +1,66 @@
+--- a/losses.py
++++ b/losses.py
+@@ -91,6 +91,39 @@
+     return logp.at[b, c, ids].get(out_sharding=P(*spec[:-1], None))
+ 
+ 
++TAIL_FLOOR = 1e-6  # smallest trainer tail mass whose log is differentiated
++
++
++def sampler_baseline(logp_vocab, topk_ids, topk_logq, positive, c=None):
++    """Per-position control variate b(h) = sum_v m(v|h) log p(v|h), m = sg(q * w(p/q)).
++
++    Its gradient is the drift direction s_bar(h) = sum_v m(v|h) grad log p(v|h),
++    which REINFORCE under q adds to the update with weight E_q[A | h]
++    (see REPORT.md). Subtracting A * b(h) from the per-token objective turns the
++    expected update at every prefix into the covariance Cov_q(A, s_y | h).
++
++    Only the sampler's top-k (ids, logprobs) are known. The remaining sampler
++    mass q_T = 1 - sum_K q is treated as one merged token, the trainer's tail
++    T = V minus K with log p(T) = log(1 - sum_K p): this assumes q restricted to the
++    tail is proportional to p there, and keeps the baseline exact on-policy
++    (q = p gives grad b = grad (sum_K p + p_T) = grad 1 = 0).
++    """
++    logp_k = take_vocab(logp_vocab, topk_ids)                         # [B, C, K]
++    logq_k = topk_logq.astype(jnp.float32)
++    pos = positive[..., None]
++    p_k = jnp.exp(logp_k)
++    tail_p = 1.0 - p_k.sum(-1)
++    tail_q = jnp.clip(1.0 - jnp.exp(logq_k).sum(-1), 0.0, 1.0)
++    log_tail_p = jnp.log(jnp.maximum(tail_p, TAIL_FLOOR))
++    log_tail_q = jnp.log(jnp.maximum(tail_q, 1e-30))
++    tv_k = sg(jnp.abs(jnp.exp(logq_k) - p_k))
++    tv_t = sg(jnp.abs(tail_q - tail_p))
++    # sampler mass of each outcome, reweighted by the same detached w as the sampled token
++    m_k = sg(jnp.exp(log_mass(sg(logp_k), logq_k, pos, c, tv_k)))
++    m_t = sg(jnp.where(tail_q > 0, jnp.exp(log_mass(sg(log_tail_p), log_tail_q, positive, c, tv_t)), 0.0))
++    return (m_k * logp_k).sum(-1) + m_t * log_tail_p
++
++
+ def loss_fn_rl(hidden, head, batch, correction=None, chunk=128):
+     """REINFORCE loss on sampled rollouts, with an optional ISCorrection.
+     Returns (loss, metrics).
+@@ -110,7 +143,7 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,7 +154,13 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        score = w * logp
++        if "sampler_topk_ids" in b:
++            # Drift removal: subtract the detached-weight baseline sum_v m(v) log p(v|h),
++            # whose gradient is s_bar(h) = E_{v~q}[w(v) grad log p(v|h)].
++            score = score - sampler_baseline(logp_vocab, b["sampler_topk_ids"], b["sampler_topk_logprobs"],
++                                             positive, token_c)
++        terms = {"score": score, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
