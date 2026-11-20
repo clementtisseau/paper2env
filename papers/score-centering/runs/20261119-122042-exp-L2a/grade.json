@@ -1,0 +1,23 @@
+{
+  "correct": false,
+  "idea_found": null,
+  "success": null,
+  "graders": {
+    "check": {
+      "correct": false,
+      "checks": {
+        "no_drift": true,
+        "no_drift_prefix": true,
+        "on_policy": false,
+        "bounded": true
+      },
+      "worst": {
+        "no_drift": 0.0,
+        "no_drift_prefix": 1.0814837736461413e-07,
+        "on_policy": 1.0,
+        "bounded": 0.0
+      }
+    }
+  },
+  "judge": null
+}

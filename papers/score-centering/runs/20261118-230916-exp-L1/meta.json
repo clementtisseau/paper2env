@@ -8,5 +8,10 @@
   "experiments": true,
   "hours": 2.0,
   "started": 1795043357.0017252,
-  "log": "/home/user/rl-sampler-mismatch/rlenv/runs/20261118-230916-exp-L1/agent_log.jsonl"
+  "log": "/home/user/rl-sampler-mismatch/rlenv/runs/20261118-230916-exp-L1/agent_log.jsonl",
+  "minutes": 18.4,
+  "submitted": true,
+  "changed": true,
+  "agent_commands": 23,
+  "transcripts": 1
 }
