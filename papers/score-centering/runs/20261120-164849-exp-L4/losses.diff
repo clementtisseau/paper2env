@@ -1,0 +1,78 @@
+--- a/losses.py
++++ b/losses.py
+@@ -91,6 +91,42 @@
+     return logp.at[b, c, ids].get(out_sharding=P(*spec[:-1], None))
+ 
+ 
++P_TAIL_FLOOR = 1e-6  # floor on the trainer's tail mass when modelling q's tail as rho * p
++
++
++def sampler_score_baseline(logp_vocab, head_ids, head_logq, positive, c, mask):
++    """Surrogate whose gradient is the sampler-expected (weighted) score
++        s_bar(h) = sum_v q(v|h) w_v grad log p(v|h)
++    at every position, with w_v = 1 without a correction (see REPORT.md).
++
++    Only q's top-k head H is known. The tail is modelled as proportional to p,
++    q_v = rho p_v on v not in H with rho = q_tail / p_tail. Because
++    sum_v p_v grad log p_v = 0, the tail term equals -rho sum_{v in H} p_v grad log p_v,
++    so the whole baseline is the gradient of
++        sum_{v in H} sg[m_v - rho_m p_v] log p_v,
++    where m_v = q_v w(p_v/q_v) (= q_v without a correction) and rho_m p_v the
++    same mass on the tail. Returns (per-token surrogate [B, C], metric terms)."""
++    logp_head = take_vocab(logp_vocab, head_ids)                     # [B, C, K] trainer logprobs on q's head
++    logq_head = jnp.where(mask[..., None], head_logq, 0.0)          # stale rows outside the mask -> finite
++    logp_head_sg = sg(logp_head)
++    q_head = jnp.exp(logq_head)
++    p_head = jnp.exp(logp_head_sg)
++    q_tail = jnp.clip(1.0 - q_head.sum(-1), 0.0, 1.0)
++    p_tail = jnp.maximum(1.0 - p_head.sum(-1), P_TAIL_FLOOR)
++    pos = positive[..., None]
++    # m_v = q_v w(p_v / q_v): sampler mass times the correction's weight (log_mass is log q without one)
++    tv_head = jnp.abs(q_head - p_head)
++    m_head = jnp.exp(log_mass(logp_head_sg, logq_head, pos, c, tv_head))
++    # same for the tail, treated as one aggregate outcome of masses (q_tail, p_tail)
++    m_tail = jnp.exp(log_mass(jnp.log(p_tail), jnp.log(jnp.maximum(q_tail, 1e-30)), positive, c,
++                              jnp.abs(q_tail - p_tail)))
++    m_tail = jnp.where(q_tail > 0, m_tail, 0.0)
++    rho = m_tail / p_tail
++    coef = sg(jnp.where(mask[..., None], m_head - rho[..., None] * p_head, 0.0))
++    base = (coef * logp_head).sum(-1)
++    return base, {"q_head_mass": sg(q_head.sum(-1)), "drift_mass": sg(jnp.abs(coef).sum(-1))}
++
++
+ def loss_fn_rl(hidden, head, batch, correction=None, chunk=128):
+     """REINFORCE loss on sampled rollouts, with an optional ISCorrection.
+     Returns (loss, metrics).
+@@ -110,7 +146,7 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,7 +157,13 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        score = w * logp
++        extra = {}
++        if "sampler_topk_ids" in b:
++            base, extra = sampler_score_baseline(logp_vocab, b["sampler_topk_ids"], b["sampler_topk_logprobs"],
++                                                 positive, token_c, b["mask"])
++            score = score - base
++        terms = {"score": score, **extra, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
+@@ -139,6 +181,7 @@
+         advantages = advantages * w
+         frac_masked = (w == 0).mean()  # fraction of sequences
+     loss = -(advantages * sums["score"]).sum() / n_tokens
+-    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train") if k in sums}
++    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train", "q_head_mass", "drift_mass")
++               if k in sums}
+     metrics["pol_entropy"] = metrics.pop("entropy")
+     return loss, metrics | {"frac_masked": frac_masked}
