@@ -1,0 +1,36 @@
+--- a/losses.py
++++ b/losses.py
+@@ -110,7 +110,8 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
++    use_topk = "sampler_topk_ids" in batch and "sampler_topk_logprobs" in batch
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,7 +122,22 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        if use_topk:
++            # drift removal: subtract sum_v sg[q_v - rho p_v] log p_v (top-k head, tail ~ p)
++            ids = b["sampler_topk_ids"].astype(jnp.int32)
++            lq = b["sampler_topk_logprobs"].astype(jnp.float32)
++            q_h = jnp.where(jnp.isfinite(lq), jnp.exp(jnp.where(jnp.isfinite(lq), lq, 0.0)), 0.0)
++            lp_h = take_vocab(logp_vocab, ids)
++            p_h = jnp.exp(lp_h)
++            q_tail = jnp.maximum(1.0 - q_h.sum(-1), 0.0)
++            p_tail = jnp.maximum(1.0 - p_h.sum(-1), 0.0)
++            rho = sg(jnp.clip(q_tail / jnp.maximum(p_tail, 1e-6), 0.0, 20.0))
++            coef = sg(q_h - rho[..., None] * p_h)
++            baseline = (coef * lp_h).sum(-1)
++            centered = logp - baseline
++        else:
++            centered = logp
++        terms = {"score": w * centered, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
