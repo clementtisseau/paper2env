@@ -55,17 +55,22 @@ sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 *Success rate by hint level and model: Claude Haiku, Sonnet and Opus 5.5
 as Claude Code subagents, 9 runs each; whiskers: 95% Wilson intervals.*
 
-- **Opus succeeds in 26 of 27 runs, from L1**, top-k tail included, in a
-  median of 12 minutes and 17 shell commands; its one failure drops the tail.
-- **Haiku finds the idea but not the implementation:** the judges find it
-  in 23/27 runs, but 20 of them center over the sampler's top-k without
-  modeling the tail, which is biased even on-policy.
-- **Sonnet reaches for the familiar remedy:** 20/27 runs use importance
-  sampling (17) or a reward baseline (3) instead; 6 succeed.
-- **The most precise hint makes Sonnet worse:** 0/9 at L2b against 3/9 at
-  L2a. Asked to analyze one token's update under the sampler, it answers in
-  under 2 minutes without running anything, and reweights by p/q: unbiased,
-  but with unbounded gradients. Its L2a successes all came after experiments.
+**What the figure shows**
+
+- **Opus rediscovers the method from pre-paper knowledge alone:** 26 of 27
+  runs succeed, already at L1 (median 12 minutes).
+- **Haiku and Sonnet mostly fail, for opposite reasons:**
+  - Haiku usually *finds* the idea (23/27 runs) but implements it wrongly: it
+    centers over the sampler's top-k logprobs and ignores the rest of the
+    vocabulary, which leaves a bias (20 runs).
+  - Sonnet usually *misses* the idea (20/27 runs) and applies the standard
+    fix instead: importance sampling (17) or a reward baseline (3).
+- **More hints do not help them.** Neither improves from L1 to L2b. Sonnet
+  even drops to 0/9 at L2b: given the most precise hint, it answers in under
+  2 minutes without experimenting, with importance sampling
+  ([why](papers/score-centering/README.md#results)).
+- **With 9 runs per bar, only the gap between Opus and the others is
+  certain;** the differences between levels are within the intervals.
 
 Detailed results, one episode and every run: [papers/score-centering](papers/score-centering/README.md)
 
@@ -107,10 +112,8 @@ at the repository root and follow [core/runner](core/runner/README.md).
 - **Possible contamination:** the models tested were released a few days
   after the paper and may have seen it; two Haiku reports even name the
   method. Runs with open-weight models released before the paper are planned.
-- **Small samples:** 9 runs per model and level, so the 95% intervals are
-  wide (3/9 spans 12–65%): the gap between Opus and the others is clear, the
-  differences between levels are not. 37 runs of an earlier version of the starter are kept
-  in `runs/` but not counted.
+- **Small samples:** 9 runs per model and level (3/9 spans 12–65%). 37 runs
+  of an earlier version of the starter are kept in `runs/` but not counted.
 - **One harness:** all runs use Claude Code's subagent harness, Bash only.
 - **Judge checked by hand:** the three judges agree on all 81 runs, and every
   verdict read by hand was right.
