@@ -27,54 +27,58 @@ differs slightly from the trained model. The paper shows why, and removes the
 drift by centering each token's score under the sampler, using only the top-k
 logprobs an inference engine returns. The models tested predate it.
 
-**A run succeeds when both hold:**
-1. **The idea is found:** an LLM judge finds that the submitted loss centers
-   each token's score under the sampler, which removes the drift.
-2. **It is implemented correctly:** exact checks confirm the loss is
-   drift-free, using only the sampler's top-k logprobs.
+**What counts as a success.** Only the submitted `losses.py` is graded,
+called with its default arguments. A run succeeds when both hold:
 
+1. **The idea is found:** a majority of three LLM judges (Opus 5.5, hidden
+   prompt) find that the loss centers each token's score under the sampler.
+2. **It is implemented correctly:** exact checks on a toy policy confirm the
+   loss is drift-free, using only the sampler's top-k logprobs.
+
+The judge says whether the idea is there; the checks say whether it works.
 [How a run is graded](papers/score-centering/grading.md)
 
-**Drift-free submissions by hint level** (passing / runs)
+**Successful runs by hint level** (successes / runs)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/results-dark.svg">
-  <img alt="Drift-free submissions by hint level. L1: Haiku 1/6, Sonnet 2/6, Opus 5/5. L2a: 2/3, 0/3, 3/3. L2b: 2/3, 0/3, 3/3. L3: 3/3 for all three models." src="papers/score-centering/figures/results-light.svg" width="680">
+  <img alt="Successful runs by hint level. L1: Haiku 1/3, Sonnet 0/3, Opus 3/3. L2a: Haiku 0/3, Sonnet 1/3, Opus 3/3. L2b: Haiku 0/3, Sonnet 0/3, Opus 3/3." src="papers/score-centering/figures/results-light.svg" width="680">
 </picture>
 
-45 runs, Claude Haiku / Sonnet / Opus 5.5, as Claude Code subagents with a
-2-hour budget. *Hint level*: how much of the answer the prompt gives, from
-L1 (only what was known before the paper) to L3 (the key decomposition).
+27 runs: Claude Haiku, Sonnet and Opus 5.5 as Claude Code subagents, three
+runs per model and hint level, 2-hour budget. *Hint level*: how much the
+prompt gives, from L1 (only what was known before the paper) to L2b (where
+to look: the expected update at one token, given the prefix).
 
-- **Opus rediscovers the method from pre-paper knowledge in 5/5 runs**,
-  including the top-k variant an inference engine needs, in a median of 13
-  minutes and 21 shell commands.
-- **Weaker models find the diagnosis, then the familiar remedy:** importance
-  sampling, unclipped or loosely capped. It slows the drift without removing it.
-- **More hints are not always better:** Sonnet scores lower at L2 than at L1.
+- **Opus succeeds in 9/9 runs, from pre-paper knowledge on**, including the
+  top-k tail model, in a median of 13 minutes and 20 shell commands.
+- **Haiku finds the idea but not the implementation:** the judge finds the
+  centering in 8/9 runs, but 7 of them center over the sampler's top-k
+  without modeling the tail, which is biased even on-policy.
+- **Sonnet reaches for the familiar remedy:** 8/9 runs use importance
+  sampling (6) or a reward baseline (2) instead; one succeeds.
+- **The judges agree:** the three verdicts are unanimous on all 27 runs.
 
-[Full results and limitations](papers/score-centering/results.md) · [every
-run, with its transcript](papers/score-centering/runs/)
+[Every run, with its transcript and grade](papers/score-centering/runs/) ·
+[tables](papers/score-centering/results_tables.md)
 
 ## One episode
 
-An Opus run at L1 ([full run](papers/score-centering/runs/20261118-223834-exp-L1/)).
+An Opus run at L1 ([full run](papers/score-centering/runs/20261119-103415-exp-L1/)).
 The prompt describes the setting and adds only what was known before the paper:
 
 > *The mismatch acts as a systematic bias in the training objective, not as
 > zero-mean noise. [...] Importance-sampling corrections and clipping slow the
 > degradation down but do not remove it.*
 
-Sixteen minutes later, the agent's report:
+Fourteen minutes later, the agent's report:
 
-> *When the tokens come from a different sampler `q`, the score's mean is
-> `q − p` (at the logits), which is not zero. Whatever conditional mean the
-> advantage has then turns into a deterministic drift `Ā·(q − p)`. [...] The
-> fix is to center the score under the distribution that generated the
-> tokens.*
+> *Here the tokens come from the sampler `q != p`, and
+> `E_{y~q}[grad log p(y)] = -grad KL(q || p) != 0`. Each token's update
+> therefore picks up a term `V(s) * (q - p)`. [...] Center each sampled
+> token's score under the distribution the token was actually drawn from.*
 
-Exact checks: drift-free with the sampler's top-k ✓ (the judge has not run
-yet).
+Judges: idea found, 3/3. Exact checks: drift-free with the sampler's top-k ✓.
 
 ## Why this is a useful eval
 
@@ -130,7 +134,7 @@ Design: [docs/method.md](docs/method.md) · adding a paper:
 
 | `--paper` | Paper | Runs |
 |---|---|---|
-| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 45 |
+| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 27 |
 
 ## Quickstart
 
@@ -200,11 +204,12 @@ and show me grade.json.
 
 ## Limitations and status
 
-- **Small samples:** 3 runs per (level, model) in most cells; counts, not
-  rates with confidence intervals.
+- **Small samples:** 3 runs per (level, model); counts, not rates with
+  confidence intervals. The 37 runs of an earlier version of the environment,
+  kept in `runs/` as starter v1, are not counted.
 - **One harness:** all runs use Claude Code's subagent harness with Bash only.
-- **Judge not run yet:** the success rate waits for it; the reports were read
-  by hand.
+- **Judge not calibrated:** its verdicts have not yet been compared with a
+  human's on a sample of runs.
 - **Contamination from here on:** publishing the judge's prompt and the checks means
   future models may have seen the answer.
 - **Not done yet:** GPU validation, `noexp` runs, a second paper.

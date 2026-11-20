@@ -40,24 +40,26 @@ predate the paper.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="figures/results-dark.svg">
-  <img alt="Drift-free submissions by hint level and model" src="figures/results-light.svg" width="680">
+  <img alt="Successful runs by hint level and model" src="figures/results-light.svg" width="680">
 </picture>
 
-45 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, `exp`
-mode. Drift-free submissions / runs:
+27 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, `exp`
+mode, starter v2. Successful runs ([grading.md](grading.md)) / runs, with how
+many found the idea (judge) and how many are correct (checks):
 
 | Level | Haiku | Sonnet | Opus |
 |---|---|---|---|
-| L3: decomposition given | 3/3 | 3/3 | 3/3 |
-| L2b: per-prefix direction | 2/3 | 0/3 | 3/3 |
-| L2a: direction | 2/3 | 0/3 | 3/3 |
-| **L1: pre-paper knowledge only** | 1/6 | 2/6 | **5/5** |
+| L2b: per-prefix direction | 0/3 (idea 3, correct 0) | 0/3 (idea 0, correct 0) | 3/3 |
+| L2a: direction | 0/3 (idea 3, correct 0) | 1/3 (idea 1, correct 1) | 3/3 |
+| **L1: pre-paper knowledge only** | 1/3 (idea 2, correct 1) | 0/3 (idea 0, correct 0) | **3/3** |
 
-Opus rediscovers the method from L1 in 5/5 runs, including the top-k tail
-model. Weaker models find the right diagnosis, then the familiar remedy
-(importance sampling). Analysis and limitations: [results.md](results.md) ·
-every run: [tables](results_tables.md), [`runs/`](runs/).
-After new runs:
+Opus succeeds in every run. Haiku finds the centering but truncates it to the
+sampler's top-k without the tail; Sonnet uses importance sampling or a reward
+baseline. Every run: [tables](results_tables.md), [`runs/`](runs/). The 37
+runs of starter v1 are kept in `runs/` but not counted.
+
+After new runs: `python core/grade.py --paper score-centering <run>`, the
+judges, then
 `python papers/score-centering/summarize_runs.py > papers/score-centering/results_tables.md`
 and `python papers/score-centering/plot_results.py`.
 

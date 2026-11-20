@@ -14,8 +14,9 @@ from summarize_runs import MODELS, rows
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "figures"
-LEVELS = [("L1", "pre-paper knowledge"), ("L2a", "direction"), ("L2b", "per-prefix direction"),
-          ("L3", "decomposition given")]
+# every level that has runs, easiest last
+LEVEL_NAMES = [("L0", "problem only"), ("L1", "pre-paper knowledge"), ("L2a", "direction"),
+               ("L2b", "per-prefix direction"), ("L3", "decomposition given"), ("L4", "method given")]
 # one hue (slate), three steps: Haiku lightest, Opus strongest. Transparent
 # background, text in GitHub's own light / dark inks.
 THEMES = {
@@ -56,6 +57,7 @@ def bar(x, y, h, color):
 def svg(theme):
     t = THEMES[theme]
     c = counts()
+    LEVELS = [(lvl, name) for lvl, name in LEVEL_NAMES if any(k[0] == lvl for k in c)]
     plot_h = H - TOP - BOTTOM
     base = TOP + plot_h
     band = (W - LEFT - RIGHT) / len(LEVELS)

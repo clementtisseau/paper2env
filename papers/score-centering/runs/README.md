@@ -3,7 +3,7 @@
 45 runs of the environment, all with the `exp` starter (the agent can run
 CPU training) and a stated budget of 2 hours, driven by the Claude Code
 subagent runner ([`core/runner/`](../../../core/runner/)). Tables and
-per-run results: [`results.md`](../results.md).
+per-run results: [`results_tables.md`](../results_tables.md).
 
 `index.json` gives each run's model (as launched, and as served according to
 the transcript), level and starter version (`v1`: the sampler's distribution
