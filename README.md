@@ -103,7 +103,7 @@ Why the eval is built this way, and what went wrong: [docs/method.md](docs/metho
 
 ## Quickstart
 
-Docker (daemon running), Python 3.12, CPU only.
+Docker, Python 3.12, CPU only.
 
 ```bash
 pip install -r requirements-host.txt
@@ -111,61 +111,14 @@ python -m pytest                       # every test, core and papers
 python core/runner/run.py papers       # papers and their hint levels
 ```
 
-Each paper runs in two modes: `exp` (the agent can run experiments; the
-default) or `noexp` (reasoning only).
-
-### Run with Inspect AI (API model)
+**With an API model** ([Inspect AI](https://inspect.aisi.org.uk/); options in [`core/task.py`](core/task.py)):
 
 ```bash
-inspect eval core/task.py --model <provider/model> \
-    -T paper=<paper> -T levels=<level>,<level> -T epochs=3 -T hours=2
-inspect view
+inspect eval core/task.py --model <provider/model> -T paper=<paper> -T levels=<level>,<level>
 ```
 
-<details>
-<summary>Options</summary>
-
-- `levels`: defaults to the paper's `DEFAULT_LEVELS`; `epochs`: attempts per
-  level (pass@k).
-- Limits: `hours` (working time; wall clock capped at 3×), `tokens` (default
-  5M), `messages` (default 500). `compaction` (default on) summarizes the
-  history near the context limit.
-- `experiments=false` for the `noexp` mode; `judges=<model>,...` adds the LLM
-  judge. There is one scorer per grader of the paper.
-- On a network that intercepts TLS, set `P2E_PIPCA=<CA bundle>` so the images
-  can build.
-
-</details>
-
-### Run with Claude Code (no API key)
-
-How every run here was produced: the model under test is a subagent of a
-Claude Code session, confined by a hook that rewrites each of its Bash
-commands into `docker exec` in the run's container and denies every other
-tool. Open a session at the repository root and paste, filled in:
-
-```text
-Run one paper2env episode. Run `python3 core/runner/run.py start --paper <paper> --level <level> --hours 2`
-(add --no-experiments for the noexp mode). Then launch the `researcher` subagent with
-model <haiku|sonnet|opus>, giving it as its prompt exactly the content of the printed
-agent_prompt.md and nothing else. When it has finished, run `python3 core/runner/run.py finish`
-and show me grade.json.
-```
-
-<details>
-<summary>Before running, and limits</summary>
-
-- **Name the checkout neutrally.** The subagent sees the session's working
-  directory in its context, so the directory name must say nothing about the
-  method.
-- **Probe for leaks** before a series of runs: ask the session to launch a
-  `researcher` subagent that only quotes the lines of its context mentioning
-  a directory, repository, branch, commit or project name.
-- The run lands in `papers/<paper>/runs/<run>/`, with the transcript.
-- Limits: the time budget is stated, not enforced; no LLM judge; one run at a
-  time. Details: [core/runner](core/runner/README.md).
-
-</details>
+**With Claude Code, no API key** (how every run here was made): open a session
+at the repository root and follow [core/runner](core/runner/README.md).
 
 ## Limitations and status
 

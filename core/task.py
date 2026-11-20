@@ -9,6 +9,10 @@ given.
 
     inspect eval core/task.py --model <agent model> -T paper=score-centering \
         -T levels=L3,L4 -T experiments=true -T judges=<judge model> -T hours=2 -T epochs=3
+
+epochs: attempts per level (pass@k). judges: one or more judge models (none:
+no judge). On a network that intercepts TLS, set P2E_PIPCA=<CA bundle> so the
+images build. The other options are in paper_env's docstring.
 """
 import asyncio
 import difflib
