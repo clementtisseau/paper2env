@@ -1,0 +1,73 @@
+--- a/losses.py
++++ b/losses.py
+@@ -91,6 +91,27 @@
+     return logp.at[b, c, ids].get(out_sharding=P(*spec[:-1], None))
+ 
+ 
++def sampler_baseline(logp_vocab, logp_head, ids, q_head_logp):
++    """Per-position coefficient-weighted score baseline b_t = sum_{v in H} c_v log p_v,
++    with c_v = sg[q_v - rho p_v] (see REPORT.md). Its gradient is sum_v sg[q_v] s_v
++    over the head plus rho times the tail-proportional part, so that
++    E_q[b] = sum_v q_v log p_v in expectation over the tail model."""
++    q_head = sg(jnp.exp(q_head_logp))                       # [B, C, K] sampler probs on the head
++    p_head = sg(jnp.exp(logp_head))                         # [B, C, K] trainer probs on the head
++    # trainer tail mass p_tail = sum over v outside H, computed in log space from the full vocab
++    b_idx = jnp.arange(ids.shape[0])[:, None, None]
++    c_idx = jnp.arange(ids.shape[1])[None, :, None]
++    in_head = jnp.zeros(logp_vocab.shape, bool).at[b_idx, c_idx, ids].set(True)
++    log_p_tail = sg(jax.nn.logsumexp(jnp.where(in_head, -jnp.inf, sg(logp_vocab)), axis=-1))   # [B, C]
++    # sampler tail mass from the head (1 - sum_H q); clamped away from zero
++    q_tail = jnp.clip(1.0 - q_head.sum(-1), 1e-12, 1.0)
++    p_tail = jnp.exp(log_p_tail)
++    rho = jnp.where(p_tail > 0, q_tail / jnp.where(p_tail > 0, p_tail, 1.0), 0.0)  # empty tail: rho unused
++    rho = jnp.clip(rho, 0.0, 1e6)
++    coef = sg(q_head - rho[..., None] * p_head)            # [B, C, K]
++    return (coef * logp_head).sum(-1)
++
++
+ def loss_fn_rl(hidden, head, batch, correction=None, chunk=128):
+     """REINFORCE loss on sampled rollouts, with an optional ISCorrection.
+     Returns (loss, metrics).
+@@ -101,6 +122,15 @@
+ 
+     batch: tokens, mask (completion tokens), advantages [B], and
+     sampling_token_logprobs [B, T], the sampler's logprobs of the sampled tokens.
++    Optional sampler_topk_ids / sampler_topk_logprobs [B, T, K]: the sampler's
++    top-K next-token distribution at each position (same alignment as the tokens).
++
++    Per token, the score s_y = grad log p(y|h) is replaced by s_y - s_bar(h),
++    where s_bar(h) = E_q[grad log p(v|h)] under the sampler's next-token
++    distribution q(.|h). The subtracted term is a baseline: it removes the drift
++    E_q[A|h] s_bar(h) and leaves Cov_q(A, s_y | h) in expectation. The surrogate
++    is -A * (log p(y|h) - sum_v sg[c_v] log p(v|h)), with c_v = q_v - rho p_v on
++    the sampler's head and the tail modelled as proportional to p.
+     """
+     c = correction
+     token_c = c if c and c.level == "token" else None
+@@ -110,8 +140,9 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
++    use_baseline = "sampler_topk_ids" in batch and "sampler_topk_logprobs" in batch
+ 
+     def chunk_sums(start):
+         b = {k: jax.lax.dynamic_slice_in_dim(v, start, chunk, axis=1) for k, v in per_token.items()}
+@@ -120,8 +151,14 @@
+         logq = b["sampling_token_logprobs"]
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
++        if use_baseline:
++            base = sampler_baseline(logp_vocab, take_vocab(logp_vocab, b["sampler_topk_ids"]),
++                                    b["sampler_topk_ids"], b["sampler_topk_logprobs"].astype(jnp.float32))
++        else:
++            base = 0.0
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        terms = {"score": w * (logp - base), "entropy": -plogp, "kl_samp_train": sg(logq - logp),
++                 "masked": w == 0, "tv": tv}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))

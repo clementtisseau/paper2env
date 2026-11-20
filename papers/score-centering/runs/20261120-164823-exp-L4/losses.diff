@@ -1,0 +1,35 @@
+--- a/losses.py
++++ b/losses.py
+@@ -110,7 +110,7 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,7 +121,22 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        score = logp
++        if "sampler_topk_ids" in b:
++            # drift removal: subtract sg-weighted sampler-mean score s_bar(h) (see REPORT.md)
++            ids = b["sampler_topk_ids"].astype(jnp.int32)
++            tlq = b["sampler_topk_logprobs"].astype(jnp.float32)
++            valid = (ids >= 0) & jnp.isfinite(tlq)
++            ids = jnp.where(valid, ids, 0)
++            tlp = take_vocab(logp_vocab, ids)
++            qv = jnp.where(valid, jnp.exp(jnp.where(valid, tlq, 0.0)), 0.0)
++            pv = jnp.where(valid, jnp.exp(tlp), 0.0)
++            q_tail = jnp.clip(1.0 - qv.sum(-1, keepdims=True), 0.0, 1.0)
++            p_tail = jnp.clip(1.0 - pv.sum(-1, keepdims=True), 1e-6, 1.0)
++            rho = jnp.clip(q_tail / p_tail, 0.0, 1e3)
++            coef = sg(qv - rho * pv)
++            score = logp - (coef * jnp.where(valid, tlp, 0.0)).sum(-1)
++        terms = {"score": w * score, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
