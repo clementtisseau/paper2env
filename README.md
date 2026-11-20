@@ -1,7 +1,6 @@
 # paper2env
 
 [![tests](https://github.com/clementtisseau/paper2env/actions/workflows/tests.yml/badge.svg)](https://github.com/clementtisseau/paper2env/actions/workflows/tests.yml)
-![Python 3.12](https://img.shields.io/badge/python-3.12-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **Can an agent rediscover a paper's key insight from what was known before it?**
@@ -9,55 +8,50 @@
 Rediscovery environments, each built from one recent research paper. The
 agent gets the paper's own codebase with the contribution removed, a prompt
 limited to pre-paper knowledge (plus optional hints), and a sandbox. It is
-graded on whether it **found the paper's idea** and **implemented it
-correctly**. How depends on the paper: exact checks, an LLM judge with a hidden
-rubric, or both.
+graded on two questions: did it find the paper's idea, and did it implement
+it correctly.
 
 > Environments are **built by hand, not generated**: choosing what to hide,
 > which property to check and which wrong answers to reject means reading the
-> paper closely. The shared machinery lives in [`core/`](core/); each paper
-> lives in [`papers/<name>/`](papers/).
+> paper closely.
+
+## Papers
+
+| `--paper` | Paper | Runs |
+|---|---|---|
+| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 27 |
+| | *more to come* | |
 
 ## Result: score-centering
 
-The first environment is built from *Score Centering Stabilizes Off-policy RL*
-(Marek & Ryabinin, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807),
-Sept. 2026). RL for LLMs **drifts** when the engine that samples rollouts
-differs slightly from the trained model. The paper shows why, and removes the
-drift by centering each token's score under the sampler, using only the top-k
-logprobs an inference engine returns. The models tested predate it.
+When the inference engine that samples rollouts differs slightly from the
+model being trained, RL for language models drifts and often collapses. The
+paper shows why, and fixes it in the loss: from each token's gradient, it
+subtracts that gradient's average under the sampler, using only the top-k
+logprobs an inference engine returns.
 
-**What counts as a success.** Only the submitted `losses.py` is graded,
-called with its default arguments. A run succeeds when both hold:
-
-1. **The idea is found:** a majority of three LLM judges (Opus 5.5, hidden
-   prompt) find that the loss centers each token's score under the sampler.
-2. **It is implemented correctly:** exact checks on a toy policy confirm the
-   loss is drift-free, using only the sampler's top-k logprobs.
-
-The judge says whether the idea is there; the checks say whether it works.
-[How a run is graded](papers/score-centering/grading.md)
-
-**Successful runs by hint level** (successes / runs)
+The agent gets 2 hours, Bash in a sandbox, and a small CPU version of the
+training to experiment with. Hint levels go from L0 (the problem alone) to
+L4 (the method given); these runs cover L1 (only what was known before the
+paper) to L2b (where to look). A run succeeds when LLM judges find the
+paper's idea in the submitted loss and exact checks confirm it is correct
+with the sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/success-dark.svg">
-  <img alt="Successful runs by hint level. L1: Haiku 1/3, Sonnet 0/3, Opus 3/3. L2a: Haiku 0/3, Sonnet 1/3, Opus 3/3. L2b: Haiku 0/3, Sonnet 0/3, Opus 3/3." src="papers/score-centering/figures/success-light.svg" width="680">
+  <img alt="Successful runs by hint level and model. L1: Haiku 1/3, Sonnet 0/3, Opus 3/3. L2a: Haiku 0/3, Sonnet 1/3, Opus 3/3. L2b: Haiku 0/3, Sonnet 0/3, Opus 3/3." src="papers/score-centering/figures/success-light.svg" width="680">
 </picture>
 
-27 runs: Claude Haiku, Sonnet and Opus 5.5 as Claude Code subagents, three
-runs per model and hint level, 2-hour budget. *Hint level*: how much the
-prompt gives, from L1 (only what was known before the paper) to L2b (where
-to look: the expected update at one token, given the prefix).
+*Successful runs by hint level and model: Claude Haiku, Sonnet and Opus 5.5
+as Claude Code subagents, 3 runs each.*
 
-- **Opus succeeds in 9/9 runs, from pre-paper knowledge on**, including the
-  top-k tail model, in a median of 13 minutes and 20 shell commands.
-- **Haiku finds the idea but not the implementation:** the judge finds the
-  centering in 8/9 runs, but 7 of them center over the sampler's top-k
-  without modeling the tail, which is biased even on-policy.
+- **Opus succeeds in every run (9/9), from L1**, top-k tail model included,
+  in a median of 13 minutes and 20 shell commands.
+- **Haiku finds the idea but not the implementation:** the judges find it
+  in 8/9 runs, but 7 of them center over the sampler's top-k without
+  modeling the tail, which is biased even on-policy.
 - **Sonnet reaches for the familiar remedy:** 8/9 runs use importance
   sampling (6) or a reward baseline (2) instead; one succeeds.
-- **The judges agree:** the three verdicts are unanimous on all 27 runs.
 
 Detailed results, one episode and every run: [papers/score-centering](papers/score-centering/README.md)
 
@@ -75,13 +69,6 @@ flowchart LR
 What is shared between papers and what is written for each: [docs/adding-a-paper.md](docs/adding-a-paper.md).
 
 Why the eval is built this way, and what went wrong: [docs/method.md](docs/method.md).
-
-## Papers
-
-| `--paper` | Paper | Runs |
-|---|---|---|
-| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 27 |
-| more to come | | |
 
 ## Quickstart
 
@@ -102,17 +89,21 @@ inspect eval core/task.py --model <provider/model> -T paper=<paper> -T levels=<l
 **With Claude Code, no API key** (how every run here was made): open a session
 at the repository root and follow [core/runner](core/runner/README.md).
 
-## Limitations and status
+## Limitations
 
-- **Small samples:** 3 runs per (level, model); counts, not rates with
-  confidence intervals. The 37 runs of an earlier version of the environment,
-  kept in `runs/` as starter v1, are not counted.
-- **One harness:** all runs use Claude Code's subagent harness with Bash only.
-- **Judge not calibrated:** its verdicts have not yet been compared with a
-  human's on a sample of runs.
-- **Contamination from here on:** publishing the judge's prompt and the checks means
-  future models may have seen the answer.
-- **Not done yet:** GPU validation, `noexp` runs, a second paper.
+- **Possible contamination:** the models tested were released a few days
+  after the paper and may have seen it; two Haiku reports even name the
+  method. Runs with open-weight models released before the paper are planned.
+- **Small samples:** 3 runs per model and level; counts, not rates with
+  confidence intervals. 37 runs of an earlier version of the starter are kept
+  in `runs/` but not counted.
+- **One harness:** all runs use Claude Code's subagent harness, Bash only.
+- **Judge not calibrated:** the three judges agree on all 27 runs, but have
+  not been compared with a human.
+- **Published answer:** the judge's prompt and the checks are public, so
+  future models may have seen them.
+
+**Status:** not done yet: GPU validation, `noexp` runs, a second paper.
 
 ## Credits
 

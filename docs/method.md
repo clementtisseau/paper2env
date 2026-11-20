@@ -15,7 +15,8 @@ A paper is a good target when:
   giving the answer;
 - the contribution is a small change whose correctness can be checked, not
   only a benchmark number;
-- the paper postdates the models tested;
+- the paper postdates the models tested, including their training data (open-weight
+  models released before the paper are the safe choice);
 - its code is public, so the agent works in a real codebase.
 
 ## Principles

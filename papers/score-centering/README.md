@@ -26,8 +26,7 @@ loss:
 
 A good target: the problem was widely studied before the paper (importance
 sampling, clipping, "a systematic bias, not noise"), the fix is a small change
-to the loss with an exact correctness criterion, and the models tested
-predate the paper.
+to the loss with an exact correctness criterion.
 
 ## Results
 
