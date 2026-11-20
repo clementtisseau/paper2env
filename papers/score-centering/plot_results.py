@@ -22,13 +22,16 @@ LEVEL_NAMES = [("L0", "problem only"), ("L1", "pre-paper knowledge"), ("L2a", "d
 # background, text in GitHub's own light / dark inks.
 THEMES = {
     "light": {"text": "#1f2328", "halo": "#ffffff", "muted": "#59636e", "rule": "#d1d9e0",
-              "series": ["#a3b4c7", "#5f7a96", "#1e3550"]},
+              "series": ["#a3b4c7", "#5f7a96", "#1e3550"],
+              "coming": ["#1d4ed8", "#60a5fa", "#16a34a"]},
     "dark": {"text": "#e6edf3", "halo": "#0d1117", "muted": "#9198a1", "rule": "#3d444d",
-             "series": ["#3a5470", "#7894b2", "#c8d6e5"]},
+             "series": ["#3a5470", "#7894b2", "#c8d6e5"],
+             "coming": ["#3b82f6", "#93c5fd", "#4ade80"]},
 }
 W, H = 680, 288
 LEFT, RIGHT, TOP, BOTTOM = 44, 8, 54, 52
-# models not run yet: in the legend, and as empty dashed bars of unknown height
+# models not run yet: in the legend, and as dashed bars that fade out upwards,
+# so no height is implied (colors in THEMES["coming"], same order)
 COMING = ["DeepSeek V4 Pro", "DeepSeek V4.1 Flash", "GLM 5.3 Flash"]
 BAR, GAP, R = 15, 2, 2
 SEP = 8  # between the models run and the models to come
@@ -78,13 +81,20 @@ def svg(theme):
         out.append(f'<rect x="{x}" y="6" width="10" height="10" rx="2" fill="{color}"/>')
         out.append(f'<text x="{x + 15}" y="15" font-size="12" fill="{t["muted"]}">{m}</text>')
         x += 24 + 7.5 * len(m)
-    # second legend row: models not run yet, hollow dashed swatches
+    # vertical fades for the models to come: opaque at the baseline, transparent at the top
+    out.append("<defs>" + "".join(
+        f'<linearGradient id="fill{k}" x1="0" y1="1" x2="0" y2="0">'
+        f'<stop offset="0" stop-color="{col}" stop-opacity="0.35"/><stop offset="1" stop-color="{col}" stop-opacity="0"/>'
+        f'</linearGradient><linearGradient id="edge{k}" x1="0" y1="1" x2="0" y2="0">'
+        f'<stop offset="0" stop-color="{col}" stop-opacity="0.9"/><stop offset="1" stop-color="{col}" stop-opacity="0"/>'
+        f'</linearGradient>' for k, col in enumerate(t["coming"])) + "</defs>")
+    # second legend row: models not run yet, dashed swatches in their colors
     x = LEFT + (band - group) / 2
     out.append(f'<text x="{x}" y="35" font-size="12" font-style="italic" fill="{t["muted"]}">More to come:</text>')
     x += 92
-    for m in COMING:
-        out.append(f'<rect x="{x + 0.5}" y="26.5" width="9" height="9" rx="2" fill="none" stroke="{t["muted"]}" '
-                   f'stroke-dasharray="2 1.5"/>')
+    for m, col in zip(COMING, t["coming"]):
+        out.append(f'<rect x="{x + 0.5}" y="26.5" width="9" height="9" rx="2" fill="{col}" fill-opacity="0.3" '
+                   f'stroke="{col}" stroke-dasharray="2 1.5"/>')
         out.append(f'<text x="{x + 15}" y="35" font-size="12" fill="{t["muted"]}">{m}</text>')
         x += 28 + 6.6 * len(m)
     # y axis: success rate, light gridlines, the baseline solid
@@ -109,14 +119,14 @@ def svg(theme):
             # a halo in the page's colour keeps the whisker visible over a bar of any shade
             out.append(f'<path d="{whisker}" stroke="{t["halo"]}" stroke-width="3" fill="none"/>')
             out.append(f'<path d="{whisker}" stroke="{t["muted"]}" stroke-width="1" fill="none"/>')
-        # models to come: dashed outline over the whole axis and a "?", so no height is implied
+        # models to come: a dashed bar that fades out upwards and a "?", so no height is implied
         xc = x0 + len(MODELS) * (BAR + GAP) - GAP + SEP
         for j in range(len(COMING)):
             xb = xc + j * (BAR + GAP)
             out.append(f'<rect x="{xb + 0.5}" y="{TOP + 0.5}" width="{BAR - 1}" height="{plot_h - 1}" rx="2" '
-                       f'fill="none" stroke="{t["muted"]}" stroke-opacity="0.45" stroke-dasharray="3 3"/>')
-            out.append(f'<text x="{xb + BAR / 2}" y="{TOP + plot_h / 2 + 4}" font-size="11" text-anchor="middle" '
-                       f'fill="{t["muted"]}" fill-opacity="0.8">?</text>')
+                       f'fill="url(#fill{j})" stroke="url(#edge{j})" stroke-dasharray="3 3"/>')
+            out.append(f'<text x="{xb + BAR / 2}" y="{base - plot_h / 4 + 4}" font-size="11" text-anchor="middle" '
+                       f'fill="{t["coming"][j]}">?</text>')
         cx = LEFT + i * band + band / 2
         out.append(f'<text x="{cx}" y="{base + 20}" font-size="12.5" font-weight="600" text-anchor="middle" '
                    f'fill="{t["text"]}">{lvl}</text>')
