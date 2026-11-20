@@ -30,8 +30,8 @@ to the loss with an exact correctness criterion.
 
 ## Results
 
-27 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, `exp`
-mode, starter v2. Successful runs ([grading.md](grading.md)) / runs, with how
+27 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, 3 per
+model and level, `exp` mode, current starter (v2). Successful runs ([grading.md](grading.md)) / runs, with how
 many found the idea (judge) and how many are correct (checks):
 
 | Level | Haiku | Sonnet | Opus |
@@ -105,7 +105,7 @@ applies and audits them.
 | Structure | `models/topk.py`, which exists only for the method | Folded into the sampler as a private helper. |
 | Data plumbing | a setting that enables the sampler's distribution | Removed: the sampler always returns its top-20 logprobs, as `logprobs=20` does in an inference engine, and nothing documents them for the loss. Saying what the batch holds is an L3 hint. |
 | History | git log, the paper's figure, sweeps, tests | Fresh history; `README.md`, `assets/`, `sweeps/`, `tests/` dropped. |
-| Prompt | "theoretical argument", the name of the useful config key | Moved into the levels or removed. |
+| Prompt | wording that pointed at the answer ("theoretical argument"), the name of the one useful config key | Moved into the levels or removed. |
 | The agent's context | the session's working directory contained the repository's name | Runs launched from a checkout with a neutral name; a probe subagent before runs; every transcript scanned afterwards. |
 
 Kept on purpose: `log_mass` in `losses.py` (used by `is_weight`, a weak hint),

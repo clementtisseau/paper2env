@@ -31,11 +31,21 @@ subtracts that gradient's average under the sampler, using only the top-k
 logprobs an inference engine returns.
 
 The agent gets 2 hours, Bash in a sandbox, and a small CPU version of the
-training to experiment with. Hint levels go from L0 (the problem alone) to
-L4 (the method given); these runs cover L1 (only what was known before the
-paper) to L2b (where to look). A run succeeds when LLM judges find the
-paper's idea in the submitted loss and exact checks confirm it is correct
-with the sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
+training to experiment with. Its prompt states the problem, then adds hints
+by level, each level including the previous ones:
+
+- **L0:** the problem only: training collapses when the sampler differs from the model.
+- **L1:** what was known before the paper: a systematic bias, not noise;
+  importance sampling and clipping slow it down without removing it.
+- **L2a:** where to look: the expected update under the sampler, on- vs off-policy.
+- **L2b:** at one token, given the prefix.
+- **L3:** the answer to that analysis (a drift term plus the useful signal),
+  and that the batch holds the sampler's top-20 logprobs.
+- **L4:** the method itself.
+
+These runs cover L1 to L2b. A run succeeds when LLM judges find the paper's
+idea in the submitted loss and exact checks confirm it is correct with the
+sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/success-dark.svg">
