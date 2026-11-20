@@ -30,19 +30,34 @@ to the loss with an exact correctness criterion.
 
 ## Results
 
-54 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, 6 per
+81 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, 9 per
 model and level, `exp` mode, current starter (v2). Successful runs ([grading.md](grading.md)) / runs, with how
 many found the idea (judge) and how many are correct (checks):
 
 | Level | Haiku | Sonnet | Opus |
 |---|---|---|---|
-| L2b: per-prefix direction | 0/6 (idea 6, correct 0) | 0/6 (idea 0, correct 0) | 6/6 |
-| L2a: direction | 1/6 (idea 6, correct 1) | 2/6 (idea 2, correct 2) | 6/6 |
-| **L1: pre-paper knowledge only** | 1/6 (idea 4, correct 1) | 2/6 (idea 2, correct 2) | **6/6** |
+| L2b: per-prefix direction | 0/9 (idea 8, correct 0) | 0/9 (idea 0, correct 0) | 9/9 |
+| L2a: direction | 1/9 (idea 8, correct 1) | 3/9 (idea 3, correct 3) | 9/9 |
+| **L1: pre-paper knowledge only** | 1/9 (idea 7, correct 1) | 3/9 (idea 4, correct 3) | **8/9** |
 
-Opus succeeds in every run. Haiku finds the centering but truncates it to the
-sampler's top-k without the tail; Sonnet uses importance sampling or a reward
-baseline. Every run: [tables](results_tables.md), [`runs/`](runs/). The 37
+Opus succeeds in all runs but one, which drops the top-k tail. Haiku finds the
+centering but truncates it to the sampler's top-k without the tail; Sonnet
+mostly uses importance sampling or a reward baseline.
+
+**Why Sonnet does worse at L2b than at L2a.** L2b adds one sentence to L2a:
+*"Do this analysis at a single token position, conditionally on the prefix:
+for a fixed prefix, take the expectation over the next token drawn from q."*
+With it, all 9 Sonnet runs take under 2 minutes and 6 commands, and none runs
+a training. Each report finds the drift correctly (E_q[∇log p] ≠ 0 at a fixed
+prefix), then fixes it with the textbook change of measure: weight by p/q,
+which is unbiased per token. They read the prompt's warning about importance
+sampling as a warning about clipping only; one writes that higher variance
+"is the correct trade because bias is what causes collapse". The checks reject
+it for its unbounded gradients. At L2a, the question is less framed: the 3
+successes ran 6 to 8 experiments and reasoned about the baseline term, then
+subtracted E_q[∇log p] as a control variate, which is the paper's centering.
+With 9 runs per level this is a pattern, not a proof; experimenting is not
+enough on its own (some L2a failures also ran experiments). Every run: [tables](results_tables.md), [`runs/`](runs/). The 37
 runs of starter v1 are kept in `runs/` but not counted.
 
 ## One episode

@@ -19,7 +19,7 @@ it correctly.
 
 | `--paper` | Paper | Runs |
 |---|---|---|
-| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 54 |
+| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 81 |
 | | *more to come* | |
 
 ## Result: score-centering
@@ -49,19 +49,23 @@ sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/success-dark.svg">
-  <img alt="Successful runs by hint level and model. L1: Haiku 1/6, Sonnet 2/6, Opus 6/6. L2a: Haiku 1/6, Sonnet 2/6, Opus 6/6. L2b: Haiku 0/6, Sonnet 0/6, Opus 6/6." src="papers/score-centering/figures/success-light.svg" width="680">
+  <img alt="Successful runs by hint level and model. L1: Haiku 1/9, Sonnet 3/9, Opus 8/9. L2a: Haiku 1/9, Sonnet 3/9, Opus 9/9. L2b: Haiku 0/9, Sonnet 0/9, Opus 9/9." src="papers/score-centering/figures/success-light.svg" width="680">
 </picture>
 
 *Success rate by hint level and model: Claude Haiku, Sonnet and Opus 5.5
-as Claude Code subagents, 6 runs each; whiskers: 95% Wilson intervals.*
+as Claude Code subagents, 9 runs each; whiskers: 95% Wilson intervals.*
 
-- **Opus succeeds in every run (18/18), from L1**, top-k tail included,
-  in a median of 12 minutes and 20 shell commands.
+- **Opus succeeds in 26 of 27 runs, from L1**, top-k tail included, in a
+  median of 12 minutes and 17 shell commands; its one failure drops the tail.
 - **Haiku finds the idea but not the implementation:** the judges find it
-  in 16/18 runs, but 14 of them center over the sampler's top-k without
+  in 23/27 runs, but 20 of them center over the sampler's top-k without
   modeling the tail, which is biased even on-policy.
-- **Sonnet reaches for the familiar remedy:** 14/18 runs use importance
-  sampling (11) or a reward baseline (3) instead; the other 4 succeed.
+- **Sonnet reaches for the familiar remedy:** 20/27 runs use importance
+  sampling (17) or a reward baseline (3) instead; 6 succeed.
+- **The most precise hint makes Sonnet worse:** 0/9 at L2b against 3/9 at
+  L2a. Asked to analyze one token's update under the sampler, it answers in
+  under 2 minutes without running anything, and reweights by p/q: unbiased,
+  but with unbounded gradients. Its L2a successes all came after experiments.
 
 Detailed results, one episode and every run: [papers/score-centering](papers/score-centering/README.md)
 
@@ -103,12 +107,12 @@ at the repository root and follow [core/runner](core/runner/README.md).
 - **Possible contamination:** the models tested were released a few days
   after the paper and may have seen it; two Haiku reports even name the
   method. Runs with open-weight models released before the paper are planned.
-- **Small samples:** 6 runs per model and level, so the 95% intervals are
-  wide (2/6 spans 10–70%): the gap between Opus and the others is clear, the
+- **Small samples:** 9 runs per model and level, so the 95% intervals are
+  wide (3/9 spans 12–65%): the gap between Opus and the others is clear, the
   differences between levels are not. 37 runs of an earlier version of the starter are kept
   in `runs/` but not counted.
 - **One harness:** all runs use Claude Code's subagent harness, Bash only.
-- **Judge checked by hand:** the three judges agree on all 54 runs, and every
+- **Judge checked by hand:** the three judges agree on all 81 runs, and every
   verdict read by hand was right.
 - **Published answer:** the judge's prompt and the checks are public, so
   future models may have seen them.
