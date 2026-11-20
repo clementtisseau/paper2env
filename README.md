@@ -75,8 +75,12 @@ More to come: DeepSeek V4 Pro, DeepSeek V4.1 Flash and GLM 5.3 Flash.*
 - **Given the method (L4), every model implements it correctly** (18/18,
   top-k tail included). What separates the models is finding the method, and
   how to handle the top-k tail, not writing the code.
-- **With 6 to 9 runs per bar, only the gap between Opus and the others is
-  certain;** the differences between levels are within the intervals.
+- **Where the environment is useful.** For Haiku and Sonnet, L1 to L3
+  succeed 1 to 3 times in 9: hard but not out of reach, with a diagnosed
+  failure, the useful range for training. Sonnet's drop at L2b shows how much
+  a hint's wording can steer it. Opus is saturated from L1; finding its limit
+  needs L0 or a harder paper. With 6 to 9 runs per bar, only the gap between
+  Opus and the others is certain.
 
 Detailed results, one episode and every run: [papers/score-centering](papers/score-centering/README.md)
 
