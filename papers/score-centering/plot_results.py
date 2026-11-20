@@ -28,9 +28,10 @@ THEMES = {
 }
 W, H = 680, 288
 LEFT, RIGHT, TOP, BOTTOM = 44, 8, 54, 52
-# models announced in the legend, not run yet (no bars)
+# models not run yet: in the legend, and as empty dashed bars of unknown height
 COMING = ["DeepSeek V4 Pro", "DeepSeek V4.1 Flash", "GLM 5.3 Flash"]
-BAR, GAP, R = 22, 3, 2
+BAR, GAP, R = 18, 3, 2
+SEP = 8  # between the models run and the models to come
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 
 
@@ -64,7 +65,7 @@ def svg(theme):
     plot_h = H - TOP - BOTTOM
     base = TOP + plot_h
     band = (W - LEFT - RIGHT) / len(LEVELS)
-    group = len(MODELS) * BAR + (len(MODELS) - 1) * GAP
+    group = (len(MODELS) + len(COMING)) * BAR + (len(MODELS) + len(COMING) - 2) * GAP + SEP
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            f'font-family="{FONT}" role="img" aria-labelledby="title desc">',
            '<title id="title">Successful runs by hint level and model</title>',
@@ -108,6 +109,14 @@ def svg(theme):
             # a halo in the page's colour keeps the whisker visible over a bar of any shade
             out.append(f'<path d="{whisker}" stroke="{t["halo"]}" stroke-width="3" fill="none"/>')
             out.append(f'<path d="{whisker}" stroke="{t["muted"]}" stroke-width="1" fill="none"/>')
+        # models to come: dashed outline over the whole axis and a "?", so no height is implied
+        xc = x0 + len(MODELS) * (BAR + GAP) - GAP + SEP
+        for j in range(len(COMING)):
+            xb = xc + j * (BAR + GAP)
+            out.append(f'<rect x="{xb + 0.5}" y="{TOP + 0.5}" width="{BAR - 1}" height="{plot_h - 1}" rx="2" '
+                       f'fill="none" stroke="{t["muted"]}" stroke-opacity="0.45" stroke-dasharray="3 3"/>')
+            out.append(f'<text x="{xb + BAR / 2}" y="{TOP + plot_h / 2 + 4}" font-size="11" text-anchor="middle" '
+                       f'fill="{t["muted"]}" fill-opacity="0.8">?</text>')
         cx = LEFT + i * band + band / 2
         out.append(f'<text x="{cx}" y="{base + 20}" font-size="12.5" font-weight="600" text-anchor="middle" '
                    f'fill="{t["text"]}">{lvl}</text>')
