@@ -1,38 +1,38 @@
 ## By level and model
 
-Each cell: runs passing / runs. `correct`: the four exact checks pass with the sampler's top-k; `idea`: the judge finds the method in the loss; `success`: both.
+Each cell: runs passing / runs. `correct`: the four exact checks pass with the sampler's top-k; `idea`: the judge finds the method in the loss; `success`: both, with its 95% Wilson interval.
 
 ### Starter v1, exp
 
-| Level | Model | correct | idea | success | median minutes |
-|---|---|---|---|---|---|
-| L4 | Haiku | 1/1 | ? | ? | 7 |
-| L3 | Haiku | 0/3 | ? | ? | 11 |
-| L3 | Sonnet | 2/3 | ? | ? | 2 |
-| L3 | Opus | 3/3 | ? | ? | 8 |
-| L2b | Haiku | 0/3 | ? | ? | 18 |
-| L2b | Sonnet | 0/3 | ? | ? | 2 |
-| L2b | Opus | 2/3 | ? | ? | 12 |
-| L2a | Haiku | 1/3 | ? | ? | 22 |
-| L2a | Sonnet | 0/3 | ? | ? | 2 |
-| L2a | Opus | 1/3 | ? | ? | 18 |
-| L1 | Haiku | 0/3 | ? | ? | 18 |
-| L1 | Sonnet | 0/3 | ? | ? | 4 |
-| L1 | Opus | 3/3 | ? | ? | 16 |
+| Level | Model | correct | idea | success | success, 95% CI | median minutes |
+|---|---|---|---|---|---|---|
+| L4 | Haiku | 1/1 | ? | ? | ? | 7 |
+| L3 | Haiku | 0/3 | ? | ? | ? | 11 |
+| L3 | Sonnet | 2/3 | ? | ? | ? | 2 |
+| L3 | Opus | 3/3 | ? | ? | ? | 8 |
+| L2b | Haiku | 0/3 | ? | ? | ? | 18 |
+| L2b | Sonnet | 0/3 | ? | ? | ? | 2 |
+| L2b | Opus | 2/3 | ? | ? | ? | 12 |
+| L2a | Haiku | 1/3 | ? | ? | ? | 22 |
+| L2a | Sonnet | 0/3 | ? | ? | ? | 2 |
+| L2a | Opus | 1/3 | ? | ? | ? | 18 |
+| L1 | Haiku | 0/3 | ? | ? | ? | 18 |
+| L1 | Sonnet | 0/3 | ? | ? | ? | 4 |
+| L1 | Opus | 3/3 | ? | ? | ? | 16 |
 
 ### Starter v2, exp
 
-| Level | Model | correct | idea | success | median minutes |
-|---|---|---|---|---|---|
-| L2b | Haiku | 0/6 | 6/6 | 0/6 | 10 |
-| L2b | Sonnet | 0/6 | 0/6 | 0/6 | 1 |
-| L2b | Opus | 6/6 | 6/6 | 6/6 | 11 |
-| L2a | Haiku | 1/6 | 6/6 | 1/6 | 14 |
-| L2a | Sonnet | 2/6 | 2/6 | 2/6 | 5 |
-| L2a | Opus | 6/6 | 6/6 | 6/6 | 16 |
-| L1 | Haiku | 1/6 | 4/6 | 1/6 | 19 |
-| L1 | Sonnet | 2/6 | 2/6 | 2/6 | 10 |
-| L1 | Opus | 6/6 | 6/6 | 6/6 | 11 |
+| Level | Model | correct | idea | success | success, 95% CI | median minutes |
+|---|---|---|---|---|---|---|
+| L2b | Haiku | 0/6 | 6/6 | 0/6 | 0–39% | 10 |
+| L2b | Sonnet | 0/6 | 0/6 | 0/6 | 0–39% | 1 |
+| L2b | Opus | 6/6 | 6/6 | 6/6 | 61–100% | 11 |
+| L2a | Haiku | 1/6 | 6/6 | 1/6 | 3–56% | 14 |
+| L2a | Sonnet | 2/6 | 2/6 | 2/6 | 10–70% | 5 |
+| L2a | Opus | 6/6 | 6/6 | 6/6 | 61–100% | 16 |
+| L1 | Haiku | 1/6 | 4/6 | 1/6 | 3–56% | 19 |
+| L1 | Sonnet | 2/6 | 2/6 | 2/6 | 10–70% | 10 |
+| L1 | Opus | 6/6 | 6/6 | 6/6 | 61–100% | 11 |
 
 ## Every run
 

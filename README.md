@@ -53,7 +53,7 @@ sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 </picture>
 
 *Successful runs by hint level and model: Claude Haiku, Sonnet and Opus 5.5
-as Claude Code subagents, 6 runs each.*
+as Claude Code subagents, 6 runs each; whiskers: 95% Wilson intervals.*
 
 - **Opus succeeds in every run (18/18), from L1**, top-k tail model included,
   in a median of 12 minutes and 20 shell commands.
@@ -104,12 +104,14 @@ at the repository root and follow [core/runner](core/runner/README.md).
 - **Possible contamination:** the models tested were released a few days
   after the paper and may have seen it; two Haiku reports even name the
   method. Runs with open-weight models released before the paper are planned.
-- **Small samples:** 6 runs per model and level; counts, not rates with
-  confidence intervals. 37 runs of an earlier version of the starter are kept
+- **Small samples:** 6 runs per model and level, so the 95% intervals are
+  wide (2/6 spans 10–70%): the gap between Opus and the others is clear, the
+  differences between levels are not. 37 runs of an earlier version of the starter are kept
   in `runs/` but not counted.
 - **One harness:** all runs use Claude Code's subagent harness, Bash only.
-- **Judge not calibrated:** the three judges agree on all 54 runs, but have
-  not been compared with a human.
+- **Judge checked by hand, not measured:** the three judges agree on all 54
+  runs, and every verdict read by hand was right; there is no systematic
+  comparison with human grading.
 - **Published answer:** the judge's prompt and the checks are public, so
   future models may have seen them.
 

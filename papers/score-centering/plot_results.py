@@ -3,14 +3,15 @@
 Writes figures/success-light.svg and figures/success-dark.svg (standard
 library only, transparent background; the README picks one with <picture>
 and prefers-color-scheme).
-Successful runs (grade.json) of the current starter, from
+Successful runs (grade.json) of the current starter, with 95% Wilson
+intervals as whiskers, from
 summarize_runs.rows(), so the figure and the tables agree.
 
     python papers/score-centering/plot_results.py
 """
 from pathlib import Path
 
-from summarize_runs import MODELS, rows
+from summarize_runs import MODELS, rows, wilson
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "figures"
@@ -20,9 +21,9 @@ LEVEL_NAMES = [("L0", "problem only"), ("L1", "pre-paper knowledge"), ("L2a", "d
 # one hue (slate), three steps: Haiku lightest, Opus strongest. Transparent
 # background, text in GitHub's own light / dark inks.
 THEMES = {
-    "light": {"text": "#1f2328", "muted": "#59636e", "rule": "#d1d9e0",
+    "light": {"text": "#1f2328", "halo": "#ffffff", "muted": "#59636e", "rule": "#d1d9e0",
               "series": ["#a3b4c7", "#5f7a96", "#1e3550"]},
-    "dark": {"text": "#e6edf3", "muted": "#9198a1", "rule": "#3d444d",
+    "dark": {"text": "#e6edf3", "halo": "#0d1117", "muted": "#9198a1", "rule": "#3d444d",
              "series": ["#3a5470", "#7894b2", "#c8d6e5"]},
 }
 W, H = 680, 270
@@ -85,7 +86,13 @@ def svg(theme):
             h = p / n * plot_h
             xb = x0 + j * (BAR + GAP)
             out.append(bar(xb, base - h, h, color))
-            out.append(f'<text x="{xb + BAR / 2}" y="{base - h - 6}" font-size="10.5" text-anchor="middle" '
+            lo, hi = wilson(p, n)
+            xm, y_lo, y_hi = xb + BAR / 2, base - lo * plot_h, base - hi * plot_h
+            whisker = f"M{xm},{y_lo} V{y_hi} M{xm - 3},{y_hi} H{xm + 3} M{xm - 3},{y_lo} H{xm + 3}"
+            # a halo in the page's colour keeps the whisker visible over a bar of any shade
+            out.append(f'<path d="{whisker}" stroke="{t["halo"]}" stroke-width="3" fill="none"/>')
+            out.append(f'<path d="{whisker}" stroke="{t["muted"]}" stroke-width="1" fill="none"/>')
+            out.append(f'<text x="{xb + BAR / 2}" y="{y_hi - 5}" font-size="10.5" text-anchor="middle" '
                        f'fill="{t["muted"]}" font-variant-numeric="tabular-nums">{p}/{n}</text>')
         cx = LEFT + i * band + band / 2
         out.append(f'<text x="{cx}" y="{base + 20}" font-size="12.5" font-weight="600" text-anchor="middle" '
