@@ -65,4 +65,5 @@ python core/grade.py --paper score-centering [run ...]           # re-run the ch
 
 `check.py` alone runs the code on the host, for trusted files only;
 `core/grade.py` runs it in the grader container
-(no network, the file mounted read-only).
+(no network, the file mounted read-only). The judges are launched with
+[core/runner/judge_runs.py](../../core/runner/README.md#judging-finished-runs).

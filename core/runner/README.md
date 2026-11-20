@@ -27,9 +27,25 @@ and show me grade.json.
    subagent's transcript into `runs/<run>/transcripts/`, and removes the
    container. `abort` ends a run without grading.
 
-The judge is run separately, on finished runs ([grading](../../papers/score-centering/grading.md)).
+The judge is run separately, on finished runs (below).
 On a network that intercepts TLS, set `P2E_PIPCA=<CA bundle>` so the images
 build.
+
+## Judging finished runs
+
+The judges are subagents too, so judging needs no API key either:
+
+1. `python3 core/runner/judge_runs.py prompts --paper <paper> <run> ... [--votes 3]`
+   writes each run's judge prompt under a shuffled, neutral name in a new
+   round directory (`state/judge/<round>/`), and prints one line per judge.
+2. Paste into the session: *"Launch one `general-purpose` subagent with model
+   opus per line below, at most 20 at a time, giving each the text after the
+   tab as its prompt and nothing else."* followed by those lines.
+3. `python3 core/runner/judge_runs.py record --paper <paper>` reads the judges'
+   transcripts, checks that each read only its own prompt and used no other
+   tool, validates the answers, and writes `judge.json` and the majority
+   verdict into each run's `grade.json`. It lists any run left without the
+   planned number of valid answers.
 
 ## Before a series of runs
 
