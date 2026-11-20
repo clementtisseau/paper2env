@@ -24,9 +24,9 @@ Each cell: runs passing / runs. `correct`: the four exact checks pass with the s
 
 | Level | Model | correct | idea | success | success, 95% CI | median minutes |
 |---|---|---|---|---|---|---|
-| L3 | Haiku | 1/6 | 6/6 | 1/6 | 3–56% | 7 |
-| L3 | Sonnet | 1/6 | 6/6 | 1/6 | 3–56% | 1 |
-| L3 | Opus | 6/6 | 6/6 | 6/6 | 61–100% | 6 |
+| L3 | Haiku | 1/9 | 9/9 | 1/9 | 2–44% | 9 |
+| L3 | Sonnet | 1/9 | 9/9 | 1/9 | 2–44% | 2 |
+| L3 | Opus | 9/9 | 9/9 | 9/9 | 70–100% | 7 |
 | L2b | Haiku | 0/9 | 8/9 | 0/9 | 0–30% | 14 |
 | L2b | Sonnet | 0/9 | 0/9 | 0/9 | 0–30% | 1 |
 | L2b | Opus | 9/9 | 9/9 | 9/9 | 70–100% | 12 |
@@ -177,3 +177,12 @@ Each cell: runs passing / runs. `correct`: the four exact checks pass with the s
 | [20261120-150711-exp-L3](runs/20261120-150711-exp-L3/) | v2 | exp | L3 | Haiku | 6 | 16 | ✗ | ✓ | ✗ |  |
 | [20261120-150748-exp-L3](runs/20261120-150748-exp-L3/) | v2 | exp | L3 | Opus | 6 | 13 | ✓ | ✓ | ✓ |  |
 | [20261120-150841-exp-L3](runs/20261120-150841-exp-L3/) | v2 | exp | L3 | Haiku | 5 | 13 | ✗ | ✓ | ✗ |  |
+| [20261120-161321-exp-L3](runs/20261120-161321-exp-L3/) | v2 | exp | L3 | Opus | 9 | 15 | ✓ | ✓ | ✓ |  |
+| [20261120-161339-exp-L3](runs/20261120-161339-exp-L3/) | v2 | exp | L3 | Sonnet | 2 | 4 | ✗ | ✓ | ✗ |  |
+| [20261120-161407-exp-L3](runs/20261120-161407-exp-L3/) | v2 | exp | L3 | Sonnet | 2 | 5 | ✗ | ✓ | ✗ |  |
+| [20261120-161416-exp-L3](runs/20261120-161416-exp-L3/) | v2 | exp | L3 | Opus | 7 | 16 | ✓ | ✓ | ✓ |  |
+| [20261120-161427-exp-L3](runs/20261120-161427-exp-L3/) | v2 | exp | L3 | Opus | 7 | 16 | ✓ | ✓ | ✓ |  |
+| [20261120-161429-exp-L3](runs/20261120-161429-exp-L3/) | v2 | exp | L3 | Haiku | 9 | 19 | ✗ | ✓ | ✗ |  |
+| [20261120-161435-exp-L3](runs/20261120-161435-exp-L3/) | v2 | exp | L3 | Haiku | 23 | 16 | ✗ | ✓ | ✗ |  |
+| [20261120-161436-exp-L3](runs/20261120-161436-exp-L3/) | v2 | exp | L3 | Sonnet | 2 | 5 | ✗ | ✓ | ✗ |  |
+| [20261120-161601-exp-L3](runs/20261120-161601-exp-L3/) | v2 | exp | L3 | Haiku | 14 | 33 | ✗ | ✓ | ✗ |  |
