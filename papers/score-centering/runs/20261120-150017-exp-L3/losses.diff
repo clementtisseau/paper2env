@@ -1,0 +1,84 @@
+--- a/losses.py
++++ b/losses.py
+@@ -91,6 +91,52 @@
+     return logp.at[b, c, ids].get(out_sharding=P(*spec[:-1], None))
+ 
+ 
++def drop_vocab(logp, ids, fill=-1e30):
++    """logp with the entries at ids [B, C, K] replaced by `fill` (gradient
++    zero there, identity elsewhere). Same sharding caveat as take_vocab."""
++    spec = jax.typeof(logp).sharding.spec
++    b = jnp.arange(ids.shape[0])[:, None, None]
++    c = jnp.arange(ids.shape[1])[None, :, None]
++    if spec[-1] is None:
++        return logp.at[b, c, ids].set(fill)
++    return logp.at[b, c, ids].set(fill, out_sharding=P(*spec))
++
++
++def sampler_mean_score(logp_vocab, top_ids, top_logq, log_p_tok, positive, c):
++    """Surrogate whose gradient is the drift direction at each position,
++
++        s_bar(h) = sum_v m(v|h) grad log p(v|h),   m = q * w(p/q)
++
++    (m = q without a token-level correction), evaluated with the sampler's
++    top-K logprobs. Off the top-K, q is extrapolated as proportional to p
++    (q~(v) = p(v) (1-Q)/(1-P), Q, P = top-K masses), so the tail contributes
++    m_tail * grad log P_tail with P_tail = sum_{v not in K} p(v): exact in
++    logit space and zero on-policy. Returns (surrogate [B, C], metrics)."""
++    logp_k = take_vocab(logp_vocab, top_ids)                     # [B, C, K], carries gradient
++    log_tail = jax.nn.logsumexp(drop_vocab(logp_vocab, top_ids), -1)  # log P_tail, carries gradient
++    lp_k, lq_k = sg(logp_k), top_logq.astype(jnp.float32)
++    q_tail = jnp.clip(1.0 - jnp.exp(lq_k).sum(-1), 0.0, 1.0)     # 1 - Q
++    p_tail = jnp.exp(sg(log_tail))                               # 1 - P, computed without cancellation
++    has_tail = p_tail > 1e-30
++    if c is None or c.level != "token":
++        m_k = jnp.exp(lq_k)
++        m_tail = q_tail
++    else:
++        pos = positive[..., None]
++        tv_k = jnp.abs(jnp.exp(lq_k) - jnp.exp(lp_k))
++        m_k = jnp.exp(log_mass(lp_k, lq_k, pos, c, tv_k))
++        # on the tail the ratio p/q~ is the constant P_tail / (1 - Q)
++        log_qt = jnp.log(jnp.maximum(q_tail, 1e-30))
++        lp_t = jnp.where(has_tail, sg(log_tail), -69.0)
++        m_tail = jnp.where(q_tail > 0, jnp.exp(log_mass(lp_t, log_qt, positive, c, jnp.abs(q_tail - p_tail))), 0.0)
++    m_tail = jnp.where(has_tail, m_tail, 0.0)
++    surrogate = (m_k * logp_k).sum(-1) + m_tail * jnp.where(has_tail, log_tail, 0.0)
++    surrogate = surrogate - sg(surrogate)  # value 0: only its gradient matters
++    # || q~ - p ||_1 / 2 over the vocabulary: size of the drift direction (in logit space)
++    drift_tv = 0.5 * (jnp.abs(jnp.exp(lq_k) - jnp.exp(lp_k)).sum(-1) + jnp.abs(q_tail - p_tail))
++    return surrogate, {"drift_tv": drift_tv, "tail_q": q_tail}
++
++
+ def loss_fn_rl(hidden, head, batch, correction=None, chunk=128):
+     """REINFORCE loss on sampled rollouts, with an optional ISCorrection.
+     Returns (loss, metrics).
+@@ -110,7 +156,7 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -122,6 +168,11 @@
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+         terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        if "sampler_topk_ids" in b:
++            # centered score: w(y) s_y - sum_v q(v) w(v) s_v, whose q-expectation has no drift term
++            base, extra = sampler_mean_score(logp_vocab, b["sampler_topk_ids"], b["sampler_topk_logprobs"],
++                                             logp, positive, token_c)
++            terms |= {"score": terms["score"] - base} | extra
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))
+@@ -139,6 +190,6 @@
+         advantages = advantages * w
+         frac_masked = (w == 0).mean()  # fraction of sequences
+     loss = -(advantages * sums["score"]).sum() / n_tokens
+-    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train") if k in sums}
++    metrics = {k: sums[k].sum() / n_tokens for k in ("entropy", "kl_samp_train", "drift_tv", "tail_q") if k in sums}
+     metrics["pol_entropy"] = metrics.pop("entropy")
+     return loss, metrics | {"frac_masked": frac_masked}
