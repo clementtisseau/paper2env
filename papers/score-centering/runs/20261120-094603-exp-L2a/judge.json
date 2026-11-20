@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "mean = (same @ (alive * adv[:, None])) / jnp.maximum(count, 1.0)\nreturn sg(jnp.where(grouped, adv[:, None] - mean, adv[:, None]))\nterms = {\"score\": b[\"adv_tok\"] * w * logp, ...}",
+      "idea_found": false,
+      "wrong_answer": "reward_baseline"
+    },
+    {
+      "evidence": "mean = (same @ (alive * adv[:, None])) / jnp.maximum(count, 1.0)\nreturn sg(jnp.where(grouped, adv[:, None] - mean, adv[:, None]))\nterms = {\"score\": b[\"adv_tok\"] * w * logp, ...}\nloss = -((seq_w * sums[\"score\"]).sum() if seq_c else sums[\"score\"].sum()) / n_tokens",
+      "idea_found": false,
+      "wrong_answer": "reward_baseline"
+    },
+    {
+      "evidence": "adv_tok = position_centered_advantages(batch, mask)\nmean = (same @ (alive * adv[:, None])) / jnp.maximum(count, 1.0)\nreturn sg(jnp.where(grouped, adv[:, None] - mean, adv[:, None]))\nterms = {\"score\": b[\"adv_tok\"] * w * logp, ...}",
+      "idea_found": false,
+      "wrong_answer": "reward_baseline"
+    }
+  ]
+}

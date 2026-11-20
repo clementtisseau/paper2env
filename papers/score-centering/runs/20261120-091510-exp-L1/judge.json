@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "s = (sg(qw_k) * logp_k).sum(-1) + sg(qw_y) * logp + sg(tail_scale) * (plogp_all - plogp_known)\ncoef = sg(jnp.where(Z > 0, w_y / jnp.maximum(Z, 1e-30), 0.0))\nreturn sg(w_y), coef * s\nterms = {\"score\": w * logp - center, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "qw_k = jnp.exp(logq_k) * w_k\ntail_scale = jnp.where(has_tail, Q_tail / jnp.maximum(P_tail, 1e-6), 0.0) * w_tail\ns = (sg(qw_k) * logp_k).sum(-1) + sg(qw_y) * logp + sg(tail_scale) * (plogp_all - plogp_known)\ncoef = sg(jnp.where(Z > 0, w_y / jnp.maximum(Z, 1e-30), 0.0))\nreturn sg(w_y), coef * s\nterms = {\"score\": w * logp - center, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "qw_k = jnp.exp(logq_k) * w_k\ntail_scale = jnp.where(has_tail, Q_tail / jnp.maximum(P_tail, 1e-6), 0.0) * w_tail\ns = (sg(qw_k) * logp_k).sum(-1) + sg(qw_y) * logp + sg(tail_scale) * (plogp_all - plogp_known)\ncoef = sg(jnp.where(Z > 0, w_y / jnp.maximum(Z, 1e-30), 0.0))\nterms = {\"score\": w * logp - center, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

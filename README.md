@@ -19,7 +19,7 @@ it correctly.
 
 | `--paper` | Paper | Runs |
 |---|---|---|
-| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 27 |
+| [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 54 |
 | | *more to come* | |
 
 ## Result: score-centering
@@ -49,19 +49,19 @@ sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="papers/score-centering/figures/success-dark.svg">
-  <img alt="Successful runs by hint level and model. L1: Haiku 1/3, Sonnet 0/3, Opus 3/3. L2a: Haiku 0/3, Sonnet 1/3, Opus 3/3. L2b: Haiku 0/3, Sonnet 0/3, Opus 3/3." src="papers/score-centering/figures/success-light.svg" width="680">
+  <img alt="Successful runs by hint level and model. L1: Haiku 1/6, Sonnet 2/6, Opus 6/6. L2a: Haiku 1/6, Sonnet 2/6, Opus 6/6. L2b: Haiku 0/6, Sonnet 0/6, Opus 6/6." src="papers/score-centering/figures/success-light.svg" width="680">
 </picture>
 
 *Successful runs by hint level and model: Claude Haiku, Sonnet and Opus 5.5
-as Claude Code subagents, 3 runs each.*
+as Claude Code subagents, 6 runs each.*
 
-- **Opus succeeds in every run (9/9), from L1**, top-k tail model included,
-  in a median of 13 minutes and 20 shell commands.
+- **Opus succeeds in every run (18/18), from L1**, top-k tail model included,
+  in a median of 12 minutes and 20 shell commands.
 - **Haiku finds the idea but not the implementation:** the judges find it
-  in 8/9 runs, but 7 of them center over the sampler's top-k without
+  in 16/18 runs, but 14 of them center over the sampler's top-k without
   modeling the tail, which is biased even on-policy.
-- **Sonnet reaches for the familiar remedy:** 8/9 runs use importance
-  sampling (6) or a reward baseline (2) instead; one succeeds.
+- **Sonnet reaches for the familiar remedy:** 14/18 runs use importance
+  sampling (11) or a reward baseline (3) instead; the other 4 succeed.
 
 Detailed results, one episode and every run: [papers/score-centering](papers/score-centering/README.md)
 
@@ -104,11 +104,11 @@ at the repository root and follow [core/runner](core/runner/README.md).
 - **Possible contamination:** the models tested were released a few days
   after the paper and may have seen it; two Haiku reports even name the
   method. Runs with open-weight models released before the paper are planned.
-- **Small samples:** 3 runs per model and level; counts, not rates with
+- **Small samples:** 6 runs per model and level; counts, not rates with
   confidence intervals. 37 runs of an earlier version of the starter are kept
   in `runs/` but not counted.
 - **One harness:** all runs use Claude Code's subagent harness, Bash only.
-- **Judge not calibrated:** the three judges agree on all 27 runs, but have
+- **Judge not calibrated:** the three judges agree on all 54 runs, but have
   not been compared with a human.
 - **Published answer:** the judge's prompt and the checks are public, so
   future models may have seen them.

@@ -30,15 +30,15 @@ to the loss with an exact correctness criterion.
 
 ## Results
 
-27 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, 3 per
+54 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, 6 per
 model and level, `exp` mode, current starter (v2). Successful runs ([grading.md](grading.md)) / runs, with how
 many found the idea (judge) and how many are correct (checks):
 
 | Level | Haiku | Sonnet | Opus |
 |---|---|---|---|
-| L2b: per-prefix direction | 0/3 (idea 3, correct 0) | 0/3 (idea 0, correct 0) | 3/3 |
-| L2a: direction | 0/3 (idea 3, correct 0) | 1/3 (idea 1, correct 1) | 3/3 |
-| **L1: pre-paper knowledge only** | 1/3 (idea 2, correct 1) | 0/3 (idea 0, correct 0) | **3/3** |
+| L2b: per-prefix direction | 0/6 (idea 6, correct 0) | 0/6 (idea 0, correct 0) | 6/6 |
+| L2a: direction | 1/6 (idea 6, correct 1) | 2/6 (idea 2, correct 2) | 6/6 |
+| **L1: pre-paper knowledge only** | 1/6 (idea 4, correct 1) | 2/6 (idea 2, correct 2) | **6/6** |
 
 Opus succeeds in every run. Haiku finds the centering but truncates it to the
 sampler's top-k without the tail; Sonnet uses importance sampling or a reward
