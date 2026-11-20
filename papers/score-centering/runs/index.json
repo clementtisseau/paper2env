@@ -870,5 +870,77 @@
     "experiments": true,
     "era": "v2",
     "budget_hours": 2.0
+  },
+  "20261120-115646-exp-L1": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-121911-exp-L1": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-123307-exp-L1": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-124945-exp-L2a": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-130230-exp-L2a": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-132501-exp-L2a": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-133916-exp-L2b": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-135655-exp-L2b": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-141231-exp-L2b": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
   }
 }
