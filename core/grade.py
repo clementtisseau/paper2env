@@ -49,7 +49,11 @@ def run_grader(paper, submission, args, timeout):
     try:
         return json.loads(proc.stdout)
     except json.JSONDecodeError:
-        return {"correct": False, "error": (proc.stderr or proc.stdout).decode(errors="replace")[-1500:]}
+        # The grader reports a failing submission as JSON itself; no JSON means
+        # the grading did not run (Docker down, image missing...): fail loudly
+        # rather than record the submission as incorrect.
+        raise RuntimeError("grader produced no JSON: "
+                           + (proc.stderr or proc.stdout).decode(errors="replace")[-1500:]) from None
 
 
 def run_graders(paper, submission):
