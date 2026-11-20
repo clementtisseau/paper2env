@@ -30,19 +30,23 @@ to the loss with an exact correctness criterion.
 
 ## Results
 
-81 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, 9 per
-model and level, `exp` mode, current starter (v2). Successful runs ([grading.md](grading.md)) / runs, with how
+99 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, 9 per
+model and level (6 at L3), `exp` mode, current starter (v2). Successful runs ([grading.md](grading.md)) / runs, with how
 many found the idea (judge) and how many are correct (checks):
 
 | Level | Haiku | Sonnet | Opus |
 |---|---|---|---|
+| L3: decomposition given | 1/6 (idea 6, correct 1) | 1/6 (idea 6, correct 1) | 6/6 |
 | L2b: per-prefix direction | 0/9 (idea 8, correct 0) | 0/9 (idea 0, correct 0) | 9/9 |
 | L2a: direction | 1/9 (idea 8, correct 1) | 3/9 (idea 3, correct 3) | 9/9 |
 | **L1: pre-paper knowledge only** | 1/9 (idea 7, correct 1) | 3/9 (idea 4, correct 3) | **8/9** |
 
 Opus succeeds in all runs but one, which drops the top-k tail. Haiku finds the
 centering but truncates it to the sampler's top-k without the tail; Sonnet
-mostly uses importance sampling or a reward baseline.
+mostly uses importance sampling or a reward baseline up to L2b. At L3, which
+states the decomposition and that the batch holds the sampler's top-20
+logprobs, every run finds the idea, but Haiku and Sonnet mostly center over
+the top-20 alone (9 of their 12 runs), which the checks reject.
 
 **Why Sonnet does worse at L2b than at L2a.** L2b adds one sentence to L2a:
 *"Do this analysis at a single token position, conditionally on the prefix:

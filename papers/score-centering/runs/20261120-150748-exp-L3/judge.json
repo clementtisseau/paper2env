@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "m_k = jnp.where(valid, jnp.exp(log_mass(logp_k, logq_k, positive[..., None], c, tv_k)), 0.0)  # c=None -> q_k\nif c is None:\n    m_tail = q_tail\ntail_ratio = jnp.where(p_tail > TAIL_MIN, jnp.minimum(m_tail / jnp.maximum(p_tail, TAIL_MIN), TAIL_RATIO_MAX), 0.0)\nreturn sg(m_k - tail_ratio[..., None] * p_k)\n...\na_k = centering_coeffs(logp_k, logq_k, positive, token_c, valid)\nscore = score - (a_k * jnp.where(valid, logp_k, 0.0)).sum(-1)\n...\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "m_k = jnp.where(valid, jnp.exp(log_mass(logp_k, logq_k, positive[..., None], c, tv_k)), 0.0)  # = q_k when c is None\nif c is None:\n    m_tail = q_tail\ntail_ratio = jnp.where(p_tail > TAIL_MIN, jnp.minimum(m_tail / jnp.maximum(p_tail, TAIL_MIN), TAIL_RATIO_MAX), 0.0)\nreturn sg(m_k - tail_ratio[..., None] * p_k)\na_k = centering_coeffs(logp_k, logq_k, positive, token_c, valid)\nscore = score - (a_k * jnp.where(valid, logp_k, 0.0)).sum(-1)\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "m_k = jnp.where(valid, jnp.exp(log_mass(logp_k, logq_k, positive[..., None], c, tv_k)), 0.0)  # c=None -> q_k\nif c is None:\n    m_tail = q_tail\ntail_ratio = jnp.where(p_tail > TAIL_MIN, jnp.minimum(m_tail / jnp.maximum(p_tail, TAIL_MIN), TAIL_RATIO_MAX), 0.0)\nreturn sg(m_k - tail_ratio[..., None] * p_k)\n...\na_k = centering_coeffs(logp_k, logq_k, positive, token_c, valid)\nscore = score - (a_k * jnp.where(valid, logp_k, 0.0)).sum(-1)\n...\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

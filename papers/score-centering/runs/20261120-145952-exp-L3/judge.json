@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "m_k = sg(jnp.exp(log_mass(sg(logp_k), topk_logq, pos, c, tv_k))) * valid  # = q_k when c is None\ntail_scale = jnp.minimum(m_tail / jnp.exp(log_p_tail), 100.0)  # = (1-Q_k)/(1-P_k) = rho\nbase = (m_k * jnp.where(valid, logp_k, 0.0)).sum(-1) + sg(tail_scale) * plogp_tail\nscore = score - base\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "m_k = sg(jnp.exp(log_mass(sg(logp_k), topk_logq, pos, c, tv_k))) * valid\ntail_scale = jnp.minimum(m_tail / jnp.exp(log_p_tail), 100.0)\nbase = (m_k * jnp.where(valid, logp_k, 0.0)).sum(-1) + sg(tail_scale) * plogp_tail\nscore = score - base\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "m_k = sg(jnp.exp(log_mass(sg(logp_k), topk_logq, pos, c, tv_k))) * valid\nm_tail = sg(jnp.exp(log_mass(log_p_tail, log_q_tail, positive, c, tv_tail)))\ntail_scale = jnp.minimum(m_tail / jnp.exp(log_p_tail), 100.0)\nbase = (m_k * jnp.where(valid, logp_k, 0.0)).sum(-1) + sg(tail_scale) * plogp_tail\nscore = score - base\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

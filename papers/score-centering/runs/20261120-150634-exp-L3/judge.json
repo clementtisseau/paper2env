@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "q_k = jnp.exp(top_lq)\nq_tail = jnp.clip(1.0 - q_k.sum(-1), 0.0, 1.0)\np_tail = 1.0 - jnp.exp(logp_k).sum(-1)\nlogp_tail = jnp.log(jnp.where(has_tail, p_tail, 1.0))\nm_k, m_tail = q_k, q_tail\nw_k, w_tail = sg(m_k / norm[..., None]), sg(m_tail / norm)\nbaseline = (w_k * logp_k).sum(-1) + w_tail * logp_tail\nterms = {\"score\": w * (logp - baseline), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "q_k = jnp.exp(top_lq)\nq_tail = jnp.clip(1.0 - q_k.sum(-1), 0.0, 1.0)\np_tail = 1.0 - jnp.exp(logp_k).sum(-1)\nlogp_tail = jnp.log(jnp.where(has_tail, p_tail, 1.0))\nm_k, m_tail = q_k, q_tail\nw_k, w_tail = sg(m_k / norm[..., None]), sg(m_tail / norm)\nbaseline = (w_k * logp_k).sum(-1) + w_tail * logp_tail\nterms = {\"score\": w * (logp - baseline), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "q_k = jnp.exp(top_lq)\nq_tail = jnp.clip(1.0 - q_k.sum(-1), 0.0, 1.0)\np_tail = 1.0 - jnp.exp(logp_k).sum(-1)\nlogp_tail = jnp.log(jnp.where(has_tail, p_tail, 1.0))\nm_k, m_tail = q_k, q_tail\nw_k, w_tail = sg(m_k / norm[..., None]), sg(m_tail / norm)\nbaseline = (w_k * logp_k).sum(-1) + w_tail * logp_tail\nterms = {\"score\": w * (logp - baseline), ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

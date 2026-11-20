@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5",
+  "answers": [
+    {
+      "evidence": "q_top, p_top = sg(jnp.exp(topk_logq)), sg(jnp.exp(logp_top))\nrho = jnp.clip((1.0 - q_mass) / jnp.maximum(1.0 - p_mass, 1e-6), 0.0, rho_max)\nc = q_top - rho[..., None] * p_top\nreturn (c * logp_top).sum(-1)\nscore = logp - drift_baseline(logp_vocab, b[\"sampler_topk_ids\"], b[\"sampler_topk_logprobs\"])\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "rho = jnp.clip((1.0 - q_mass) / jnp.maximum(1.0 - p_mass, 1e-6), 0.0, rho_max)\nc = q_top - rho[..., None] * p_top\nreturn (c * logp_top).sum(-1)\nscore = logp - drift_baseline(logp_vocab, b[\"sampler_topk_ids\"], b[\"sampler_topk_logprobs\"])\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "rho = jnp.clip((1.0 - q_mass) / jnp.maximum(1.0 - p_mass, 1e-6), 0.0, rho_max)\nc = q_top - rho[..., None] * p_top\nreturn (c * logp_top).sum(-1)\nscore = logp - drift_baseline(logp_vocab, b[\"sampler_topk_ids\"], b[\"sampler_topk_logprobs\"])\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}
