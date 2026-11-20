@@ -510,5 +510,221 @@
     "experiments": true,
     "era": "v2",
     "budget_hours": 2.0
+  },
+  "20261120-085258-exp-L1": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-085344-exp-L1": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-085358-exp-L1": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-090650-exp-L1": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-091044-exp-L1": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-091510-exp-L1": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-092158-exp-L1": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-092549-exp-L1": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-093514-exp-L1": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L1",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-093529-exp-L2a": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-094603-exp-L2a": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-094610-exp-L2a": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-095832-exp-L2a": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-095948-exp-L2a": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-100749-exp-L2a": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-100847-exp-L2a": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-101418-exp-L2b": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-101608-exp-L2a": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-101731-exp-L2b": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-102028-exp-L2b": {
+    "model": "Sonnet",
+    "served_model": "claude-sonnet-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-102139-exp-L2b": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-103212-exp-L2b": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-103324-exp-L2a": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2a",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-104143-exp-L2b": {
+    "model": "Opus",
+    "served_model": "claude-opus-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-104202-exp-L2b": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-105325-exp-L2b": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
+  },
+  "20261120-110424-exp-L2b": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L2b",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
   }
 }
