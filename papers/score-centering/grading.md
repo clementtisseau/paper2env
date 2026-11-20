@@ -42,7 +42,7 @@ All four checks must pass, on three seeds:
 | `no_drift` | a constant advantage, mild and severe noise | expected update ≈ 0 | REINFORCE; truncated or masked IS; IS capped at 10 |
 | `no_drift_prefix` | an advantage that depends on the first tokens, mean zero | ≈ 0 at every later position | a global reward baseline (GRPO at its limit) |
 | `on_policy` | q = p | the same update as REINFORCE | a loss that learns nothing |
-| `bounded` | severe noise | no gradient above 10× REINFORCE's largest | unclipped IS |
+| `bounded` | severe noise | no gradient above 10× REINFORCE's largest | unclipped IS (gradients ×85,000) |
 
 ≈ 0 means below 10⁻⁴ of the gradients' size. Each rejection is tested in
 [`tests/test_check.py`](tests/test_check.py), on the wrong answer itself.

@@ -37,7 +37,7 @@ in the loss batch, documented nowhere).
   with unclipped importance weights, which are unbiased but unbounded.
   [`20261119-095730-exp-L1`](20261119-095730-exp-L1/REPORT.md) does the same
   with weights capped at 10; it fooled the first version of the exact checks
-  (see [lessons](../../../docs/lessons.md)).
+  (see [lessons](../../../docs/method.md#lessons)).
 - **Correct with the full distribution, wrong with the top-k (Haiku, L3):**
   [`20261118-112015-exp-L3`](20261118-112015-exp-L3/REPORT.md) truncates the
   sum to the head without modeling the tail, which is biased even on-policy.

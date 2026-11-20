@@ -80,33 +80,6 @@ Fourteen minutes later, the agent's report:
 
 Judges: idea found, 3/3. Exact checks: drift-free with the sampler's top-k ✓.
 
-## Why this is a useful eval
-
-- **No contamination by construction:** the paper postdates the models, and
-  the prompt is limited to what was published before it.
-- **The grader checks the property, not the wording:** on a toy policy whose
-  completions are all enumerated, the expected update must have no drift at
-  any prefix, be unchanged on-policy and keep gradients bounded. Any correct
-  fix passes, whatever it is called.
-- **A curve, not a pass rate:** hint levels show *how much* help each model
-  needs, and what it finds before that.
-- **Isolation:** the agent's code only runs in containers without network,
-  and grading runs in a separate one.
-
-Every check of the grader exists to reject a plausible wrong answer, and is
-tested on it:
-
-| Plausible wrong answer | What it gets right | Rejected by |
-|---|---|---|
-| Global reward baseline (GRPO, pushed to its limit) | cancels the drift on average | `no_drift_prefix`: drift remains at each prefix |
-| Truncated or masked importance sampling (TIS, MIS) | reduces the drift | `no_drift`: reduced, not removed |
-| Unclipped importance sampling | unbiased | `bounded`: per-sample gradients ×85,000 |
-| Importance sampling capped at 10 | exact under a mild mismatch | `no_drift` under a severe mismatch, where ratios exceed the cap |
-| A loss that learns nothing | trivially drift-free | `on_policy`: must equal REINFORCE when the sampler is exact |
-
-The cap-at-10 case was found after the fact, by reading the reports of runs
-that *passed*; all runs were re-graded ([lessons](docs/lessons.md)).
-
 ## How it works
 
 ```mermaid
@@ -126,9 +99,8 @@ flowchart LR
 | **LLM judge** | prompt filling, answer validation, majority vote | the method and its near-misses, in one prompt |
 | **Runners** | Inspect AI task; Claude Code subagent runner | — |
 
-Design: [docs/method.md](docs/method.md) · adding a paper:
-[docs/adding-a-paper.md](docs/adding-a-paper.md) · what went wrong:
-[docs/lessons.md](docs/lessons.md)
+Why the eval is built this way, and what went wrong: [docs/method.md](docs/method.md) ·
+adding a paper: [docs/adding-a-paper.md](docs/adding-a-paper.md)
 
 ## Papers
 
