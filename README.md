@@ -59,26 +59,7 @@ to look: the expected update at one token, given the prefix).
   sampling (6) or a reward baseline (2) instead; one succeeds.
 - **The judges agree:** the three verdicts are unanimous on all 27 runs.
 
-[Every run, with its transcript and grade](papers/score-centering/runs/) ·
-[tables](papers/score-centering/results_tables.md)
-
-## One episode
-
-An Opus run at L1 ([full run](papers/score-centering/runs/20261119-103415-exp-L1/)).
-The prompt describes the setting and adds only what was known before the paper:
-
-> *The mismatch acts as a systematic bias in the training objective, not as
-> zero-mean noise. [...] Importance-sampling corrections and clipping slow the
-> degradation down but do not remove it.*
-
-Fourteen minutes later, the agent's report:
-
-> *Here the tokens come from the sampler `q != p`, and
-> `E_{y~q}[grad log p(y)] = -grad KL(q || p) != 0`. Each token's update
-> therefore picks up a term `V(s) * (q - p)`. [...] Center each sampled
-> token's score under the distribution the token was actually drawn from.*
-
-Judges: idea found, 3/3. Exact checks: drift-free with the sampler's top-k ✓.
+Detailed results, one episode and every run: [papers/score-centering](papers/score-centering/README.md)
 
 ## How it works
 
@@ -100,6 +81,7 @@ Why the eval is built this way, and what went wrong: [docs/method.md](docs/metho
 | `--paper` | Paper | Runs |
 |---|---|---|
 | [`score-centering`](papers/score-centering/) | Score Centering Stabilizes Off-policy RL, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807) | 27 |
+| more to come | | |
 
 ## Quickstart
 

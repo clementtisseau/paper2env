@@ -4,13 +4,6 @@
 and Max Ryabinin, [arXiv:2609.20807](https://arxiv.org/abs/2609.20807),
 September 2026. Code: [`upstream/`](upstream/), untouched (MIT).
 
-```bash
-python core/runner/run.py start --paper score-centering --level L1 --hours 2   # Claude Code subagent
-inspect eval core/task.py -T paper=score-centering -T levels=L1,L3 --model ...  # API model
-```
-
-How to run either: [top-level README](../../README.md#running).
-
 ## The paper
 
 When RL for LLMs samples rollouts with an inference engine that differs
@@ -38,11 +31,6 @@ predate the paper.
 
 ## Results
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="figures/success-dark.svg">
-  <img alt="Successful runs by hint level and model" src="figures/success-light.svg" width="680">
-</picture>
-
 27 runs, Claude Haiku / Sonnet / Opus 5.5 as Claude Code subagents, `exp`
 mode, starter v2. Successful runs ([grading.md](grading.md)) / runs, with how
 many found the idea (judge) and how many are correct (checks):
@@ -58,10 +46,23 @@ sampler's top-k without the tail; Sonnet uses importance sampling or a reward
 baseline. Every run: [tables](results_tables.md), [`runs/`](runs/). The 37
 runs of starter v1 are kept in `runs/` but not counted.
 
-After new runs: `python core/grade.py --paper score-centering <run>`, the
-judges, then
-`python papers/score-centering/summarize_runs.py > papers/score-centering/results_tables.md`
-and `python papers/score-centering/plot_results.py`.
+## One episode
+
+An Opus run at L1 ([full run](runs/20261119-103415-exp-L1/)).
+The prompt describes the setting and adds only what was known before the paper:
+
+> *The mismatch acts as a systematic bias in the training objective, not as
+> zero-mean noise. [...] Importance-sampling corrections and clipping slow the
+> degradation down but do not remove it.*
+
+Fourteen minutes later, the agent's report:
+
+> *Here the tokens come from the sampler `q != p`, and
+> `E_{y~q}[grad log p(y)] = -grad KL(q || p) != 0`. Each token's update
+> therefore picks up a term `V(s) * (q - p)`. [...] Center each sampled
+> token's score under the distribution the token was actually drawn from.*
+
+Judges: idea found, 3/3. Exact checks: drift-free with the sampler's top-k ✓.
 
 ## The environment
 
@@ -106,15 +107,10 @@ applies and audits them.
 | Data plumbing | a setting that enables the sampler's distribution | Removed: the sampler always returns its top-20 logprobs, as `logprobs=20` does in an inference engine, and nothing documents them for the loss. Saying what the batch holds is an L3 hint. |
 | History | git log, the paper's figure, sweeps, tests | Fresh history; `README.md`, `assets/`, `sweeps/`, `tests/` dropped. |
 | Prompt | "theoretical argument", the name of the useful config key | Moved into the levels or removed. |
-| The agent's context | the session's working directory contained the repository's name | Runs launched from a checkout with a neutral name; a probe subagent before runs; all 45 transcripts scanned. |
+| The agent's context | the session's working directory contained the repository's name | Runs launched from a checkout with a neutral name; a probe subagent before runs; every transcript scanned afterwards. |
 
 Kept on purpose: `log_mass` in `losses.py` (used by `is_weight`, a weak hint),
 and the author's name in `LICENSE`, as the MIT license requires.
-
-### Grading
-
-A run succeeds when an LLM judge finds the method in `losses.py` and exact
-checks confirm it is drift-free with the sampler's top-k: [grading.md](grading.md).
 
 ## Layout
 
@@ -130,6 +126,6 @@ checks confirm it is drift-free with the sampler's top-k: [grading.md](grading.m
 | `grader/` | `check.py` (exact checks) and `judge.md` (the judge's prompt). |
 | `docker/` | Agent (CPU) and grader images. |
 | `tests/` | Starter equivalence, grader validation, prompt leaks. |
-| `runs/` | Every run, with prompts, transcripts and grading ([guide](runs/README.md)). |
+| `runs/` | Every run: prompts, transcripts, submission, report, `grade.json`. |
 | `summarize_runs.py` | Writes `results_tables.md` from `runs/`. |
 | `plot_results.py` | Writes `figures/success-{light,dark}.svg` from `runs/`. |
