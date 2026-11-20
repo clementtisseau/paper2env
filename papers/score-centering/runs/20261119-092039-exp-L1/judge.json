@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5 (Claude Code subagent)",
+  "answers": [
+    {
+      "evidence": "if c is None:  # default: unclipped token ratio, self-normalised below\n    w = sg(jnp.exp(jnp.clip(logp - logq, -20.0, 20.0)))\nterms = {\"score\": w * logp, ..., \"wmass\": w}\nn_tokens = jnp.maximum(sums[\"wmass\"].sum(), 1e-6)\nadvantages = advantages - advantages.mean()",
+      "idea_found": false,
+      "wrong_answer": "importance_weights"
+    },
+    {
+      "evidence": "if c is None:  # default: unclipped token ratio, self-normalised below\n    w = sg(jnp.exp(jnp.clip(logp - logq, -20.0, 20.0)))\nterms = {\"score\": w * logp, ...}\nn_tokens = jnp.maximum(sums[\"wmass\"].sum(), 1e-6)\nadvantages = advantages - advantages.mean()",
+      "idea_found": false,
+      "wrong_answer": "importance_weights"
+    },
+    {
+      "evidence": "if c is None:  # default: unclipped token ratio, self-normalised below\n    w = sg(jnp.exp(jnp.clip(logp - logq, -20.0, 20.0)))\nterms = {\"score\": w * logp, ...}\nn_tokens = jnp.maximum(sums[\"wmass\"].sum(), 1e-6)\nadvantages = advantages - advantages.mean()",
+      "idea_found": false,
+      "wrong_answer": "importance_weights"
+    }
+  ]
+}

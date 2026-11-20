@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5 (Claude Code subagent)",
+  "answers": [
+    {
+      "evidence": "seq_tokens0 = mask.sum(1).astype(jnp.float32)\nadvantages = advantages - sg((advantages * seq_tokens0).sum() / jnp.maximum(seq_tokens0.sum(), 1.0))",
+      "idea_found": false,
+      "wrong_answer": "reward_baseline"
+    },
+    {
+      "evidence": "seq_tokens0 = mask.sum(1).astype(jnp.float32)\nadvantages = advantages - sg((advantages * seq_tokens0).sum() / jnp.maximum(seq_tokens0.sum(), 1.0))",
+      "idea_found": false,
+      "wrong_answer": "reward_baseline"
+    },
+    {
+      "evidence": "seq_tokens0 = mask.sum(1).astype(jnp.float32)\nadvantages = advantages - sg((advantages * seq_tokens0).sum() / jnp.maximum(seq_tokens0.sum(), 1.0))\nterms = {\"score\": w * logp, ...}  (score not centered; no sampler distribution used)",
+      "idea_found": false,
+      "wrong_answer": "reward_baseline"
+    }
+  ]
+}

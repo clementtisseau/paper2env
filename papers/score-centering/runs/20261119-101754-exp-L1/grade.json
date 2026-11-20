@@ -1,7 +1,7 @@
 {
   "correct": false,
-  "idea_found": null,
-  "success": null,
+  "idea_found": false,
+  "success": false,
   "graders": {
     "check": {
       "correct": false,
@@ -19,5 +19,9 @@
       }
     }
   },
-  "judge": null
+  "judge": {
+    "idea_found": false,
+    "wrong_answer": "importance_weights",
+    "votes": "0/3"
+  }
 }

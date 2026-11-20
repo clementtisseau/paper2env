@@ -36,6 +36,22 @@ the sum then reduces to the top-k tokens:
 
     Σ_{v ∈ top-k} sg[q_v − ρ·p_v] · log p(v)
 
+One possible implementation, in the starter's names (inside the per-chunk
+function of loss_fn_rl, where logp_vocab holds the trained model's logprobs
+over the vocabulary and logp those of the sampled tokens; the batch carries
+the sampler's top-k as sampler_topk_ids / sampler_topk_logprobs). It is an
+example only: a submission may be organized, named and written differently.
+
+    ids = b["sampler_topk_ids"]                      # [B, C, k] the sampler's top-k tokens
+    logq_head = b["sampler_topk_logprobs"]           # their logprobs under q
+    logp_head = take_vocab(logp_vocab, ids)          # their logprobs under p
+    q_head, p_head = jnp.exp(logq_head), sg(jnp.exp(logp_head))
+    # tail of q modeled as rho * p, rho matching the tail mass
+    rho = jnp.maximum(1 - q_head.sum(-1), 0) / jnp.maximum(1 - p_head.sum(-1), 1e-6)
+    # sum over the head of sg[q_v - rho p_v] log p(v): the tail term has zero gradient
+    center = (sg(q_head - rho[..., None] * p_head) * logp_head).sum(-1)
+    terms["score"] = logp - center                   # then loss = -(A * score).sum() / n_tokens
+
 Equivalent forms count. The method is there if the loss subtracts from each
 token's score, multiplied by that token's own advantage A, the expected score
 under the sampler's distribution, with q taken from the sampler's logprobs:

@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5 (Claude Code subagent)",
+  "answers": [
+    {
+      "evidence": "log_c_head = log_mass(sg(log_p_head), jnp.where(head_valid, log_q_head, 0.0), pos_k, token_c, sg(tv_head))\nc_head = jnp.where(head_valid, sg(jnp.exp(log_c_head)), 0.0)\nc_tail = jnp.exp(log_s)  # s = q_rest / p_rest\nm = (c_head * jnp.where(head_valid, log_p_head, 0.0)).sum(-1) + c_tail * (plogp_all - plogp_head)\nterms = {\"score\": w * logp - center, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "c_head = jnp.where(head_valid, sg(jnp.exp(log_c_head)), 0.0)  # = q on the sampler's top-k (+ sampled token) when token_c is None\nc_tail = jnp.exp(log_s)  # q_rest / p_rest, tail of q modeled as proportional to p\nm = (c_head * jnp.where(head_valid, log_p_head, 0.0)).sum(-1) + c_tail * (plogp_all - plogp_head)\ncenter = sampler_centering(logp_vocab, logp, logq, b, pos, token_c)\nterms = {\"score\": w * logp - center, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "log_c_head = log_mass(sg(log_p_head), jnp.where(head_valid, log_q_head, 0.0), pos_k, token_c, sg(tv_head))\nc_head = jnp.where(head_valid, sg(jnp.exp(log_c_head)), 0.0)\nlog_s = jnp.log(jnp.maximum(q_rest, 1e-30)) - jnp.log(p_rest)\nc_tail = jnp.exp(log_s)\nm = (c_head * jnp.where(head_valid, log_p_head, 0.0)).sum(-1) + c_tail * (plogp_all - plogp_head)\nterms = {\"score\": w * logp - center, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

@@ -24,15 +24,15 @@ Each cell: runs passing / runs. `correct`: the four exact checks pass with the s
 
 | Level | Model | correct | idea | success | median minutes |
 |---|---|---|---|---|---|
-| L2b | Haiku | 0/3 | ? | ? | 7 |
-| L2b | Sonnet | 0/3 | ? | ? | 1 |
-| L2b | Opus | 3/3 | ? | ? | 12 |
-| L2a | Haiku | 0/3 | ? | ? | 12 |
-| L2a | Sonnet | 1/3 | ? | ? | 4 |
-| L2a | Opus | 3/3 | ? | ? | 20 |
-| L1 | Haiku | 1/3 | ? | ? | 28 |
-| L1 | Sonnet | 0/3 | ? | ? | 6 |
-| L1 | Opus | 3/3 | ? | ? | 10 |
+| L2b | Haiku | 0/3 | 3/3 | 0/3 | 7 |
+| L2b | Sonnet | 0/3 | 0/3 | 0/3 | 1 |
+| L2b | Opus | 3/3 | 3/3 | 3/3 | 12 |
+| L2a | Haiku | 0/3 | 3/3 | 0/3 | 12 |
+| L2a | Sonnet | 1/3 | 1/3 | 1/3 | 4 |
+| L2a | Opus | 3/3 | 3/3 | 3/3 | 20 |
+| L1 | Haiku | 1/3 | 2/3 | 1/3 | 28 |
+| L1 | Sonnet | 0/3 | 0/3 | 0/3 | 6 |
+| L1 | Opus | 3/3 | 3/3 | 3/3 | 10 |
 
 ## Every run
 
@@ -75,30 +75,30 @@ Each cell: runs passing / runs. `correct`: the four exact checks pass with the s
 | [20261118-223834-exp-L1](runs/20261118-223834-exp-L1/) | v1 | exp | L1 | Opus | 16 | 21 | ✓ | ? | ? |  |
 | [20261118-225630-exp-L1](runs/20261118-225630-exp-L1/) | v1 | exp | L1 | Opus | 11 | 18 | ✓ | ? | ? |  |
 | [20261118-230916-exp-L1](runs/20261118-230916-exp-L1/) | v1 | exp | L1 | Opus | 18 | 23 | ✓ | ? | ? |  |
-| [20261119-081907-exp-L1](runs/20261119-081907-exp-L1/) | v2 | exp | L1 | Haiku | 20 | 21 | ✗ | ? | ? |  |
-| [20261119-084106-exp-L1](runs/20261119-084106-exp-L1/) | v2 | exp | L1 | Haiku | 38 | 26 | ✓ | ? | ? |  |
-| [20261119-092039-exp-L1](runs/20261119-092039-exp-L1/) | v2 | exp | L1 | Haiku | 28 | 29 | ✗ | ? | ? |  |
-| [20261119-095015-exp-L1](runs/20261119-095015-exp-L1/) | v2 | exp | L1 | Sonnet | 5 | 8 | ✗ | ? | ? |  |
-| [20261119-095730-exp-L1](runs/20261119-095730-exp-L1/) | v2 | exp | L1 | Sonnet | 19 | 13 | ✗ | ? | ? |  |
-| [20261119-101754-exp-L1](runs/20261119-101754-exp-L1/) | v2 | exp | L1 | Sonnet | 6 | 8 | ✗ | ? | ? |  |
-| [20261119-102609-exp-L1](runs/20261119-102609-exp-L1/) | v2 | exp | L1 | Opus | 6 | 20 | ✓ | ? | ? |  |
-| [20261119-103415-exp-L1](runs/20261119-103415-exp-L1/) | v2 | exp | L1 | Opus | 14 | 25 | ✓ | ? | ? |  |
-| [20261119-104955-exp-L1](runs/20261119-104955-exp-L1/) | v2 | exp | L1 | Opus | 10 | 15 | ✓ | ? | ? |  |
-| [20261119-110224-exp-L2a](runs/20261119-110224-exp-L2a/) | v2 | exp | L2a | Haiku | 52 | 16 | ✗ | ? | ? |  |
-| [20261119-115626-exp-L2a](runs/20261119-115626-exp-L2a/) | v2 | exp | L2a | Haiku | 9 | 19 | ✗ | ? | ? |  |
-| [20261119-120713-exp-L2a](runs/20261119-120713-exp-L2a/) | v2 | exp | L2a | Haiku | 12 | 16 | ✗ | ? | ? |  |
-| [20261119-122042-exp-L2a](runs/20261119-122042-exp-L2a/) | v2 | exp | L2a | Sonnet | 13 | 10 | ✗ | ? | ? |  |
-| [20261119-123601-exp-L2a](runs/20261119-123601-exp-L2a/) | v2 | exp | L2a | Sonnet | 1 | 4 | ✗ | ? | ? |  |
-| [20261119-123853-exp-L2a](runs/20261119-123853-exp-L2a/) | v2 | exp | L2a | Sonnet | 4 | 9 | ✓ | ? | ? |  |
-| [20261119-124431-exp-L2a](runs/20261119-124431-exp-L2a/) | v2 | exp | L2a | Opus | 29 | 22 | ✓ | ? | ? |  |
-| [20261119-131624-exp-L2a](runs/20261119-131624-exp-L2a/) | v2 | exp | L2a | Opus | 20 | 30 | ✓ | ? | ? |  |
-| [20261119-133853-exp-L2a](runs/20261119-133853-exp-L2a/) | v2 | exp | L2a | Opus | 11 | 19 | ✓ | ? | ? |  |
-| [20261119-135225-exp-L2b](runs/20261119-135225-exp-L2b/) | v2 | exp | L2b | Haiku | 7 | 17 | ✗ | ? | ? |  |
-| [20261119-140145-exp-L2b](runs/20261119-140145-exp-L2b/) | v2 | exp | L2b | Haiku | 6 | 15 | ✗ | ? | ? |  |
-| [20261119-141003-exp-L2b](runs/20261119-141003-exp-L2b/) | v2 | exp | L2b | Haiku | 29 | 33 | ✗ | ? | ? |  |
-| [20261119-144130-exp-L2b](runs/20261119-144130-exp-L2b/) | v2 | exp | L2b | Sonnet | 1 | 3 | ✗ | ? | ? |  |
-| [20261119-144418-exp-L2b](runs/20261119-144418-exp-L2b/) | v2 | exp | L2b | Sonnet | 1 | 6 | ✗ | ? | ? |  |
-| [20261119-144726-exp-L2b](runs/20261119-144726-exp-L2b/) | v2 | exp | L2b | Sonnet | 2 | 3 | ✗ | ? | ? |  |
-| [20261119-145052-exp-L2b](runs/20261119-145052-exp-L2b/) | v2 | exp | L2b | Opus | 47 | 20 | ✓ | ? | ? |  |
-| [20261119-162635-exp-L2b](runs/20261119-162635-exp-L2b/) | v2 | exp | L2b | Opus | 12 | 16 | ✓ | ? | ? |  |
-| [20261119-164144-exp-L2b](runs/20261119-164144-exp-L2b/) | v2 | exp | L2b | Opus | 7 | 15 | ✓ | ? | ? |  |
+| [20261119-081907-exp-L1](runs/20261119-081907-exp-L1/) | v2 | exp | L1 | Haiku | 20 | 21 | ✗ | ✓ | ✗ |  |
+| [20261119-084106-exp-L1](runs/20261119-084106-exp-L1/) | v2 | exp | L1 | Haiku | 38 | 26 | ✓ | ✓ | ✓ |  |
+| [20261119-092039-exp-L1](runs/20261119-092039-exp-L1/) | v2 | exp | L1 | Haiku | 28 | 29 | ✗ | ✗ | ✗ | importance_weights |
+| [20261119-095015-exp-L1](runs/20261119-095015-exp-L1/) | v2 | exp | L1 | Sonnet | 5 | 8 | ✗ | ✗ | ✗ | importance_weights |
+| [20261119-095730-exp-L1](runs/20261119-095730-exp-L1/) | v2 | exp | L1 | Sonnet | 19 | 13 | ✗ | ✗ | ✗ | importance_weights |
+| [20261119-101754-exp-L1](runs/20261119-101754-exp-L1/) | v2 | exp | L1 | Sonnet | 6 | 8 | ✗ | ✗ | ✗ | importance_weights |
+| [20261119-102609-exp-L1](runs/20261119-102609-exp-L1/) | v2 | exp | L1 | Opus | 6 | 20 | ✓ | ✓ | ✓ |  |
+| [20261119-103415-exp-L1](runs/20261119-103415-exp-L1/) | v2 | exp | L1 | Opus | 14 | 25 | ✓ | ✓ | ✓ |  |
+| [20261119-104955-exp-L1](runs/20261119-104955-exp-L1/) | v2 | exp | L1 | Opus | 10 | 15 | ✓ | ✓ | ✓ |  |
+| [20261119-110224-exp-L2a](runs/20261119-110224-exp-L2a/) | v2 | exp | L2a | Haiku | 52 | 16 | ✗ | ✓ | ✗ |  |
+| [20261119-115626-exp-L2a](runs/20261119-115626-exp-L2a/) | v2 | exp | L2a | Haiku | 9 | 19 | ✗ | ✓ | ✗ |  |
+| [20261119-120713-exp-L2a](runs/20261119-120713-exp-L2a/) | v2 | exp | L2a | Haiku | 12 | 16 | ✗ | ✓ | ✗ |  |
+| [20261119-122042-exp-L2a](runs/20261119-122042-exp-L2a/) | v2 | exp | L2a | Sonnet | 13 | 10 | ✗ | ✗ | ✗ | reward_baseline |
+| [20261119-123601-exp-L2a](runs/20261119-123601-exp-L2a/) | v2 | exp | L2a | Sonnet | 1 | 4 | ✗ | ✗ | ✗ | reward_baseline |
+| [20261119-123853-exp-L2a](runs/20261119-123853-exp-L2a/) | v2 | exp | L2a | Sonnet | 4 | 9 | ✓ | ✓ | ✓ |  |
+| [20261119-124431-exp-L2a](runs/20261119-124431-exp-L2a/) | v2 | exp | L2a | Opus | 29 | 22 | ✓ | ✓ | ✓ |  |
+| [20261119-131624-exp-L2a](runs/20261119-131624-exp-L2a/) | v2 | exp | L2a | Opus | 20 | 30 | ✓ | ✓ | ✓ |  |
+| [20261119-133853-exp-L2a](runs/20261119-133853-exp-L2a/) | v2 | exp | L2a | Opus | 11 | 19 | ✓ | ✓ | ✓ |  |
+| [20261119-135225-exp-L2b](runs/20261119-135225-exp-L2b/) | v2 | exp | L2b | Haiku | 7 | 17 | ✗ | ✓ | ✗ |  |
+| [20261119-140145-exp-L2b](runs/20261119-140145-exp-L2b/) | v2 | exp | L2b | Haiku | 6 | 15 | ✗ | ✓ | ✗ |  |
+| [20261119-141003-exp-L2b](runs/20261119-141003-exp-L2b/) | v2 | exp | L2b | Haiku | 29 | 33 | ✗ | ✓ | ✗ |  |
+| [20261119-144130-exp-L2b](runs/20261119-144130-exp-L2b/) | v2 | exp | L2b | Sonnet | 1 | 3 | ✗ | ✗ | ✗ | importance_weights |
+| [20261119-144418-exp-L2b](runs/20261119-144418-exp-L2b/) | v2 | exp | L2b | Sonnet | 1 | 6 | ✗ | ✗ | ✗ | importance_weights |
+| [20261119-144726-exp-L2b](runs/20261119-144726-exp-L2b/) | v2 | exp | L2b | Sonnet | 2 | 3 | ✗ | ✗ | ✗ | importance_weights |
+| [20261119-145052-exp-L2b](runs/20261119-145052-exp-L2b/) | v2 | exp | L2b | Opus | 47 | 20 | ✓ | ✓ | ✓ |  |
+| [20261119-162635-exp-L2b](runs/20261119-162635-exp-L2b/) | v2 | exp | L2b | Opus | 12 | 16 | ✓ | ✓ | ✓ |  |
+| [20261119-164144-exp-L2b](runs/20261119-164144-exp-L2b/) | v2 | exp | L2b | Opus | 7 | 15 | ✓ | ✓ | ✓ |  |

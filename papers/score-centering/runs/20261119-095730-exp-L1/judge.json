@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5 (Claude Code subagent)",
+  "answers": [
+    {
+      "evidence": "DEFAULT_CORRECTION = ISCorrection(level=\"token\", high=10.0, outside=\"clamp\")\nif correction is None:\n    correction = DEFAULT_CORRECTION\nterms = {\"score\": w * logp, ...}",
+      "idea_found": false,
+      "wrong_answer": "importance_weights"
+    },
+    {
+      "evidence": "DEFAULT_CORRECTION = ISCorrection(level=\"token\", high=10.0, outside=\"clamp\")\nif correction is None:\n    correction = DEFAULT_CORRECTION\nterms = {\"score\": w * logp, ...}",
+      "idea_found": false,
+      "wrong_answer": "importance_weights"
+    },
+    {
+      "evidence": "DEFAULT_CORRECTION = ISCorrection(level=\"token\", high=10.0, outside=\"clamp\")\nif correction is None:\n    correction = DEFAULT_CORRECTION\nterms = {\"score\": w * logp, ...}",
+      "idea_found": false,
+      "wrong_answer": "importance_weights"
+    }
+  ]
+}

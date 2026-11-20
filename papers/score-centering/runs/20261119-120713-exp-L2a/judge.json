@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5 (Claude Code subagent)",
+  "answers": [
+    {
+      "evidence": "ids, lq = b[\"tk_ids\"], sg(b[\"tk_lp\"].astype(jnp.float32))\nq = sg(jax.nn.softmax(lq, axis=-1))\nreturn (q * take_vocab(logp_vocab, ids)).sum(-1)\n...\nif center:\n    score = logp - baseline(logp_vocab, b)\n...\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "ids, lq = b[\"tk_ids\"], sg(b[\"tk_lp\"].astype(jnp.float32))\nq = sg(jax.nn.softmax(lq, axis=-1))\nreturn (q * take_vocab(logp_vocab, ids)).sum(-1)\ncenter = correction is None and \"sampler_topk_ids\" in per_token and \"sampler_topk_logprobs\" in per_token\nscore = logp - baseline(logp_vocab, b)\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "center = correction is None and \"sampler_topk_ids\" in per_token and \"sampler_topk_logprobs\" in per_token\nq = sg(jax.nn.softmax(lq, axis=-1))\nreturn (q * take_vocab(logp_vocab, ids)).sum(-1)\nscore = logp - baseline(logp_vocab, b)\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}

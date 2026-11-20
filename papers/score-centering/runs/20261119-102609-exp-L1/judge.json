@@ -1,0 +1,20 @@
+{
+  "model": "claude-opus-5-5 (Claude Code subagent)",
+  "answers": [
+    {
+      "evidence": "known = (q_top * topk_logp).sum(-1) + q_extra * logp_tok\nq_rest = jnp.clip(1.0 - q_s, 0.0, 1.0)\nlogp_rest = jax.nn.logsumexp(excluded, axis=-1)\ntail = q_rest * jnp.maximum(logp_rest, -1e4)\nreturn known + tail\n...\nexpected = sampler_expected_logp(logp_vocab, logp, b[\"targets\"], logq, b.get(\"sampler_topk_ids\"), b.get(\"sampler_topk_logprobs\"))\nscore = logp - expected\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "known = (q_top * topk_logp).sum(-1) + q_extra * logp_tok\nq_rest = jnp.clip(1.0 - q_s, 0.0, 1.0)\nlogp_rest = jax.nn.logsumexp(excluded, axis=-1)\ntail = q_rest * jnp.maximum(logp_rest, -1e4)\nreturn known + tail\nexpected = sampler_expected_logp(logp_vocab, logp, b[\"targets\"], logq, b.get(\"sampler_topk_ids\"), b.get(\"sampler_topk_logprobs\"))\nscore = logp - expected\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    },
+    {
+      "evidence": "known = (q_top * topk_logp).sum(-1) + q_extra * logp_tok\nq_rest = jnp.clip(1.0 - q_s, 0.0, 1.0)\nlogp_rest = jax.nn.logsumexp(excluded, axis=-1)\ntail = q_rest * jnp.maximum(logp_rest, -1e4)\nreturn known + tail\n...\nexpected = sampler_expected_logp(logp_vocab, logp, b[\"targets\"], logq, b.get(\"sampler_topk_ids\"), b.get(\"sampler_topk_logprobs\"))\nscore = logp - expected\nterms = {\"score\": w * score, ...}\nloss = -(advantages * sums[\"score\"]).sum() / n_tokens",
+      "idea_found": true,
+      "wrong_answer": null
+    }
+  ]
+}
