@@ -1,4 +1,4 @@
-"""Figure of the headline result: drift-free runs by hint level and model.
+"""Figure of the headline result: success rate by hint level and model.
 
 Writes figures/success-light.svg and figures/success-dark.svg (standard
 library only, transparent background; the README picks one with <picture>
@@ -27,7 +27,7 @@ THEMES = {
              "series": ["#3a5470", "#7894b2", "#c8d6e5"]},
 }
 W, H = 680, 270
-LEFT, RIGHT, TOP, BOTTOM = 8, 8, 44, 52
+LEFT, RIGHT, TOP, BOTTOM = 44, 8, 36, 52
 BAR, GAP, R = 22, 3, 2
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 
@@ -75,8 +75,13 @@ def svg(theme):
         out.append(f'<rect x="{x}" y="6" width="10" height="10" rx="2" fill="{color}"/>')
         out.append(f'<text x="{x + 15}" y="15" font-size="12" fill="{t["muted"]}">{m}</text>')
         x += 24 + 7.5 * len(m)
-    # baseline only
-    out.append(f'<line x1="{LEFT}" x2="{W - RIGHT}" y1="{base + 0.5}" y2="{base + 0.5}" stroke="{t["rule"]}"/>')
+    # y axis: success rate, light gridlines, the baseline solid
+    for pct in (0, 25, 50, 75, 100):
+        y = round(base - pct / 100 * plot_h) + 0.5
+        dash = "" if pct == 0 else ' stroke-dasharray="2 3"'
+        out.append(f'<line x1="{LEFT}" x2="{W - RIGHT}" y1="{y}" y2="{y}" stroke="{t["rule"]}"{dash}/>')
+        out.append(f'<text x="{LEFT - 8}" y="{y + 4}" font-size="10.5" text-anchor="end" fill="{t["muted"]}" '
+                   f'font-variant-numeric="tabular-nums">{pct}%</text>')
     for i, (lvl, name) in enumerate(LEVELS):
         x0 = LEFT + i * band + (band - group) / 2
         for j, (m, color) in enumerate(zip(MODELS, t["series"])):
@@ -92,8 +97,6 @@ def svg(theme):
             # a halo in the page's colour keeps the whisker visible over a bar of any shade
             out.append(f'<path d="{whisker}" stroke="{t["halo"]}" stroke-width="3" fill="none"/>')
             out.append(f'<path d="{whisker}" stroke="{t["muted"]}" stroke-width="1" fill="none"/>')
-            out.append(f'<text x="{xb + BAR / 2}" y="{y_hi - 5}" font-size="10.5" text-anchor="middle" '
-                       f'fill="{t["muted"]}" font-variant-numeric="tabular-nums">{p}/{n}</text>')
         cx = LEFT + i * band + band / 2
         out.append(f'<text x="{cx}" y="{base + 20}" font-size="12.5" font-weight="600" text-anchor="middle" '
                    f'fill="{t["text"]}">{lvl}</text>')

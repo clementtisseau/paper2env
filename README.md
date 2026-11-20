@@ -52,10 +52,10 @@ sampler's top-k ([how a run is graded](papers/score-centering/grading.md)).
   <img alt="Successful runs by hint level and model. L1: Haiku 1/6, Sonnet 2/6, Opus 6/6. L2a: Haiku 1/6, Sonnet 2/6, Opus 6/6. L2b: Haiku 0/6, Sonnet 0/6, Opus 6/6." src="papers/score-centering/figures/success-light.svg" width="680">
 </picture>
 
-*Successful runs by hint level and model: Claude Haiku, Sonnet and Opus 5.5
+*Success rate by hint level and model: Claude Haiku, Sonnet and Opus 5.5
 as Claude Code subagents, 6 runs each; whiskers: 95% Wilson intervals.*
 
-- **Opus succeeds in every run (18/18), from L1**, top-k tail model included,
+- **Opus succeeds in every run (18/18), from L1**, top-k tail included,
   in a median of 12 minutes and 20 shell commands.
 - **Haiku finds the idea but not the implementation:** the judges find it
   in 16/18 runs, but 14 of them center over the sampler's top-k without
@@ -76,9 +76,8 @@ flowchart LR
     A -->|submission| J["LLM judge<br/>is the idea there?"]
 ```
 
-What is shared between papers and what is written for each: [docs/adding-a-paper.md](docs/adding-a-paper.md).
-
 Why the eval is built this way, and what went wrong: [docs/method.md](docs/method.md).
+What is shared between papers and what is written for each: [docs/adding-a-paper.md](docs/adding-a-paper.md).
 
 ## Quickstart
 
@@ -109,9 +108,8 @@ at the repository root and follow [core/runner](core/runner/README.md).
   differences between levels are not. 37 runs of an earlier version of the starter are kept
   in `runs/` but not counted.
 - **One harness:** all runs use Claude Code's subagent harness, Bash only.
-- **Judge checked by hand, not measured:** the three judges agree on all 54
-  runs, and every verdict read by hand was right; there is no systematic
-  comparison with human grading.
+- **Judge checked by hand:** the three judges agree on all 54 runs, and every
+  verdict read by hand was right.
 - **Published answer:** the judge's prompt and the checks are public, so
   future models may have seen them.
 
