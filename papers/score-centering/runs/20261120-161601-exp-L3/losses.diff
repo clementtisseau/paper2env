@@ -1,0 +1,34 @@
+--- a/losses.py
++++ b/losses.py
+@@ -110,7 +110,7 @@
+     positive = batch["advantages"][:, None] >= 0
+     seq_len = targets.shape[1]
+     chunk = next(n for n in range(min(chunk, seq_len), 0, -1) if seq_len % n == 0)
+-    sampler_keys = ("sampling_token_logprobs",)
++    sampler_keys = ("sampling_token_logprobs", "sampler_topk_ids", "sampler_topk_logprobs")
+     per_token = {"hidden": hidden, "targets": targets, "mask": mask} | {k: batch[k] for k in sampler_keys if k in batch}
+ 
+     def chunk_sums(start):
+@@ -121,7 +121,21 @@
+         tv = sg(jnp.abs(jnp.exp(logq) - jnp.exp(logp)))
+         w = is_weight(logp - logq, positive, token_c, tv)
+         plogp = sg((jnp.exp(logp_vocab) * logp_vocab).sum(-1))  # policy entropy metric
+-        terms = {"score": w * logp, "entropy": -plogp, "kl_samp_train": sg(logq - logp), "masked": w == 0, "tv": tv}
++        # Control variate for the drift term (see REPORT.md): subtract
++        # b = sum_v m(v|h) log p(v|h), m(v|h) = q(v|h) w(v|h), over the sampler's top-k
++        # support. Its gradient sum_v m s_v is the h-measurable mean of the weighted score,
++        # so E_q[A (w_y s_y - sum_v m s_v) | h] carries no drift term.
++        # Without a token correction w = 1 and m = q.
++        if "sampler_topk_logprobs" in b:
++            lq_top = b["sampler_topk_logprobs"].astype(jnp.float32)
++            lp_top = take_vocab(logp_vocab, b["sampler_topk_ids"])
++            tv_top = sg(jnp.abs(jnp.exp(lq_top) - jnp.exp(lp_top)))
++            w_top = is_weight(lp_top - lq_top, positive[..., None], token_c, tv_top)
++            baseline = (sg(jnp.exp(lq_top)) * w_top * lp_top).sum(-1)
++        else:
++            baseline = 0.0
++        terms = {"score": w * logp - baseline, "entropy": -plogp, "kl_samp_train": sg(logq - logp),
++                 "masked": w == 0, "tv": tv}
+         return {k: (v * b["mask"]).sum(-1) for k, v in terms.items()}
+ 
+     chunks = jax.lax.map(jax.checkpoint(chunk_sums), jnp.arange(0, seq_len, chunk))

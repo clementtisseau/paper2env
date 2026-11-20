@@ -1142,5 +1142,13 @@
     "experiments": true,
     "era": "v2",
     "budget_hours": 2.0
+  },
+  "20261120-161601-exp-L3": {
+    "model": "Haiku",
+    "served_model": "claude-haiku-5-5",
+    "level": "L3",
+    "experiments": true,
+    "era": "v2",
+    "budget_hours": 2.0
   }
 }
