@@ -119,8 +119,9 @@ def test_starter_fails(tmp_path):
 
 
 def test_top_k_head_only_fails():
-    """A real submission that truncates the sum to the top-k head without
-    modeling the tail: biased even on-policy (tests/fixtures/)."""
+    """A real submission (the losses.py of runs/20261118-112015-exp-L3) that
+    truncates the sum to the top-k head without modeling the tail: biased
+    even on-policy."""
     r = check.check(ROOT / "tests/fixtures/haiku_L3_losses.py")
     assert not r["correct"] and not r["checks"]["on_policy"]
 

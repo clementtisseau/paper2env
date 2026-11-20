@@ -125,6 +125,6 @@ and the author's name in `LICENSE`, as the MIT license requires.
 | `grader/` | `check.py` (exact checks) and `judge.md` (the judge's prompt). |
 | `docker/` | Agent (CPU) and grader images. |
 | `tests/` | Starter equivalence, grader validation, prompt leaks. |
-| `runs/` | Every run: prompts, transcripts, submission, report, `grade.json`. |
+| `runs/` | Every run: prompts, transcripts, submission, report, `grade.json`, judges' answers. `index.json` gives each run's model, level and starter version (v2: the current starter; v1: an earlier one, not counted). |
 | `summarize_runs.py` | Writes `results_tables.md` from `runs/`. |
 | `plot_results.py` | Writes `figures/success-{light,dark}.svg` from `runs/`. |
